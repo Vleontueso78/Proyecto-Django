@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Editar Tarea{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center" id="editar-tarea-container">
+    <div id="editar-tarea-card" class="p-5 rounded">
+        <h1 id="editar-tarea-titulo" class="text-center mb-4">Editar Tarea</h1>
+
+        <form method="post" id="editar-tarea-form">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_titulo" id="label-editar-titulo" class="form-label">Título:</label>
+                {{ form.titulo }}
+                {% if form.titulo.errors %}
+                    <div class="text-danger">{{ form.titulo.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_descripcion" id="label-editar-descripcion" class="form-label">Descripción:</label>
+                {{ form.descripcion }}
+                {% if form.descripcion.errors %}
+                    <div class="text-danger">{{ form.descripcion.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-check mb-4" id="check-editar-completada">
+                {{ form.completada }}
+                <label class="form-check-label" id="label-editar-completada">Completada</label>
+            </div>
+
+            <div class="d-flex justify-content-center gap-3">
+                <button id="btn-guardar-editar" type="submit" class="btn px-4">💾 Guardar</button>
+                <a id="btn-volver-editar" href="{% url 'tareas:lista_tareas' %}" class="btn px-4">⬅ Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

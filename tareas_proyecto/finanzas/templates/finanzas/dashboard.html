@@ -1,0 +1,187 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
+
+<div id="dashboard-container">
+    <h2 id="titulo-finanzas">💰 Panel Financiero</h2>
+
+    <!-- BLOQUE: PRESUPUESTO ACTUAL -->
+    <div id="bloque-presupuesto-actual">
+        <p id="texto-presupuesto-actual">
+            Tu presupuesto diario actual es:
+            <strong id="valor-presupuesto-actual">${{ config.presupuesto_diario }}</strong>
+        </p>
+    </div>
+
+    <!-- MENSAJES -->
+    {% if messages %}
+        <div id="mensajes">
+            {% for message in messages %}
+                <div class="mensaje {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- FORM: MODIFICAR PRESUPUESTO -->
+    <div id="config-presupuesto">
+        <h4 id="titulo-presupuesto">Modificar presupuesto diario:</h4>
+        <form id="form-presupuesto" method="post">
+            {% csrf_token %}
+            <div id="presupuesto-wrapper">
+                <input
+                    id="input-presupuesto"
+                    type="number"
+                    name="presupuesto_diario"
+                    value="{{ config.presupuesto_diario }}"
+                    step="0.01"
+                    min="0"
+                >
+                <button id="btn-actualizar-presupuesto" type="submit">💾 Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- FORM: REGISTRO DE GASTOS -->
+    <div id="gastos-hoy">
+        <h4 id="titulo-gastos-hoy">Registrar gasto de hoy: {{ hoy }}</h4>
+
+        <!-- 🥗 ALIMENTO -->
+        <form method="post" class="form-gasto">
+            {% csrf_token %}
+            <ul id="lista-gastos">
+                <li class="item-gasto {% if registro.alimento_fijo %}fijo{% endif %}">
+                    <label>Alimento:</label>
+                    <input
+                        id="input-alimento"
+                        type="number"
+                        step="0.01"
+                        name="alimento"
+                        value="{{ registro.alimento|default_if_none:'' }}"
+                    >
+                    <input type="hidden" name="tipo" value="alimento">
+                    <button
+                        class="btn-fijar {% if registro.alimento_fijo %}fijado{% endif %}"
+                        type="submit"
+                        name="fijar"
+                        value="1"
+                        onclick="return validarMonto('input-alimento');"
+                    >
+                        {% if registro.alimento_fijo %}
+                            ✅ Fijado
+                        {% else %}
+                            📌 Fijar
+                        {% endif %}
+                    </button>
+                </li>
+            </ul>
+        </form>
+
+        <!-- 💰 AHORRO Y DEUDA -->
+        <form method="post" class="form-gasto">
+            {% csrf_token %}
+            <ul id="lista-gastos">
+                <li class="item-gasto {% if registro.ahorro_y_deuda_fijo %}fijo{% endif %}">
+                    <label>Ahorro y Deuda:</label>
+                    <input
+                        id="input-ahorro"
+                        type="number"
+                        step="0.01"
+                        name="ahorro_y_deuda"
+                        value="{{ registro.ahorro_y_deuda|default_if_none:'' }}"
+                    >
+                    <input type="hidden" name="tipo" value="ahorro_y_deuda">
+                    <button
+                        class="btn-fijar {% if registro.ahorro_y_deuda_fijo %}fijado{% endif %}"
+                        type="submit"
+                        name="fijar"
+                        value="1"
+                        onclick="return validarMonto('input-ahorro');"
+                    >
+                        {% if registro.ahorro_y_deuda_fijo %}
+                            ✅ Fijado
+                        {% else %}
+                            📌 Fijar
+                        {% endif %}
+                    </button>
+                </li>
+            </ul>
+        </form>
+
+        <!-- 💵 SOBRANTE -->
+        <form method="post" class="form-gasto">
+            {% csrf_token %}
+            <ul id="lista-gastos">
+                <li class="item-gasto {% if registro.sobrante_fijo %}fijo{% endif %}">
+                    <label>Sobrante:</label>
+                    <input
+                        id="input-sobrante"
+                        type="number"
+                        step="0.01"
+                        name="sobrante"
+                        value="{{ registro.sobrante_monetario|default_if_none:'' }}"
+                        readonly
+                    >
+                    <input type="hidden" name="tipo" value="sobrante">
+                    <button
+                        class="btn-fijar {% if registro.sobrante_fijo %}fijado{% endif %}"
+                        type="submit"
+                        name="fijar"
+                        value="1"
+                        onclick="return validarMonto('input-sobrante');"
+                    >
+                        {% if registro.sobrante_fijo %}
+                            ✅ Fijado
+                        {% else %}
+                            📌 Fijar
+                        {% endif %}
+                    </button>
+                </li>
+            </ul>
+        </form>
+
+        <!-- BOTÓN GUARDAR GASTOS GENERALES -->
+        <form id="form-gastos" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="guardar_todo" value="1">
+            <button id="btn-guardar-gasto" type="submit">💾 Guardar todos los gastos</button>
+        </form>
+    </div>
+
+    <!-- RESUMEN -->
+    <div id="resumen-financiero">
+        <h4 id="titulo-resumen">Resumen total:</h4>
+        <p id="total-gastado">💸 Total gastado: ${{ total_gastado }}</p>
+        <p id="total-sobrante">💵 Total sobrante: ${{ total_sobrante }}</p>
+    </div>
+
+    <!-- LINK AL HISTORIAL -->
+    <div id="enlace-registro">
+        <a id="btn-ver-registro" href="{% url 'finanzas:registros' %}">📊 Ver historial de registros</a>
+    </div>
+</div>
+
+<!-- SCRIPT: Calcular sobrante y validar -->
+<script>
+function validarMonto(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input.value || parseFloat(input.value) <= 0) {
+        alert("⚠️ Agregar monto válido antes de fijar.");
+        return false;
+    }
+    return true;
+}
+
+function calcularSobrante() {
+    const presupuesto = parseFloat(document.getElementById("input-presupuesto").value) || 0;
+    const alimento = parseFloat(document.getElementById("input-alimento").value) || 0;
+    const ahorro = parseFloat(document.getElementById("input-ahorro").value) || 0;
+    const sobrante = presupuesto - alimento - ahorro;
+    document.getElementById("input-sobrante").value = sobrante.toFixed(2);
+}
+
+document.getElementById("input-alimento").addEventListener("input", calcularSobrante);
+document.getElementById("input-ahorro").addEventListener("input", calcularSobrante);
+document.getElementById("input-presupuesto").addEventListener("input", calcularSobrante);
+
+// Calcular sobrante al cargar
+calcularSobrante();
+</script>

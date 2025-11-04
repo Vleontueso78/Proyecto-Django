@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+env/
+venv/
+ENV/
+.venv/
+
+# Django / local db
+db.sqlite3
+*.sqlite3
+
+# Environment
+.env
+.env.* 
+*.env
+
+# IDEs
+.vscode/
+.idea/
+
+# Static / collected files
+staticfiles/
+media/
+media_root/
+
+# Byte-compiled / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# mac / Windows
+.DS_Store
+Thumbs.db
+
+# PyCharm
+/.idea/
+
+# Logs
+*.log

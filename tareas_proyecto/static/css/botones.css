@@ -1,0 +1,315 @@
+/* --- Fondo general --- */
+body {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* --- Texto de colores para cada sección --- */
+.text-tareas { color: #0d6efd !important; }   /* Azul */
+.text-notas { color: #28a745 !important; }    /* Verde */
+.text-finanzas { color: #ffc107 !important; } /* Amarillo */
+
+/* --- Botones personalizados --- */
+.btn-tareas {
+    background-color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    color: black !important;
+    transition: 0.3s;
+}
+.btn-tareas:hover {
+    background-color: white !important;
+    color: #0d6efd !important;
+}
+
+.btn-notas {
+    background-color: #28a745 !important;
+    border: 1px solid #28a745 !important;
+    color: black !important;
+    transition: 0.3s;
+}
+.btn-notas:hover {
+    background-color: white !important;
+    color: #28a745 !important;
+}
+
+.btn-finanzas {
+    background-color: #ffc107 !important;
+    border: 1px solid #ffc107 !important;
+    color: black !important;
+    transition: 0.3s;
+}
+.btn-finanzas:hover {
+    background-color: white !important;
+    color: #ffc107 !important;
+}
+
+/* --- Cuadros de las secciones --- */
+.card-custom {
+    background-color: #111 !important;
+    border: 2px solid #0d6efd !important;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+.card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(13, 110, 253, 0.4);
+}
+
+/* --- Ajustes de texto dentro de las cards --- */
+.card-custom .card-title {
+    font-weight: 600;
+}
+.card-custom .card-text {
+    font-size: 0.95rem;
+}
+
+/* --- Cuadro "No hay tareas registradas" --- */
+.sin-tareas-cuadro {
+    border: 2px solid #0d6efd !important;
+    border-radius: 10px;
+    opacity: 0.9;
+}
+
+/* --- Quitar borde blanco de la card y mantener solo el azul --- */
+.card-borde-azul {
+    background-color: #111 !important; /* mismo tono oscuro del fondo */
+    border: 5px solid #0d6efd !important; /* borde azul */
+    border-radius: 10px !important;
+    box-shadow: none !important; /* elimina el brillo/blanco exterior */
+}
+
+#id_titulo { color: #0d6efd !important; }
+
+/* --- Colorear etiquetas del formulario de crear tarea --- */
+.form-label.text-tareas,
+.form-check-label.text-tareas {
+    color: #0d6efd !important;
+    font-weight: 500;
+}
+
+/* --- Color del texto dentro de los campos de entrada --- */
+#id_titulo,
+#id_descripcion {
+    color: #0d6efd !important;       /* texto azul */
+    background-color: #fff !important; /* fondo blanco para contraste */
+    border: 1px solid #0d6efd !important; /* borde azul opcional */
+}
+
+#id_titulo:focus,
+#id_descripcion:focus {
+    outline: none !important;
+    box-shadow: 0 0 5px #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+/* --- Botón verde de Notas (Crear Nota) --- */
+.btn-crear-nota {
+    background-color: #28a745 !important;
+    border: 1px solid #28a745 !important;
+    color: white !important;
+    transition: 0.3s;
+}
+.btn-crear-nota:hover {
+    background-color: #198754 !important;
+    color: #28a745 !important;
+}
+
+/* --- Cuadro "Todavía no hay notas." igual al de tareas pero verde --- */
+.sin-notas-cuadro {
+    background-color: #111;
+    border: 2px solid #28a745 !important;  /* borde verde grueso */
+    border-radius: 5px !important;
+    opacity: 0.9;
+    box-shadow: none !important;
+}
+
+/* --- Quitar fondo blanco del list-group-item dentro de notas --- */
+.card.shadow-sm-verde,
+.list-group-item-verde {
+    background-color: #111 !important;
+    border: 5px solid #28a745 !important;  /* borde verde grueso */
+    border-radius: 10px !important;
+}
+
+/* Quita el punto (bullet) de la lista de notas vacía */
+ul.list-group {
+    list-style: none !important;
+    padding-left: 0 !important;
+    margin: 0 !important;
+}
+
+
+
+
+/* --- Botón Editar (azul como Marcar completada) --- */
+.btn-editar {
+    background-color: #0d6efd !important;  /* azul base */
+    color: #fff !important;                /* texto blanco */
+    border: 1px solid #0d6efd !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.btn-editar:hover {
+    background-color: #0b5ed7 !important;  /* tono más oscuro al pasar el mouse */
+    color: #fff !important;
+}
+
+/* --- Botón Eliminar (rojo igual estilo) --- */
+.btn-eliminar {
+    background-color: #dc3545 !important;  /* rojo base */
+    color: #fff !important;
+    border: 1px solid #dc3545 !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.btn-eliminar:hover {
+    background-color: #bb2d3b !important;  /* rojo más oscuro al pasar el mouse */
+    color: #fff !important;
+}
+
+/* --- Marco verde fino alrededor del cuadro de notas --- */
+#sin-notas-marco {
+    border: 2px solid #28a745 !important;  /* marco verde */
+    border-radius: 10px !important;
+    background-color: #495057 !important;
+    box-shadow: none !important;
+}
+
+/* --- Botón Editar específico de notas --- */
+#btn-editar-nota {
+    background-color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+#btn-editar-nota:hover {
+    background-color: #0b5ed7 !important;
+    color: #fff !important;
+}
+
+/* --- Botón Eliminar específico de notas --- */
+#btn-eliminar-nota {
+    background-color: #dc3545 !important;
+    border: 1px solid #dc3545 !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+#btn-eliminar-nota:hover {
+    background-color: #bb2d3b !important;
+    color: #fff !important;
+}
+
+/* === ESTILOS PARA LA PÁGINA EDITAR TAREA === */
+
+#editar-tarea-cuadro {
+    background-color: #000 !important;       /* fondo oscuro */
+    border: 2px solid #0d6efd !important;    /* borde azul */
+    border-radius: 10px !important;
+    color: #fff !important;
+}
+
+#editar-tarea-titulo {
+    color: #0d6efd !important;               /* título azul */
+    font-weight: 700;
+    text-align: center;
+}
+
+#label-editar-titulo,
+#label-editar-descripcion,
+#label-editar-completada {
+    color: #0d6efd !important;               /* etiquetas azules */
+    font-weight: 500;
+}
+
+/* Campos de texto */
+#id_titulo,
+#id_descripcion {
+    background-color: #fff !important;
+    color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+}
+#id_titulo:focus,
+#id_descripcion:focus {
+    box-shadow: 0 0 5px #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+/* Botón Guardar */
+#btn-guardar-editar {
+    background-color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease;
+}
+#btn-guardar-editar:hover {
+    background-color: #0b5ed7 !important;
+}
+
+/* Botón Volver */
+#btn-volver-editar {
+    background-color: #6c757d !important;
+    border: 1px solid #6c757d !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease;
+}
+#btn-volver-editar:hover {
+    background-color: #5c636a !important;
+}
+
+/* ====== CREAR NOTA - ESTILO IGUAL A GESTIÓN DE NOTAS ====== */
+
+/* Título */
+#titulo-crear-nota {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Card contenedora del formulario */
+#crear-nota-card {
+    background-color: #2c2f33;
+    border: 2px solid #00ff7f;
+    border-radius: 10px;
+}
+
+/* Botón “Volver a Notas” */
+#btn-volver-notas {
+    background-color: #198754;
+    color: #fff;
+    border: none;
+    transition: 0.3s;
+}
+
+#btn-volver-notas:hover {
+    background-color: #157347;
+    color: #fff;
+}
+
+/* Botón “Guardar” */
+#btn-guardar-nota {
+    background-color: #198754;
+    color: #fff;
+    border: none;
+    transition: 0.3s;
+}
+
+#btn-guardar-nota:hover {
+    background-color: #157347;
+    color: #fff;
+}
+
+/* Inputs y textarea */
+#crear-nota-card input,
+#crear-nota-card textarea {
+    background-color: #f8f9fa;
+    color: #000;
+    border: 1px solid #00ff7f;
+    border-radius: 5px;
+}
+
+#crear-nota-card input:focus,
+#crear-nota-card textarea:focus {
+    border-color: #00ff7f;
+}
+
+/* ====== Etiquetas del formulario Crear Nota ====== */
+#crear-nota-card label {
+    color: #28a745;
+}

@@ -1,0 +1,49 @@
+{% extends "base.html" %} 
+{% block title %}Gestión de Notas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 id="titulo-notas" class="mb-0">Gestión de Notas</h1>
+        <div class="d-flex gap-2">
+            <a id="btn-crear-nota" class="btn btn-crear-nota" href="{% url 'tareasMauri:crear_notas' %}">➕ Crear Nota</a>
+            <a id="btn-menu-principal-crear-nota" class="btn btn-secondary" href="{% url 'tareas:dashboard' %}">⬅ Menú principal</a>
+        </div>
+    </div>
+
+    <!-- Lista de notas -->
+    <div id="notas-card" class="card shadow-sm-verde">
+        <div class="card-body">
+            <ul  class="list-group">
+                {% for n in notes %}
+                    <li id="nota-item" class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong id="nota-titulo">{{ n.title|default:"Sin título" }}</strong>
+                                <p id="nota-cuerpo" class="mb-0 mt-2">{{ n.body|linebreaksbr }}</p>
+                            </div>
+                            <div class="btn-group">
+                                <a id="btn-editar-nota" class="btn btn-sm" href="{% url 'tareasMauri:editar_nota' n.id %}">✏️ Editar</a>
+                                <a id="btn-eliminar-nota" class="btn btn-sm"
+                                   href="{% url 'tareasMauri:eliminar_nota' n.id %}"
+                                   onclick="return confirm('¿Eliminar esta nota?');">
+                                   🗑 Eliminar
+                                </a>
+                            </div>
+                        </div>
+                        <small id="nota-fecha" class="text-muted">{{ n.created_at|date:"d/m/Y H:i" }}</small>
+                    </li>
+                {% empty %}
+                    <li id="sin-notas-marco" class="list-group-item bg-dark text-light text-center py-4 sin-notas-cuadro">
+                        <i class="bi bi-journal-x" id="icono-sin-notas" style="font-size: 1.5rem; color: #28a745;"></i>
+                        <div id="texto-sin-notas">Todavía no hay notas.</div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

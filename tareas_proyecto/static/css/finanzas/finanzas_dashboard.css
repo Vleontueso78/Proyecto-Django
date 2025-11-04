@@ -1,0 +1,204 @@
+/* === CONTENEDOR PRINCIPAL === */
+#dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #181818;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    color: #fff;
+}
+
+/* === TÍTULO PRINCIPAL === */
+#titulo-finanzas {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #ffd166;
+    font-weight: 600;
+}
+
+/* === BLOQUE PRESUPUESTO ACTUAL === */
+#bloque-presupuesto-actual {
+    background-color: #222;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(255, 209, 102, 0.2);
+}
+
+#texto-presupuesto-actual {
+    font-size: 1.1em;
+}
+
+#valor-presupuesto-actual {
+    color: #ffd166;
+    font-weight: bold;
+}
+
+/* === FORMULARIOS === */
+#config-presupuesto,
+#gastos-hoy {
+    background: #1f1f1f;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+#config-presupuesto h4,
+#gastos-hoy h4 {
+    color: #06d6a0;
+    margin-bottom: 15px;
+}
+
+/* === INPUTS === */
+input[type="number"] {
+    margin: 5px;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #444;
+    width: 180px;
+    background-color: #2a2a2a;
+    color: #fff;
+    text-align: right;
+}
+
+input[type="number"]:focus {
+    outline: none;
+    border-color: #ffd166;
+}
+
+/* === BOTONES === */
+button {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s;
+}
+
+button:hover {
+    background-color: #218838;
+    transform: scale(1.03);
+}
+
+/* === BOTONES ESPECÍFICOS === */
+#btn-actualizar-presupuesto {
+    background-color: #06d6a0;
+    color: #000;
+    font-weight: bold;
+}
+
+#btn-guardar-gasto {
+    background-color: #118ab2;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+#btn-ver-registro {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    background-color: #ef476f;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+#btn-ver-registro:hover {
+    background-color: #ff5b80;
+}
+
+/* === LISTA DE GASTOS === */
+#lista-gastos {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+}
+
+.item-gasto {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #222;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(255,255,255,0.05);
+    transition: background-color 0.3s ease;
+}
+
+/* CAMPO FIJADO: resalta el fondo */
+.item-gasto.fijo {
+    background-color: #20351f;
+    border: 1px solid #3cb371;
+}
+
+/* INPUT DE GASTO FIJADO */
+.item-gasto.fijo input[type="number"] {
+    background-color: #2f3e2e;
+    border: 1px solid #4caf50;
+}
+
+/* BOTÓN DE FIJAR (📌 / ✅) */
+.btn-fijar {
+    background-color: #333;
+    color: #ffd166;
+    font-size: 0.9em;
+}
+
+.btn-fijar:hover {
+    background-color: #444;
+}
+
+/* BOTÓN FIJADO */
+.btn-fijar.fijado {
+    background-color: #4caf50;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* === RESUMEN === */
+#resumen-financiero {
+    background-color: #1f1f1f;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+#titulo-resumen {
+    color: #ffd166;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#total-gastado,
+#total-sobrante {
+    font-size: 1.1em;
+    text-align: center;
+    margin: 8px 0;
+}
+
+/* === ENLACE HISTORIAL === */
+#enlace-registro {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#btn-ver-registro:hover {
+    text-decoration: underline;
+}
+
+/* === TRANSICIONES SUAVES === */
+.item-gasto,
+button,
+input {
+    transition: 0.2s ease all;
+}

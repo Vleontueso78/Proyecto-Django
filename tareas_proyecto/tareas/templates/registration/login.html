@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">  {# 👈 nuevo css exclusivo #}
+
+<div id="login-container" class="container mt-5" style="max-width: 400px;">
+    <h3 id="login-titulo" class="mb-3 text-center">Iniciar sesión</h3>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div id="login-alerta" class="alert alert-danger text-center">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form id="login-form" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button id="btn-login" class="btn w-100" type="submit">Entrar</button>
+    </form>
+</div>
+{% endblock %}

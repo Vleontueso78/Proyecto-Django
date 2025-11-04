@@ -1,0 +1,23 @@
+#finanzas-registros {
+    color: #e3e3e3;
+}
+
+#titulo-registros {
+    color: #6be58f;
+    font-weight: 700;
+}
+
+#tabla-registros .card {
+    background-color: #1e1e1e;
+    border: 1px solid #3b3b3b;
+}
+
+#btn-volver {
+    border-color: #6bc1ff;
+    color: #6bc1ff;
+}
+
+#btn-volver:hover {
+    background-color: #6bc1ff;
+    color: #121212;
+}

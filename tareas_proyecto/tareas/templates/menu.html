@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Organizador Personal{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/menu.css' %}">  {# 👈 nuevo CSS exclusivo para el menú #}
+
+<div id="menu-encabezado" class="text-center mb-5">
+    <h1 id="menu-titulo" class="fw-bold text-light">Organizador Personal</h1>
+    <p id="menu-subtitulo" class="lead text-light opacity-75">
+        Gestioná 
+        <span id="menu-texto-tareas" class="fw-semibold text-primary">tus tareas</span>, 
+        <span id="menu-texto-notas" class="fw-semibold text-primary">notas</span> y 
+        <span id="menu-texto-finanzas" class="fw-semibold text-primary">finanzas</span> desde un solo lugar.
+    </p>
+</div>
+
+<div id="menu-botones" class="text-center mb-4">
+    <a id="btn-menu-tareas" href="{% url 'tareas:lista_tareas' %}" class="btn btn-lg me-2 shadow">📘 Tareas</a>
+    <a id="btn-menu-notas" href="{% url 'tareasMauri:notas' %}" class="btn btn-lg me-2 shadow">🗒️ Notas</a>
+    <a id="btn-menu-finanzas" href="{% url 'finanzas:dashboard' %}" class="btn btn-lg shadow">💰 Control Financiero</a>
+</div>
+
+<div id="menu-tarjetas" class="row g-4 justify-content-center">
+
+    <div class="col-md-4">
+        <div id="card-tareas" class="card shadow-lg">
+            <div class="card-body text-center text-light">
+                <h5 class="card-title fs-4">📘 Tareas</h5>
+                <p class="card-text">Total: <strong>{{ tareas_count }}</strong></p>
+                <a id="btn-ir-tareas" href="{% url 'tareas:lista_tareas' %}" class="btn btn-light btn-sm mt-2">Ir a Tareas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div id="card-notas" class="card shadow-lg">
+            <div class="card-body text-center text-light">
+                <h5 class="card-title fs-4">🗒️ Notas</h5>
+                <p class="card-text">Total: <strong>{{ notas_count }}</strong></p>
+                <a id="btn-ir-notas" href="{% url 'tareasMauri:notas' %}" class="btn btn-light btn-sm mt-2">Ir a Notas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div id="card-finanzas" class="card shadow-lg">
+            <div class="card-body text-center text-light">
+                <h5 class="card-title fs-4">💵 Control Financiero</h5>
+                <p class="card-text">Ingresos, gastos y objetivos en un solo lugar.</p>
+                <a id="btn-ir-finanzas" href="{% url 'finanzas:dashboard' %}" class="btn btn-light btn-sm mt-2">Ir a Finanzas</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

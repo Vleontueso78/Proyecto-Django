@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Editar Nota{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 id="titulo-editar-nota" class="mb-0">Editar Nota</h1>
+        <div class="d-flex gap-2">
+            <a id="btn-volver-editar-nota" class="btn btn-outline-secondary" href="{% url 'tareasMauri:notas' %}">⬅ Volver a Notas</a>
+            <a id="btn-menu-editar-nota" class="btn btn-outline-primary" href="{% url 'tareas:dashboard' %}">🏠 Menú principal</a>
+        </div>
+    </div>
+
+    <!-- Formulario -->
+    <div id="editar-nota-card" class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label id="label-editar-titulo" class="form-label">{{ form.title.label }}</label>
+                    {{ form.title }}
+                </div>
+                <div class="mb-3">
+                    <label id="label-editar-body" class="form-label">{{ form.body.label }}</label>
+                    {{ form.body }}
+                </div>
+                <button id="btn-guardar-editar-nota" type="submit" class="btn btn-success">Guardar cambios</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

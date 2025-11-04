@@ -1,0 +1,69 @@
+# =========================================
+#   🧠 GITIGNORE - Proyecto Django Limpio
+# =========================================
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de entorno / credenciales
+.env
+.env.*
+!.env.example  # si querés subir un ejemplo vacío
+
+# Base de datos local
+db.sqlite3
+*.sqlite3
+
+# Entornos virtuales
+venv/
+env/
+ENV/
+.venv/
+
+# Configuración del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de logs o temporales
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Carpetas de migraciones (solo si querés ignorarlas temporalmente)
+# **Usar con cuidado**
+# */migrations/
+
+# Archivos estáticos generados (si hacés collectstatic)
+staticfiles/
+static_root/
+media/
+
+# Configuración de VSCode, PyCharm, etc.
+.vscode/
+.idea/
+
+# Compilados y backups
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# Cache de pytest o coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Archivos específicos de Windows o macOS
+ehthumbs.db
+Desktop.ini

@@ -52,3 +52,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Pero no ignorar el ejemplo
+!.env.example

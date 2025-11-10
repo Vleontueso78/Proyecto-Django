@@ -1,7 +1,7 @@
-# 🧩 Proyecto: LibrOS Raúl  
+# 🧩 Proyecto: Organizador personal
 
-Aplicación web desarrollada con **Django**, que permite gestionar y recomendar libros, series y películas.  
-Incluye autenticación de usuarios mediante **Google OAuth2** y un panel visual moderno para explorar el catálogo.
+Aplicación web desarrollada con Django, pensada como un organizador personal integral que permite a los usuarios gestionar sus tareas, notas y finanzas de manera simple y eficiente.
+Incluye autenticación segura con Google OAuth2, una interfaz moderna y paneles visuales para controlar y planificar la información diaria desde un mismo lugar.
 
 ---
 
@@ -71,7 +71,7 @@ tareas_proyecto/
 ├── db.sqlite3 # Base de datos local (no se sube al repo)
 ├── manage.py
 ├── requirements.txt # Dependencias del proyecto
-└── Documentacion_organizador.md
+└── Documentacion.md
 ```
 
 ---
@@ -83,8 +83,8 @@ Sigue estos pasos para levantar el proyecto en tu entorno local 👇
 ### 1️⃣ Clonar el repositorio
 
 ```bash
-git clone https://github.com/raultueso2006/Proyecto_Raul.git
-cd Proyecto_Raul
+git clone https://github.com/Vleontueso78/Proyecto-Django.git
+cd Proyecto-Django
 ```
 
 ---
@@ -122,7 +122,7 @@ python manage.py migrate
 
 ---
 
-### 5️⃣ Crear un superusuario (opcional)
+### 5️⃣ Crear un superusuario (opcional por si queres administrar la base de datos)
 
 ```bash
 python manage.py createsuperuser
@@ -130,18 +130,7 @@ python manage.py createsuperuser
 
 ---
 
-### 6️⃣ Ejecutar el servidor
-
-```bash
-python manage.py runserver
-```
-
-👉 Abrí tu navegador en:  
-[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-
----
-
-## 🔐 Configuración de Inicio de Sesión con Google OAuth2
+### 6 🔐 Configuración de Inicio de Sesión con Google OAuth2
 
 Para usar el **login con Google**, seguí estos pasos:
 
@@ -150,7 +139,7 @@ Para usar el **login con Google**, seguí estos pasos:
 3. En el menú lateral, entrá a **APIs y servicios → Credenciales**.
 4. Hacé clic en **Crear credenciales → ID de cliente de OAuth**.
 5. Configurá la pantalla de consentimiento con:
-   - Nombre de la app: *LibrOS Raúl*
+   - Nombre de la app: *Organizador personal*
    - Correo del desarrollador
 6. En **Tipo de aplicación**, elegí **Aplicación web**.
 7. En **Orígenes autorizados de JavaScript**, agregá:
@@ -173,6 +162,19 @@ Para usar el **login con Google**, seguí estos pasos:
     ```
 
 11. Reiniciá el servidor y verificá el botón de inicio de sesión con Google en `/login/`.
+
+### 7 Ejecutar el servidor
+
+```bash
+python manage.py runserver
+```
+
+👉 Abrí tu navegador en:  
+[http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+---
+
+
 
 ---
 

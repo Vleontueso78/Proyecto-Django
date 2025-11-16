@@ -115,24 +115,43 @@ pip install -r requirements.txt
 
 ---
 
-## 🔑 Generar tu propio SECRET_KEY para Django
+## 🔑 Crear tu archivo `.env`
 
-En el archivo `.env.example` verás esta línea:
+Tu proyecto incluye un archivo **`.env.example`**, el cual sirve como **plantilla**.
 
-    SECRET_KEY=change-me-in-production
+### ✔ PASO 1 — Crear tu archivo `.env`
 
-Para crear tu `.env` personal, debés reemplazar ese valor por una clave
-real generada por Django.
+Debes crear un archivo llamado:
 
-Ejecutá este comando:
+```
+.env
+```
 
-``` bash
+En la ruta del proyecto:
+
+```
+/tareas_proyecto/.env
+```
+
+### ✔ PASO 2 — Copiar el contenido de `.env.example`
+
+Copiá **todo el contenido** de `.env.example` dentro de tu nuevo `.env`.
+
+### ✔ PASO 3 — Reemplazar valores sensibles
+
+Generá una SECRET_KEY válida ejecutando:
+
+```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Luego reemplazás el valor en tu `.env`:
+Luego reemplazá en tu `.env`:
 
-    SECRET_KEY=tu_clave_generada_aqui
+```
+SECRET_KEY=tu_clave_generada_aqui
+```
+
+Y finalizá configurando tus claves reales de Google OAuth2 y correo.
 
 ---
 

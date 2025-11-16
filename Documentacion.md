@@ -115,6 +115,25 @@ pip install -r requirements.txt
 
 ---
 
+## 🔐 4️⃣ Crear y configurar el archivo `.env`
+
+``` env
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+EMAIL_HOST=smtp.example.com
+EMAIL_USER=tu_email@example.com
+EMAIL_PASSWORD=tu_contraseña
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=your-google-client-id
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET=your-google-client-secret
+```
+
+---
+
 ### 4️⃣ 🔐 Configurar inicio de sesión con Google OAuth2
 
 1. Accedé a [Google Cloud Console](https://console.cloud.google.com/).

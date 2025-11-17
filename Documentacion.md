@@ -158,12 +158,58 @@ Y finalizá configurando tus claves reales de Google OAuth2 y correo.
 ### 4️⃣ 🔐 Configurar inicio de sesión con Google OAuth2
 
 1. Accedé a [Google Cloud Console](https://console.cloud.google.com/).
+<img src="docs/images/Selecciona un proyecto.JPG" alt="Logo" width="1000" />
+   - **Selecciona el boton** `Selecciona un proyecto`.
 2. Creá un **nuevo proyecto**.
+<img src="docs/images/Proyecto nuevo.JPG" alt="Logo" width="1000" />
+- **Selecciona el boton** `Proyecto nuevo`.
+<img src="docs/images/Nombre del proyecto.JPG" alt="Logo" width="1000" />  
+   - **Agrega el nombre que quieras en el campo** `Nombre del proyecto`. 
+   - **No hay que hacer nada en el campo** `ubicación`.
+   - **Luego para crear seleccionar el botón** `Crear`.
+<img src="docs/images/Selecciona un proyecto.JPG" alt="Logo" width="1000" />
+   - **Volves a apretar ese boton** `Selecciona un proyecto` **para ver tu proyecto creado**. 
+<img src="docs/images/Seleccionas el proyecto creado.JPG" alt="Logo" width="1000" />     
+   - **Selecciona el nombre del proyecto creado** `organizacion personal (ejemplo)`
+<img src="docs/images/Tres rayas.JPG" alt="Logo" width="1000" />
+   - **Selecciona el boton de las** `≡`
 3. En **APIs y servicios → Credenciales**, generá un **ID de cliente OAuth2**.
-4. Configurá los siguientes valores:
-   - **Origen autorizado:** `http://127.0.0.1:8000`
-   - **URI de redirección:** `http://127.0.0.1:8000/accounts/google/login/callback/`
-5. Copiá el `Client ID` y el `Client Secret` y agregalos a tu archivo `.env`:
+<img src="docs/images/Apis y servicios.JPG" alt="Logo" width="1000" />
+   - **Deslizate hasta el botón** `Apis y servicios` **y luego apreta el botón** `Credenciales`
+<img src="docs/images/Credenciales.JPG" alt="Logo" width="1000" />
+   - **Hace click al botón** `Configurar pantalla de consentimiento` 
+<img src="docs/images/Comenzar.JPG" alt="Logo" width="1000" />
+   - **Hace click al botón** `Comenzar`
+<img src="docs/images/Informacion de la app.JPG" alt="Logo" width="1000" />
+   - **1. Agrega el nombre de la aplicación de quieras en el campo** `Nombre de la aplicación`  
+   - **2. Agrega el un correo electrónico en el campo** `Correo electrónico de asistencia del usuario`
+   - **3. Apreta el botón** `Siguiente`
+<img src="docs/images/Público.JPG" alt="Logo" width="1000" />
+   - **1. Selecciona el circulo de** `Usuarios externos`  
+   - **2. Apreta el boton** `Siguiente`
+<img src="docs/images/Información de contacto.JPG" alt="Logo" width="1000" />
+   - **1. Agrega algún correo donde quieras recibir las notificaciones de cambios en el campo** `Direcciones de correo electrónico`  
+   - **2. Apreta el boton** `Siguiente` 
+<img src="docs/images/Terminos y condiciones.JPG" alt="Logo" width="1000" />
+   - **1. Hace click en el cuadrado** `política sobre los datos del usuario de los servicios de las APIs de Google.`
+   - **2. Apreta el boton** `Continuar`
+<img src="docs/images/Crear.JPG" alt="Logo" width="1000" />
+   - **Apreta el boton** `Crear.` 
+<img src="docs/images/Crear cliente de OAuth.JPG" alt="Logo" width="1000" />
+   - **Apreta el boton** `Crear cliente de OAuth.`           
+<img src="docs/images/Tipo de aplicación.JPG" alt="Logo" width="1000" />
+<img src="docs/images/Orígenes autorizados.JPG" alt="Logo" width="1000" />
+<img src="docs/images/Crear ID de cliente de OAuth.JPG" alt="Logo" width="1000" />
+   - **1. Elegí 'Aplicación web' en el campo** `Tipo de aplicación`  
+   - **2. Agrégale el nombre que quieras en el campo** `Nombre`
+   - **3. En el campo 'URI 1' agregale la siguiente URL:** `http://127.0.0.1:8000` 
+   - **4. En el campo 'URI 1' y 'URI 2' agregale las siguientes URL:** `http://127.0.0.1:8000/oauth/complete/google-oauth2/` y `http://localhost:8000/oauth/complete/google-oauth2/`
+   - **5. Hace click en el botón** `Crear.`  
+4. Copiá el `Client ID` y el `Client Secret` y agregalos a tu archivo `.env`:
+<img src="docs/images/Se creó el cliente de OAuth.JPG" alt="Logo" width="1000" />
+   - **1. Copia el 'ID de cliente' y pegalo en el SOCIAL_AUTH_GOOGLE_OAUTH2_KEY del .env**
+   - **2. Copia el 'Secreto del cliente' y pegalo en el SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET del .env**
+   - **3. Ojo si o si tenes que copiar las anteriores claves y apretar el botón** `Aceptar`
 
    ```env
    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY=TU_CLIENT_ID
@@ -223,6 +269,6 @@ python manage.py runserver
 
 ## 💡 Autor
 
-👤 **Raúl T.**  
-Desarrollado como parte del **proyecto final de la diplomatura en desarrollo web**.  
-📬 GitHub: [raultueso2006](https://github.com/raultueso2006)
+👤 **Victor T.**  
+Desarrollado como parte del **Proyecto final de la diplomatura en Desarrollo de software**.  
+📬 GitHub: [vleontueso78](https://github.com/vleontueso78)

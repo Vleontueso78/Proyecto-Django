@@ -51,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    # Social Auth
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
@@ -134,6 +136,14 @@ AUTHENTICATION_BACKENDS = (
 
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+# 🔥 SIEMPRE mostrar la pantalla de selección de cuentas
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
+    'prompt': 'select_account',    # ← fuerza el selector SIEMPRE
+}
+
+# 🔥 Cuando cerrás sesión, Google revoca el token y NO recuerda cuenta previa
+SOCIAL_AUTH_GOOGLE_OAUTH2_REVOKE_TOKENS_ON_DISCONNECT = True
 
 # ==============================
 #   CLAVE AUTOMÁTICA

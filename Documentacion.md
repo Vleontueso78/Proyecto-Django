@@ -272,7 +272,7 @@ Y finalizá configurando tus claves reales de Google OAuth2 y correo.
 
 ## 4️⃣ Agregar credenciales a `.env`
 
-`<img src="docs/images/Se creó el cliente de OAuth.JPG" width="1000" />`{=html}
+<img src="docs/images/Se creó el cliente de OAuth.JPG" width="1000" />
 
 1.  Copiar el **ID de cliente** → pegarlo en
     `SOCIAL_AUTH_GOOGLE_OAUTH2_KEY`

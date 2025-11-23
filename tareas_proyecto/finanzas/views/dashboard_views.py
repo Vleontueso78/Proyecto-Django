@@ -9,6 +9,9 @@ from decimal import Decimal, InvalidOperation
 from ..models import RegistroFinanciero, ObjetivoFinanciero, ConfigFinanciera
 from ..forms import RegistroFinancieroForm, ObjetivoFinancieroForm
 
+# 🔥 Import centralizado del cálculo de sobrante
+from ..calculo_sobrante.calculadora import calcular_sobrante
+
 
 # ===========================
 #   DASHBOARD PRINCIPAL
@@ -21,10 +24,10 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     template_name = "finanzas/dashboard.html"
 
     # -------------------------------------------------
-    # PROCESA FORMULARIOS (GUARDAR/FIJAR/UPDATE)
+    # PROCESA FORMULARIOS (POST)
     # -------------------------------------------------
     def post(self, request, *args, **kwargs):
-        # Obtener/crear configuración del usuario (presupuesto diario)
+        # Config del usuario (presupuesto diario)
         config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
 
         # -------- 1️⃣ MODIFICAR PRESUPUESTO DIARIO ----------
@@ -45,17 +48,16 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             defaults={"para_gastar_dia": config.presupuesto_diario},
         )
 
-        # -------- 3️⃣ FIJAR O DESFIJAR UN GASTO INDIVIDUAL ----------
+        # -------- 3️⃣ FIJAR/DESFIJAR GASTO INDIVIDUAL ----------
         if "fijar" in request.POST:
             tipo = request.POST.get("tipo")  # alimento / ahorro / sobrante
             valor = request.POST.get(tipo) or request.POST.get("valor")
 
-            # Validación de valor vacío
+            # Validación
             if not valor or valor.strip() == "":
                 messages.warning(request, "⚠️ Agregar monto válido antes de fijar.")
                 return redirect("finanzas:dashboard")
 
-            # Convertir a decimal
             try:
                 valor_decimal = Decimal(valor.replace(",", "."))
             except (ValueError, InvalidOperation):
@@ -66,23 +68,21 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 messages.warning(request, "⚠️ El monto debe ser positivo.")
                 return redirect("finanzas:dashboard")
 
-            # Campos reales del modelo
+            # Campos del modelo
             campo_valor = tipo if tipo != "sobrante" else "sobrante_monetario"
             campo_fijo = f"{tipo}_fijo" if tipo != "sobrante" else "sobrante_fijo"
 
-            # Guardar valor
+            # Alternar fijación
             setattr(registro, campo_valor, valor_decimal)
-
-            # Alternar fijación (toggle)
             actual = getattr(registro, campo_fijo)
             setattr(registro, campo_fijo, not actual)
 
-            # Recalcular sobrante si NO está fijado
+            # Recalcular sobrante solo si NO está fijado
             if not registro.sobrante_fijo:
-                registro.sobrante_monetario = (
-                    Decimal(registro.para_gastar_dia)
-                    - Decimal(registro.alimento)
-                    - Decimal(registro.ahorro_y_deuda)
+                registro.sobrante_monetario = calcular_sobrante(
+                    registro.para_gastar_dia,
+                    registro.alimento,
+                    registro.ahorro_y_deuda
                 )
 
             registro.save()
@@ -92,21 +92,18 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
 
         # -------- 4️⃣ GUARDAR TODOS LOS GASTOS ----------
         if "guardar_todo" in request.POST:
-            for campo, modelo in [
-                ("alimento", "alimento"),
-                ("ahorro_y_deuda", "ahorro_y_deuda"),
-            ]:
+            for campo in ["alimento", "ahorro_y_deuda"]:
                 valor = request.POST.get(campo)
                 try:
-                    setattr(registro, modelo, Decimal(valor.replace(",", ".") or "0"))
-                except (ValueError, InvalidOperation):
+                    setattr(registro, campo, Decimal(valor.replace(",", ".") or "0"))
+                except:
                     pass
 
             if not registro.sobrante_fijo:
-                registro.sobrante_monetario = (
-                    registro.para_gastar_dia
-                    - registro.alimento
-                    - registro.ahorro_y_deuda
+                registro.sobrante_monetario = calcular_sobrante(
+                    registro.para_gastar_dia,
+                    registro.alimento,
+                    registro.ahorro_y_deuda
                 )
 
             registro.save()
@@ -121,17 +118,17 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Obtener configuración del usuario
+        # Config
         config, _ = ConfigFinanciera.objects.get_or_create(user=self.request.user)
 
-        # Obtener o crear el registro del día
+        # Registro del día
         registro, creado = RegistroFinanciero.objects.get_or_create(
             user=self.request.user,
             fecha=date.today(),
             defaults={"para_gastar_dia": config.presupuesto_diario},
         )
 
-        # -------- 1️⃣ SI ES UN REGISTRO NUEVO, COPIAR VALORES FIJOS DEL DÍA ANTERIOR ----------
+        # -------- 1️⃣ COPIAR FIJOS DEL DÍA ANTERIOR ----------
         if creado:
             ultimo = (
                 RegistroFinanciero.objects.filter(user=self.request.user)
@@ -158,17 +155,16 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                     "📌 Se restauraron los valores fijos del día anterior."
                 )
 
-        # -------- 2️⃣ CALCULAR SOBRANTE SI NO ESTÁ FIJADO ----------
+        # -------- 2️⃣ RE-CALCULAR SOBRANTE (si no está fijado) ----------
         if not registro.sobrante_fijo:
-            registro.sobrante_monetario = (
-                registro.para_gastar_dia
-                - registro.alimento
-                - registro.ahorro_y_deuda
+            registro.sobrante_monetario = calcular_sobrante(
+                registro.para_gastar_dia,
+                registro.alimento,
+                registro.ahorro_y_deuda
             )
             registro.save()
 
-        # -------- 3️⃣ ENVIAR VALORES FORMATEADOS PARA LOS INPUTS ----------
-        # Convertir decimal → string con punto (HTML NO acepta comas)
+        # -------- 3️⃣ FORMATEO PARA INPUTS ----------
         def dec(v):
             return format(v, "f").replace(",", ".")
 
@@ -176,8 +172,10 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         context["valor_ahorro_y_deuda"] = dec(registro.ahorro_y_deuda)
         context["valor_sobrante"] = dec(registro.sobrante_monetario)
 
-        # -------- 4️⃣ CONTEXTO GENERAL ----------
-        registros = RegistroFinanciero.objects.filter(user=self.request.user).order_by("-fecha")
+        # -------- 4️⃣ DATOS GENERALES ----------
+        registros = RegistroFinanciero.objects.filter(
+            user=self.request.user
+        ).order_by("-fecha")
 
         context.update({
             "config": config,

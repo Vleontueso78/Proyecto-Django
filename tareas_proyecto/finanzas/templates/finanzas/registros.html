@@ -16,19 +16,33 @@
                     <tr>
                         <th>Fecha</th>
                         <th>Alimentos (A)</th>
-                        <th>Ahorro y Deuda (AD)</th>
+                        <th>Productos (P)</th>
+                        <th>Ahorro/Deuda (AD)</th>
                         <th>Sobrante (S)</th>
                         <th>Total Día</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>26/10/2025</td>
-                        <td>$5000</td>
-                        <td>$2000</td>
-                        <td>$800</td>
-                        <td>$7800</td>
-                    </tr>
+
+                    {% if registros %}
+                        {% for r in registros %}
+                        <tr>
+                            <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                            <td>${{ r.alimento }}</td>
+                            <td>${{ r.productos }}</td>
+                            <td>${{ r.ahorro_y_deuda }}</td>
+                            <td>${{ r.sobrante_monetario }}</td>
+                            <td>${{ r.gasto_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center py-3">
+                                No hay registros cargados.
+                            </td>
+                        </tr>
+                    {% endif %}
+
                 </tbody>
             </table>
         </div>

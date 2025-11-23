@@ -1,4 +1,5 @@
-{% load static %} 
+{% load static %}   
+<script src="{% static 'js/finanzas/sobrante.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
 
 <div id="dashboard-container">
@@ -42,7 +43,10 @@
 
     <!-- FORM: REGISTRO DE GASTOS -->
     <div id="gastos-hoy">
-        <h4 id="titulo-gastos-hoy">Registrar gasto de hoy: {{ hoy }}</h4>
+        <h4 id="titulo-gastos-hoy">
+            Registrar gasto de hoy: 
+            <strong>{{ hoy }}</strong>
+        </h4>
 
         <!-- 🥗 ALIMENTO -->
         <form method="post" class="form-gasto">
@@ -58,6 +62,7 @@
                         value="{{ valor_alimento|default:registro.alimento }}"
                     >
                     <input type="hidden" name="tipo" value="alimento">
+
                     <button
                         class="btn-fijar {% if registro.alimento_fijo %}fijado{% endif %}"
                         type="submit"
@@ -88,7 +93,9 @@
                         name="ahorro_y_deuda"
                         value="{{ valor_ahorro_y_deuda|default:registro.ahorro_y_deuda }}"
                     >
+
                     <input type="hidden" name="tipo" value="ahorro_y_deuda">
+
                     <button
                         class="btn-fijar {% if registro.ahorro_y_deuda_fijo %}fijado{% endif %}"
                         type="submit"
@@ -112,6 +119,7 @@
             <ul id="lista-gastos">
                 <li class="item-gasto {% if registro.sobrante_fijo %}fijo{% endif %}">
                     <label>Sobrante:</label>
+
                     <input
                         id="input-sobrante"
                         type="number"
@@ -120,14 +128,14 @@
                         value="{{ valor_sobrante|default:registro.sobrante_monetario }}"
                         readonly
                     >
+
                     <input type="hidden" name="tipo" value="sobrante">
+
                     <button
                         class="btn-fijar {% if registro.sobrante_fijo %}fijado{% endif %}"
                         type="submit"
                         name="fijar"
                         value="1"
-                        formaction=""
-                        formmethod="post"
                     >
                         {% if registro.sobrante_fijo %}
                             ✅ Fijado
@@ -139,12 +147,13 @@
             </ul>
         </form>
 
-        <!-- BOTÓN GUARDAR GASTOS GENERALES -->
+        <!-- BOTÓN GUARDAR TODO -->
         <form id="form-gastos" method="post">
             {% csrf_token %}
             <input type="hidden" name="guardar_todo" value="1">
             <button id="btn-guardar-gasto" type="submit">💾 Guardar todos los gastos</button>
         </form>
+
     </div>
 
     <!-- RESUMEN -->
@@ -160,29 +169,14 @@
     </div>
 </div>
 
-<!-- SCRIPT: Calcular sobrante y validar -->
+<!-- SCRIPT FINAL: VALIDACIÓN -->
 <script>
 function validarMonto(inputId) {
     const input = document.getElementById(inputId);
-    if (!input.value || parseFloat(input.value) <= 0) {
+    if (!input.value || parseFloat(input.value.replace(",", ".")) <= 0) {
         alert("⚠️ Agregar monto válido antes de fijar.");
         return false;
     }
     return true;
 }
-
-function calcularSobrante() {
-    const presupuesto = parseFloat(document.getElementById("input-presupuesto").value) || 0;
-    const alimento = parseFloat(document.getElementById("input-alimento").value) || 0;
-    const ahorro = parseFloat(document.getElementById("input-ahorro").value) || 0;
-    const sobrante = presupuesto - alimento - ahorro;
-    document.getElementById("input-sobrante").value = sobrante.toFixed(2);
-}
-
-document.getElementById("input-alimento").addEventListener("input", calcularSobrante);
-document.getElementById("input-ahorro").addEventListener("input", calcularSobrante);
-document.getElementById("input-presupuesto").addEventListener("input", calcularSobrante);
-
-// Calcular sobrante al cargar
-calcularSobrante();
 </script>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Registros Financieros{% endblock %}
+
+{% block content %}
+<div class="container mt-4" id="finanzas-registros">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 id="titulo-registros">📘 Registros diarios</h1>
+        <a id="btn-volver" class="btn btn-outline-light" href="{% url 'finanzas:dashboard' %}">⬅ Volver</a>
+    </div>
+
+    <div id="tabla-registros" class="card shadow-sm">
+        <div class="card-body">
+            <table class="table table-dark table-striped align-middle mb-0" id="tabla-registros-financieros">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Alimentos (A)</th>
+                        <th>Productos (P)</th>
+                        <th>Ahorro/Deuda (AD)</th>
+                        <th>Sobrante (S)</th>
+                        <th>Total Día</th>
+                        <th style="width:120px;">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% if registros %}
+                        {% for r in registros %}
+                        <tr class="{% if r.sobrante_monetario < 0 %}bg-danger text-light{% endif %}">
+                            <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                            <td>${{ r.alimento }}</td>
+                            <td>${{ r.productos }}</td>
+                            <td>${{ r.ahorro_y_deuda }}</td>
+                            <td>${{ r.sobrante_monetario }}</td>
+                            <td><strong>${{ r.gasto_total }}</strong></td>
+
+                            <!-- ACCIONES -->
+                            <td>
+
+                                <!-- BOTÓN EDITAR -->
+                                <a href="{% url 'finanzas:editar_registro' r.id %}" 
+                                   class="btn btn-warning btn-sm w-100 mb-1">
+                                    ✏ Editar
+                                </a>
+
+                                <!-- BOTÓN ELIMINAR -->
+                                <form method="post" action="{% url 'finanzas:eliminar_registro' r.id %}">
+                                    {% csrf_token %}
+                                    <button class="btn btn-danger btn-sm w-100"
+                                            onclick="return confirm('¿Seguro que querés eliminar este registro?');">
+                                        🗑 Eliminar
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-3">No hay registros cargados.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

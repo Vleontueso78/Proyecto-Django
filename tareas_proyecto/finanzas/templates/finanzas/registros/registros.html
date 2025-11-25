@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Registros Financieros{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'finanzas/registros/registros.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="registros-container">
+
+    <div class="registros-header">
+        <h1>📘 Registros financieros</h1>
+        <a class="btn-volver" href="{% url 'finanzas:dashboard' %}">⬅ Volver</a>
+    </div>
+
+    <div class="registros-card">
+        <table class="registros-tabla">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Alimentos</th>
+                    <th>Productos</th>
+                    <th>Ahorro / Deuda</th>
+                    <th>Sobrante</th>
+                    <th>Total Día</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% if registros %}
+                    {% for r in registros %}
+                    <tr>
+                        <td>{{ r.fecha|date:"d/m/Y" }}</td>
+                        <td>${{ r.alimento }}</td>
+                        <td>${{ r.productos }}</td>
+                        <td>${{ r.ahorro_y_deuda }}</td>
+                        <td>${{ r.sobrante_monetario }}</td>
+                        <td>${{ r.gasto_total }}</td>
+
+
+                        <td>
+                            <a href="{% url 'finanzas:editar_registro' r.id %}" class="btn btn-warning btn-sm">
+                                ✏ Editar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="sin-registros">
+                            No hay registros cargados.
+                        </td>
+                    </tr>
+                {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

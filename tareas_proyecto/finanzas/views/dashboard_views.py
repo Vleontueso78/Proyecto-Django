@@ -27,7 +27,7 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     # PROCESA FORMULARIOS (POST)
     # -------------------------------------------------
     def post(self, request, *args, **kwargs):
-        # Config del usuario (presupuesto diario)
+        # Config del usuario
         config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
 
         # -------- 1️⃣ MODIFICAR PRESUPUESTO DIARIO ----------
@@ -53,7 +53,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             tipo = request.POST.get("tipo")  # alimento / ahorro / sobrante
             valor = request.POST.get(tipo) or request.POST.get("valor")
 
-            # Validación
             if not valor or valor.strip() == "":
                 messages.warning(request, "⚠️ Agregar monto válido antes de fijar.")
                 return redirect("finanzas:dashboard")
@@ -68,24 +67,24 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 messages.warning(request, "⚠️ El monto debe ser positivo.")
                 return redirect("finanzas:dashboard")
 
-            # Campos del modelo
             campo_valor = tipo if tipo != "sobrante" else "sobrante_monetario"
             campo_fijo = f"{tipo}_fijo" if tipo != "sobrante" else "sobrante_fijo"
 
-            # Alternar fijación
             setattr(registro, campo_valor, valor_decimal)
             actual = getattr(registro, campo_fijo)
             setattr(registro, campo_fijo, not actual)
 
-            # Recalcular sobrante solo si NO está fijado
+            # 🔥 FIX: calcular_sobrante ahora recibe 4 parámetros
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,
                     registro.alimento,
-                    registro.ahorro_y_deuda
+                    registro.ahorro_y_deuda,
+                    Decimal("0")  # productos inexistentes
                 )
 
             registro.save()
+
             estado = "fijado" if getattr(registro, campo_fijo) else "desfijado"
             messages.success(request, f"{tipo.capitalize()} {estado} correctamente.")
             return redirect("finanzas:dashboard")
@@ -99,11 +98,13 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 except:
                     pass
 
+            # 🔥 FIX aquí también
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,
                     registro.alimento,
-                    registro.ahorro_y_deuda
+                    registro.ahorro_y_deuda,
+                    Decimal("0")  # productos
                 )
 
             registro.save()
@@ -118,10 +119,8 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # Config
         config, _ = ConfigFinanciera.objects.get_or_create(user=self.request.user)
 
-        # Registro del día
         registro, creado = RegistroFinanciero.objects.get_or_create(
             user=self.request.user,
             fecha=date.today(),
@@ -149,18 +148,18 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                     registro.sobrante_fijo = True
 
                 registro.save()
-
                 messages.info(
                     self.request,
                     "📌 Se restauraron los valores fijos del día anterior."
                 )
 
-        # -------- 2️⃣ RE-CALCULAR SOBRANTE (si no está fijado) ----------
+        # -------- 2️⃣ RE-CALCULAR SOBRANTE ----------
         if not registro.sobrante_fijo:
             registro.sobrante_monetario = calcular_sobrante(
                 registro.para_gastar_dia,
                 registro.alimento,
-                registro.ahorro_y_deuda
+                registro.ahorro_y_deuda,
+                Decimal("0")  # productos
             )
             registro.save()
 

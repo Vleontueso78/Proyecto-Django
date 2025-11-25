@@ -1,8 +1,12 @@
 from django.urls import path
-from .views import (
-    FinanzasDashboardView,
+
+from .views.dashboard_views import FinanzasDashboardView
+from .views.registros_views import (
     RegistroListView,
     RegistroCreateView,
+    editar_registro,
+)
+from .views.objetivos_views import (
     ObjetivoListView,
     ObjetivoCreateView,
 )
@@ -10,18 +14,14 @@ from .views import (
 app_name = "finanzas"
 
 urlpatterns = [
-    # Página principal del panel financiero
-    path('', FinanzasDashboardView.as_view(), name='dashboard'),
+    path("", FinanzasDashboardView.as_view(), name="dashboard"),
 
-    # Historial de registros financieros
-    path('registros/', RegistroListView.as_view(), name='registros'),
+    # Registros
+    path("registros/", RegistroListView.as_view(), name="registros"),
+    path("registros/nuevo/", RegistroCreateView.as_view(), name="crear_registro"),
+    path("registros/editar/<int:pk>/", editar_registro, name="editar_registro"),
 
-    # Crear un nuevo registro manualmente
-    path('registros/nuevo/', RegistroCreateView.as_view(), name='crear_registro'),
-
-    # Lista de objetivos financieros
-    path('objetivos/', ObjetivoListView.as_view(), name='objetivos'),
-
-    # Crear un nuevo objetivo
-    path('objetivos/nuevo/', ObjetivoCreateView.as_view(), name='crear_objetivo'),
+    # Objetivos
+    path("objetivos/", ObjetivoListView.as_view(), name="objetivos"),
+    path("objetivos/nuevo/", ObjetivoCreateView.as_view(), name="crear_objetivo"),
 ]

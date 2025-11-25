@@ -29,6 +29,7 @@ class RegistroFinanciero(models.Model):
 
     # Indicadores de gasto fijo
     alimento_fijo = models.BooleanField(default=False)
+    monto_fijo = models.BooleanField(default=False)  # ← NUEVO campo (antes productos_fijo)
     ahorro_y_deuda_fijo = models.BooleanField(default=False)
     sobrante_fijo = models.BooleanField(default=False)
 
@@ -43,7 +44,9 @@ class RegistroFinanciero(models.Model):
     def __str__(self):
         return f"{self.fecha} - {self.user.username}"
 
-    # --- PROPIEDADES CALCULADAS ---
+    # ==========================
+    # PROPIEDADES CALCULADAS
+    # ==========================
     @property
     def gasto_total(self):
         """Suma total de los gastos del día (sin contar sobrante)."""
@@ -59,7 +62,9 @@ class RegistroFinanciero(models.Model):
         """Suma del sobrante guardado más el balance restante."""
         return self.sobrante_monetario + self.balance_diario
 
-    # --- MÉTODOS ÚTILES ---
+    # ==========================
+    # MÉTODO PARA MARCAR FIJOS
+    # ==========================
     def fijar_valor(self, campo: str, valor: float = None):
         """
         Marca o desmarca un gasto como fijo.
@@ -69,6 +74,7 @@ class RegistroFinanciero(models.Model):
             "alimento": ("alimento", "alimento_fijo"),
             "ahorro_y_deuda": ("ahorro_y_deuda", "ahorro_y_deuda_fijo"),
             "sobrante": ("sobrante_monetario", "sobrante_fijo"),
+            "productos": ("productos", "monto_fijo"),  # ← actualizado
         }
 
         if campo not in mapping:
@@ -79,10 +85,28 @@ class RegistroFinanciero(models.Model):
         if valor is not None:
             setattr(self, campo_valor, valor)
 
-        # Alternar el valor fijo
         actual = getattr(self, campo_fijo)
         setattr(self, campo_fijo, not actual)
         self.save()
+
+    # ==========================
+    # SAVE AUTOMÁTICO
+    # ==========================
+    def save(self, *args, **kwargs):
+        """
+        Recalcula el sobrante cada vez que se guarda un registro.
+        Garantiza consistencia incluso en registros antiguos.
+        """
+        from .calculo_sobrante.calculadora import calcular_sobrante
+
+        self.sobrante_monetario = calcular_sobrante(
+            self.para_gastar_dia,
+            self.alimento,
+            self.ahorro_y_deuda,
+            self.productos
+        )
+
+        super().save(*args, **kwargs)
 
 
 class ObjetivoFinanciero(models.Model):
@@ -132,8 +156,9 @@ class ConfigFinanciera(models.Model):
         return f"Config de {self.user.username} - ${self.presupuesto_diario}"
 
 
-# --- SIGNALS ---
-
+# ==========================
+# SIGNAL: crear config automática
+# ==========================
 @receiver(post_save, sender=User)
 def crear_config_usuario(sender, instance, created, **kwargs):
     """

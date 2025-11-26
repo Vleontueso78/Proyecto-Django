@@ -1,7 +1,6 @@
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.contrib import messages
 from datetime import date
 from decimal import Decimal, InvalidOperation
@@ -13,21 +12,18 @@ from ..forms import RegistroFinancieroForm, ObjetivoFinancieroForm
 from ..calculo_sobrante.calculadora import calcular_sobrante
 
 
-# ===========================
-#   DASHBOARD PRINCIPAL
-# ===========================
 class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     """
-    Vista principal del panel financiero.
-    Muestra el presupuesto, los gastos del día y los valores fijados.
+    Panel financiero.
+    Nota importante: NO se crea automáticamente el registro del día en GET.
+    El registro se crea solamente cuando el usuario lo guarda (guardar_todo).
     """
     template_name = "finanzas/dashboard.html"
 
     # -------------------------------------------------
-    # PROCESA FORMULARIOS (POST)
+    # PROCESA POST
     # -------------------------------------------------
     def post(self, request, *args, **kwargs):
-        # Config del usuario
         config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
 
         # -------- 1️⃣ MODIFICAR PRESUPUESTO DIARIO ----------
@@ -41,16 +37,22 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 messages.error(request, "El valor ingresado no es válido.")
             return redirect("finanzas:dashboard")
 
-        # -------- 2️⃣ OBTENER O CREAR REGISTRO DEL DÍA ----------
-        registro, _ = RegistroFinanciero.objects.get_or_create(
-            user=request.user,
-            fecha=date.today(),
-            defaults={"para_gastar_dia": config.presupuesto_diario},
-        )
+        # -------- 2️⃣ Intentar obtener registro de hoy (si existe) ----------
+        try:
+            registro = RegistroFinanciero.objects.get(user=request.user, fecha=date.today())
+            existe_registro = True
+        except RegistroFinanciero.DoesNotExist:
+            registro = None
+            existe_registro = False
 
-        # -------- 3️⃣ FIJAR/DESFIJAR GASTO INDIVIDUAL ----------
+        # -------- 3️⃣ FIJAR/DESFIJAR ----------
         if "fijar" in request.POST:
-            tipo = request.POST.get("tipo")  # alimento / ahorro / sobrante
+            # Si no existe registro, no permitimos fijar (evita crear registros automáticos)
+            if not existe_registro:
+                messages.warning(request, "Primero guardá el registro del día para poder fijar valores.")
+                return redirect("finanzas:dashboard")
+
+            tipo = request.POST.get("tipo")
             valor = request.POST.get(tipo) or request.POST.get("valor")
 
             if not valor or valor.strip() == "":
@@ -74,111 +76,128 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             actual = getattr(registro, campo_fijo)
             setattr(registro, campo_fijo, not actual)
 
-            # 🔥 FIX: calcular_sobrante ahora recibe 4 parámetros
+            # Recalcular sobrante cuando corresponda
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,
                     registro.alimento,
                     registro.ahorro_y_deuda,
-                    Decimal("0")  # productos inexistentes
+                    registro.productos
                 )
 
             registro.save()
-
             estado = "fijado" if getattr(registro, campo_fijo) else "desfijado"
             messages.success(request, f"{tipo.capitalize()} {estado} correctamente.")
             return redirect("finanzas:dashboard")
 
         # -------- 4️⃣ GUARDAR TODOS LOS GASTOS ----------
         if "guardar_todo" in request.POST:
-            for campo in ["alimento", "ahorro_y_deuda"]:
-                valor = request.POST.get(campo)
+            # Obtener valores desde POST o por defecto
+            def to_decimal_or_zero(value, default=Decimal("0")):
                 try:
-                    setattr(registro, campo, Decimal(valor.replace(",", ".") or "0"))
-                except:
-                    pass
+                    if value is None or value == "":
+                        return default
+                    return Decimal(str(value).replace(",", "."))
+                except (InvalidOperation, ValueError):
+                    return default
 
-            # 🔥 FIX aquí también
+            p_raw = request.POST.get("para_gastar_dia")
+            a_raw = request.POST.get("alimento")
+            pr_raw = request.POST.get("productos")
+            ad_raw = request.POST.get("ahorro_y_deuda")
+
+            p = to_decimal_or_zero(p_raw, config.presupuesto_diario)
+            a = to_decimal_or_zero(a_raw, Decimal("0"))
+            pr = to_decimal_or_zero(pr_raw, Decimal("0"))
+            ad = to_decimal_or_zero(ad_raw, Decimal("0"))
+
+            # Si no existe registro - lo creamos ahora (usuario eligió guardar)
+            if not existe_registro:
+                registro = RegistroFinanciero.objects.create(
+                    user=request.user,
+                    fecha=date.today(),
+                    para_gastar_dia=p,
+                    alimento=a,
+                    productos=pr,
+                    ahorro_y_deuda=ad,
+                )
+            else:
+                # Actualizar registro existente
+                registro.para_gastar_dia = p
+                registro.alimento = a
+                registro.productos = pr
+                registro.ahorro_y_deuda = ad
+
+            # Recalcular sobrante si no está fijado
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,
                     registro.alimento,
                     registro.ahorro_y_deuda,
-                    Decimal("0")  # productos
+                    registro.productos
                 )
 
+            # Marcar día como completado (ya fue guardado por el usuario)
+            registro.completado = True
             registro.save()
+
             messages.success(request, "💾 Datos guardados correctamente.")
+            # Redirigir al dashboard (o a la lista si preferís)
             return redirect("finanzas:dashboard")
 
         return redirect("finanzas:dashboard")
 
     # -------------------------------------------------
-    # CONTEXTO PARA LA PÁGINA (GET)
+    # CONTEXTO (GET)
     # -------------------------------------------------
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
         config, _ = ConfigFinanciera.objects.get_or_create(user=self.request.user)
 
-        registro, creado = RegistroFinanciero.objects.get_or_create(
-            user=self.request.user,
-            fecha=date.today(),
-            defaults={"para_gastar_dia": config.presupuesto_diario},
-        )
+        # Intentamos obtener el registro del día si existe; NO lo creamos automáticamente
+        try:
+            registro = RegistroFinanciero.objects.get(user=self.request.user, fecha=date.today())
+            existe_registro = True
+        except RegistroFinanciero.DoesNotExist:
+            registro = None
+            existe_registro = False
 
-        # -------- 1️⃣ COPIAR FIJOS DEL DÍA ANTERIOR ----------
-        if creado:
-            ultimo = (
-                RegistroFinanciero.objects.filter(user=self.request.user)
-                .exclude(id=registro.id)
-                .order_by("-fecha")
-                .first()
-            )
-
-            if ultimo:
-                if ultimo.alimento_fijo:
-                    registro.alimento = ultimo.alimento
-                    registro.alimento_fijo = True
-                if ultimo.ahorro_y_deuda_fijo:
-                    registro.ahorro_y_deuda = ultimo.ahorro_y_deuda
-                    registro.ahorro_y_deuda_fijo = True
-                if ultimo.sobrante_fijo:
-                    registro.sobrante_monetario = ultimo.sobrante_monetario
-                    registro.sobrante_fijo = True
-
-                registro.save()
-                messages.info(
-                    self.request,
-                    "📌 Se restauraron los valores fijos del día anterior."
+        # Si existe registro, recalculamos si hace falta y formateamos valores
+        if existe_registro:
+            if not registro.sobrante_fijo:
+                registro.sobrante_monetario = calcular_sobrante(
+                    registro.para_gastar_dia,
+                    registro.alimento,
+                    registro.ahorro_y_deuda,
+                    registro.productos
                 )
+                registro.save()
 
-        # -------- 2️⃣ RE-CALCULAR SOBRANTE ----------
-        if not registro.sobrante_fijo:
-            registro.sobrante_monetario = calcular_sobrante(
-                registro.para_gastar_dia,
-                registro.alimento,
-                registro.ahorro_y_deuda,
-                Decimal("0")  # productos
-            )
-            registro.save()
+            def dec(v):
+                return format(v, "f").replace(",", ".")
 
-        # -------- 3️⃣ FORMATEO PARA INPUTS ----------
-        def dec(v):
-            return format(v, "f").replace(",", ".")
+            context["valor_alimento"] = dec(registro.alimento)
+            context["valor_ahorro_y_deuda"] = dec(registro.ahorro_y_deuda)
+            context["valor_sobrante"] = dec(registro.sobrante_monetario)
+        else:
+            # Valores por defecto (para mostrar en inputs, pero NO crear registro)
+            def dec(v):
+                return format(v, "f").replace(",", ".")
 
-        context["valor_alimento"] = dec(registro.alimento)
-        context["valor_ahorro_y_deuda"] = dec(registro.ahorro_y_deuda)
-        context["valor_sobrante"] = dec(registro.sobrante_monetario)
+            context["valor_alimento"] = dec(Decimal("0"))
+            context["valor_ahorro_y_deuda"] = dec(Decimal("0"))
+            # sobrante por defecto = presupuesto (sin gastos)
+            context["valor_sobrante"] = dec(config.presupuesto_diario)
 
         # -------- 4️⃣ DATOS GENERALES ----------
-        registros = RegistroFinanciero.objects.filter(
-            user=self.request.user
-        ).order_by("-fecha")
+        registros = RegistroFinanciero.objects.filter(user=self.request.user).order_by("-fecha")
 
         context.update({
             "config": config,
-            "registro": registro,
+            "registro": registro,                 # None si no existe
+            "existe_registro": existe_registro,   # útil para template
+            "dia_completado": registro.completado if registro else False,
             "registros": registros,
             "total_gastado": sum(r.gasto_total for r in registros),
             "total_sobrante": sum(r.sobrante_efectivo for r in registros),

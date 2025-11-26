@@ -1,4 +1,4 @@
-{% load static %}   
+{% load static %}    
 <script src="{% static 'js/finanzas/sobrante.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
 
@@ -59,7 +59,7 @@
                         type="number"
                         step="0.01"
                         name="alimento"
-                        value="{{ valor_alimento|default:registro.alimento }}"
+                        value="{{ valor_alimento }}"
                     >
                     <input type="hidden" name="tipo" value="alimento">
 
@@ -91,7 +91,7 @@
                         type="number"
                         step="0.01"
                         name="ahorro_y_deuda"
-                        value="{{ valor_ahorro_y_deuda|default:registro.ahorro_y_deuda }}"
+                        value="{{ valor_ahorro_y_deuda }}"
                     >
 
                     <input type="hidden" name="tipo" value="ahorro_y_deuda">
@@ -125,7 +125,7 @@
                         type="number"
                         step="0.01"
                         name="sobrante"
-                        value="{{ valor_sobrante|default:registro.sobrante_monetario }}"
+                        value="{{ valor_sobrante }}"
                         readonly
                     >
 

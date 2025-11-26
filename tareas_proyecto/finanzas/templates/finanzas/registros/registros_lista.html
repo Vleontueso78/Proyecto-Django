@@ -4,11 +4,41 @@
 {% block content %}
 <div class="container mt-4" id="finanzas-registros">
 
+    <!-- ============================ -->
+    <!--      TITULO Y BOTONES        -->
+    <!-- ============================ -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 id="titulo-registros">📘 Registros diarios</h1>
         <a id="btn-volver" class="btn btn-outline-light" href="{% url 'finanzas:dashboard' %}">⬅ Volver</a>
     </div>
 
+    <!-- ============================ -->
+    <!--   ALERTA SI HAY PENDIENTES   -->
+    <!-- ============================ -->
+    {% if dias_pendientes and dias_pendientes|length > 0 %}
+        <div class="alert alert-warning text-dark fw-bold">
+            📌 Tenés <u>{{ dias_pendientes|length }}</u> días pendientes de completar.
+        </div>
+
+        <div class="mb-3 d-flex gap-2">
+            <a href="{% url 'finanzas:registros_pendientes' %}" class="btn btn-info">
+                📅 Ver días pendientes
+            </a>
+
+            <a href="{% url 'finanzas:completar_pendiente' %}" class="btn btn-success">
+                ➡ Completar siguiente día pendiente
+            </a>
+        </div>
+
+    {% else %}
+        <div class="alert alert-success fw-bold">
+            🎉 ¡Todo al día! No hay registros pendientes.
+        </div>
+    {% endif %}
+
+    <!-- ============================ -->
+    <!--         TABLA REGISTROS      -->
+    <!-- ============================ -->
     <div id="tabla-registros" class="card shadow-sm">
         <div class="card-body">
             <table class="table table-dark table-striped align-middle mb-0" id="tabla-registros-financieros">

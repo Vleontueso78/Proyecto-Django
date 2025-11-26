@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models 
 from django.contrib.auth.models import User
 from datetime import date
 from django.db.models.signals import post_save
@@ -29,12 +29,15 @@ class RegistroFinanciero(models.Model):
 
     # Indicadores de gasto fijo
     alimento_fijo = models.BooleanField(default=False)
-    monto_fijo = models.BooleanField(default=False)  # ← NUEVO campo (antes productos_fijo)
+    monto_fijo = models.BooleanField(default=False)  # productos fijo
     ahorro_y_deuda_fijo = models.BooleanField(default=False)
     sobrante_fijo = models.BooleanField(default=False)
 
-    # Comentario opcional del usuario
+    # Comentario opcional
     comentario = models.TextField(blank=True, null=True)
+
+    # ⭐ NUEVO: indica si el día está completamente registrado
+    completado = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-fecha"]
@@ -63,7 +66,7 @@ class RegistroFinanciero(models.Model):
         return self.sobrante_monetario + self.balance_diario
 
     # ==========================
-    # MÉTODO PARA MARCAR FIJOS
+    # MARCAR VALORES FIJOS
     # ==========================
     def fijar_valor(self, campo: str, valor: float = None):
         """
@@ -74,7 +77,7 @@ class RegistroFinanciero(models.Model):
             "alimento": ("alimento", "alimento_fijo"),
             "ahorro_y_deuda": ("ahorro_y_deuda", "ahorro_y_deuda_fijo"),
             "sobrante": ("sobrante_monetario", "sobrante_fijo"),
-            "productos": ("productos", "monto_fijo"),  # ← actualizado
+            "productos": ("productos", "monto_fijo"),
         }
 
         if campo not in mapping:
@@ -95,7 +98,7 @@ class RegistroFinanciero(models.Model):
     def save(self, *args, **kwargs):
         """
         Recalcula el sobrante cada vez que se guarda un registro.
-        Garantiza consistencia incluso en registros antiguos.
+        Siempre consistente incluso en registros antiguos.
         """
         from .calculo_sobrante.calculadora import calcular_sobrante
 
@@ -146,7 +149,6 @@ class ObjetivoFinanciero(models.Model):
 class ConfigFinanciera(models.Model):
     """
     Configuración personalizada para cada usuario.
-    Permite establecer el presupuesto diario por defecto.
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)

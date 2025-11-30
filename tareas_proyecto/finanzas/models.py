@@ -154,9 +154,21 @@ class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    # 🔥 Nuevos valores por defecto para fijar montos sin registro del día
+    default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    default_alimento_fijo = models.BooleanField(default=False)
+
+    default_productos = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    default_productos_fijo = models.BooleanField(default=False)
+
+    default_ahorro_y_deuda = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    default_ahorro_y_deuda_fijo = models.BooleanField(default=False)
+
+    default_sobrante = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    default_sobrante_fijo = models.BooleanField(default=False)
+
     def __str__(self):
         return f"Config de {self.user.username} - ${self.presupuesto_diario}"
-
 
 # ==========================
 # SIGNAL: crear config automática

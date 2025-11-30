@@ -1,182 +1,237 @@
-{% load static %}    
-<script src="{% static 'js/finanzas/sobrante.js' %}"></script>
-<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Panel Financiero</title>
+  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
+</head>
 
-<div id="dashboard-container">
-    <h2 id="titulo-finanzas">💰 Panel Financiero</h2>
+<body class="body-bg">
 
-    <!-- BLOQUE: PRESUPUESTO ACTUAL -->
-    <div id="bloque-presupuesto-actual">
-        <p id="texto-presupuesto-actual">
-            Tu presupuesto diario actual es:
-            <strong id="valor-presupuesto-actual">${{ config.presupuesto_diario }}</strong>
-        </p>
+<div id="dashboard-container" class="dashboard-container">
+
+  <h2 id="titulo-finanzas" class="titulo-finanzas">💼 Panel Financiero</h2>
+
+
+  <!-- CARD: Presupuesto -->
+  <div class="card presupuesto-card">
+    <p class="muted center">Tu presupuesto diario actual es:</p>
+
+    <div class="editable-field">
+      <input id="presupuesto-input"
+             type="number"
+             class="editable-number"
+             name="presupuesto_diario"
+             value="{{ config.presupuesto_diario }}"
+             readonly>
+
+      <button class="edit-btn" data-target="presupuesto-input">✏</button>
+
+      <form method="post" action="{% url 'finanzas:dashboard' %}" id="form-presupuesto">
+        {% csrf_token %}
+        <input type="hidden" id="hidden-presupuesto" name="presupuesto_diario">
+        <button type="submit" id="submit-presupuesto" hidden></button>
+      </form>
+    </div>
+  </div>
+
+
+
+  <!-- CARD: Pendientes -->
+  <div class="card">
+    <div class="pendientes-header">
+      <div>
+        <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
+        <p class="muted subtitulo-pendientes">Completa los días faltantes en orden.</p>
+      </div>
+
+      <div class="pendientes-acciones">
+        {% if pendientes %}
+          <span class="tag">{{ pendientes|length }} pendientes</span>
+          <a class="btn btn-accent btn-small" href="{% url 'finanzas:completar_pendiente' %}">Completar siguiente</a>
+        {% else %}
+          <span class="note">No hay pendientes — estás al día ✅</span>
+        {% endif %}
+      </div>
     </div>
 
-    <!-- MENSAJES -->
-    {% if messages %}
-        <div id="mensajes">
-            {% for message in messages %}
-                <div class="mensaje {{ message.tags }}">{{ message }}</div>
-            {% endfor %}
+    {% if pendientes %}
+    <ul class="pending-list" aria-live="polite">
+      {% for d in pendientes %}
+      <li class="pending-item">
+        <div>
+          <div class="pending-fecha">{{ d|date:"d/m/Y" }}</div>
+          <div class="muted pending-desc">Pendiente — completar en orden</div>
         </div>
+
+        <div class="pending-botones">
+          {% if forloop.first %}
+            <a class="btn btn-primary btn-small" href="{% url 'finanzas:completar_pendiente' %}">
+              ➜ Completar ahora
+            </a>
+          {% else %}
+            <button class="btn btn-ghost btn-small" disabled>Bloqueado</button>
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
     {% endif %}
+  </div>
 
-    <!-- FORM: MODIFICAR PRESUPUESTO -->
-    <div id="config-presupuesto">
-        <h4 id="titulo-presupuesto">Modificar presupuesto diario:</h4>
-        <form id="form-presupuesto" method="post">
-            {% csrf_token %}
-            <div id="presupuesto-wrapper">
-                <input
-                    id="input-presupuesto"
-                    type="number"
-                    name="presupuesto_diario"
-                    value="{{ config.presupuesto_diario }}"
-                    step="0.01"
-                    min="0"
-                >
-                <button id="btn-actualizar-presupuesto" type="submit">💾 Guardar</button>
-            </div>
-        </form>
+
+
+  <!-- CARD: Registro del día -->
+  <div class="card">
+    <div class="registro-header">
+      <div>
+        <h3 class="registro-titulo">Registrar gasto de hoy</h3>
+        <p class="muted">Día: <strong>{{ hoy }}</strong></p>
+      </div>
+
+      <div>
+        {% if dia_completado %}
+          <div class="registro-fijado">✔ Registro del día guardado</div>
+        {% else %}
+          <div class="note">Pendiente — completa y guarda</div>
+        {% endif %}
+      </div>
     </div>
 
-    <!-- FORM: REGISTRO DE GASTOS -->
-    <div id="gastos-hoy">
-        <h4 id="titulo-gastos-hoy">
-            Registrar gasto de hoy: 
-            <strong>{{ hoy }}</strong>
-        </h4>
 
-        <!-- 🥗 ALIMENTO -->
-        <form method="post" class="form-gasto">
-            {% csrf_token %}
-            <ul id="lista-gastos">
-                <li class="item-gasto {% if registro.alimento_fijo %}fijo{% endif %}">
-                    <label>Alimento:</label>
-                    <input
-                        id="input-alimento"
-                        type="number"
-                        step="0.01"
-                        name="alimento"
-                        value="{{ valor_alimento }}"
-                    >
-                    <input type="hidden" name="tipo" value="alimento">
+    <div class="registro-grid">
 
-                    <button
-                        class="btn-fijar {% if registro.alimento_fijo %}fijado{% endif %}"
-                        type="submit"
-                        name="fijar"
-                        value="1"
-                        onclick="return validarMonto('input-alimento');"
-                    >
-                        {% if registro.alimento_fijo %}
-                            ✅ Fijado
-                        {% else %}
-                            📌 Fijar
-                        {% endif %}
-                    </button>
-                </li>
-            </ul>
+      <!-- ----------- LADO IZQUIERDO (inputs con lápiz) ----------- -->
+      <div>
+
+        <!-- ALIMENTO -->
+        <div class="editable-field">
+          <label>Alimento</label>
+
+          <input id="input-alimento"
+                 type="number"
+                 class="editable-number"
+                 name="alimento"
+                 step="0.01"
+                 value="{{ valor_alimento }}"
+                 {% if registro and registro.alimento_fijo %}readonly{% endif %}>
+
+          <button class="edit-btn"
+                  data-target="input-alimento"
+                  {% if registro and registro.alimento_fijo %}disabled{% endif %}>
+            ✏
+          </button>
+        </div>
+
+        <!-- PRODUCTOS -->
+        <div class="editable-field">
+          <label>Productos</label>
+
+          <input id="input-productos"
+                 type="number"
+                 class="editable-number"
+                 step="0.01"
+                 name="productos"
+                 value="{% if registro %}{{ valor_productos|default:registro.productos }}{% else %}{{ valor_productos|default:0 }}{% endif %}"
+                 {% if registro and registro.productos_fijo %}readonly{% endif %}>
+
+          <button class="edit-btn"
+                  data-target="input-productos"
+                  {% if registro and registro.productos_fijo %}disabled{% endif %}>
+            ✏
+          </button>
+        </div>
+
+        <!-- AHORRO / DEUDA -->
+        <div class="editable-field">
+          <label>Ahorro / Deuda</label>
+
+          <input id="input-ahorro"
+                 type="number"
+                 class="editable-number"
+                 step="0.01"
+                 name="ahorro_y_deuda"
+                 value="{{ valor_ahorro_y_deuda }}"
+                 {% if registro and registro.ahorro_y_deuda_fijo %}readonly{% endif %}>
+
+          <button class="edit-btn"
+                  data-target="input-ahorro"
+                  {% if registro and registro.ahorro_y_deuda_fijo %}disabled{% endif %}>
+            ✏
+          </button>
+        </div>
+
+      </div>
+
+
+
+      <!-- ----------- LADO DERECHO ----------- -->
+      <div class="registro-right">
+
+        <div>
+          <label>Sobrante (cálculo)</label>
+          <input id="input-sobrante" type="number" step="0.01"
+                 value="{{ valor_sobrante }}" readonly class="input-numero input-full">
+        </div>
+
+        {% if not dia_completado %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="guardar_todo" value="1">
+
+          <div class="guardar-botones">
+            <button class="btn btn-primary" type="submit">💾 Guardar todos los gastos</button>
+            <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">Ver pendientes</a>
+          </div>
         </form>
 
-        <!-- 💰 AHORRO Y DEUDA -->
-        <form method="post" class="form-gasto">
-            {% csrf_token %}
-            <ul id="lista-gastos">
-                <li class="item-gasto {% if registro.ahorro_y_deuda_fijo %}fijo{% endif %}">
-                    <label>Ahorro y Deuda:</label>
-                    <input
-                        id="input-ahorro"
-                        type="number"
-                        step="0.01"
-                        name="ahorro_y_deuda"
-                        value="{{ valor_ahorro_y_deuda }}"
-                    >
+        {% else %}
+        <div class="center registro-completado">
+          <div class="success">✔ Control financiero guardado</div>
+          <a class="btn btn-accent btn-edit"
+             href="{% url 'finanzas:editar_registro' registro.id %}">
+            ✏ Editar registro de hoy
+          </a>
+        </div>
+        {% endif %}
 
-                    <input type="hidden" name="tipo" value="ahorro_y_deuda">
-
-                    <button
-                        class="btn-fijar {% if registro.ahorro_y_deuda_fijo %}fijado{% endif %}"
-                        type="submit"
-                        name="fijar"
-                        value="1"
-                        onclick="return validarMonto('input-ahorro');"
-                    >
-                        {% if registro.ahorro_y_deuda_fijo %}
-                            ✅ Fijado
-                        {% else %}
-                            📌 Fijar
-                        {% endif %}
-                    </button>
-                </li>
-            </ul>
-        </form>
-
-        <!-- 💵 SOBRANTE -->
-        <form method="post" class="form-gasto">
-            {% csrf_token %}
-            <ul id="lista-gastos">
-                <li class="item-gasto {% if registro.sobrante_fijo %}fijo{% endif %}">
-                    <label>Sobrante:</label>
-
-                    <input
-                        id="input-sobrante"
-                        type="number"
-                        step="0.01"
-                        name="sobrante"
-                        value="{{ valor_sobrante }}"
-                        readonly
-                    >
-
-                    <input type="hidden" name="tipo" value="sobrante">
-
-                    <button
-                        class="btn-fijar {% if registro.sobrante_fijo %}fijado{% endif %}"
-                        type="submit"
-                        name="fijar"
-                        value="1"
-                    >
-                        {% if registro.sobrante_fijo %}
-                            ✅ Fijado
-                        {% else %}
-                            📌 Fijar
-                        {% endif %}
-                    </button>
-                </li>
-            </ul>
-        </form>
-
-        <!-- BOTÓN GUARDAR TODO -->
-        <form id="form-gastos" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="guardar_todo" value="1">
-            <button id="btn-guardar-gasto" type="submit">💾 Guardar todos los gastos</button>
-        </form>
-
+      </div>
     </div>
+  </div>
 
-    <!-- RESUMEN -->
-    <div id="resumen-financiero">
-        <h4 id="titulo-resumen">Resumen total:</h4>
-        <p id="total-gastado">💸 Total gastado: ${{ total_gastado }}</p>
-        <p id="total-sobrante">💵 Total sobrante: ${{ total_sobrante }}</p>
-    </div>
 
-    <!-- LINK AL HISTORIAL -->
-    <div id="enlace-registro">
-        <a id="btn-ver-registro" href="{% url 'finanzas:registros' %}">📊 Ver historial de registros</a>
+
+  <!-- RESUMEN TOTAL -->
+  <div class="card center resumen-total">
+    <h4>Resumen total</h4>
+
+    <div class="resumen-grid">
+      <div>
+        <div class="muted">💸 Total gastado</div>
+        <div class="resumen-valor">${{ total_gastado }}</div>
+      </div>
+
+      <div>
+        <div class="muted">💵 Total sobrante</div>
+        <div class="resumen-valor">${{ total_sobrante }}</div>
+      </div>
     </div>
+  </div>
+
+
+  <div class="center link-historial">
+    <a class="btn btn-accent" href="{% url 'finanzas:registros' %}">
+      📊 Ver historial de registros
+    </a>
+  </div>
+
 </div>
 
-<!-- SCRIPT FINAL: VALIDACIÓN -->
-<script>
-function validarMonto(inputId) {
-    const input = document.getElementById(inputId);
-    if (!input.value || parseFloat(input.value.replace(",", ".")) <= 0) {
-        alert("⚠️ Agregar monto válido antes de fijar.");
-        return false;
-    }
-    return true;
-}
-</script>
+
+<!-- JS -->
+<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+
+</body>
+</html>

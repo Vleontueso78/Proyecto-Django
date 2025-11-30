@@ -1,239 +1,226 @@
 /* ============================================
-   ESTILOS GENERALES DEL PANEL FINANCIERO
-   ============================================ */
-
+   ESTILO GLOBAL
+============================================ */
 body.body-bg {
-    background: #0f0f0f;
-    color: #e3e3e3;
-    font-family: Arial, sans-serif;
+    background: #f5f7fa;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #252525;
 }
 
 #dashboard-container {
-    max-width: 900px;
+    max-width: 950px;
     margin: 40px auto;
-    padding: 30px;
-    background: #181818;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    padding: 25px;
 }
+
 
 /* ============================================
    TÍTULO PRINCIPAL
-   ============================================ */
+============================================ */
 #titulo-finanzas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
     text-align: center;
-    margin-bottom: 30px;
-    color: #6be58f;
-    font-weight: 800;
     font-size: 2rem;
+    font-weight: 800;
+    color: #2e2e2e;
+    margin-bottom: 35px;
 }
 
+
 /* ============================================
-   CARD GENÉRICA
-   ============================================ */
+   CARD BASE
+============================================ */
 .card {
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 25px;
-    border: 1px solid #2d2d2d;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    border: 1px solid #ececf1;
+
+    /* Sombra moderna */
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.06);
 }
 
-/* ============================================
-   PRESUPUESTO ACTUAL / EDITABLE
-   ============================================ */
 
-.presupuesto-edit-wrapper {
+/* ============================================
+   PRESUPUESTO (FIX + MEJORA)
+============================================ */
+
+/* Centrado REAL del display */
+#presupuesto-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
-#presupuesto-input {
-    width: 160px;
-    padding: 8px 12px;
-    background: #111;
-    border: 1px solid #444;
-    border-radius: 8px;
-    color: #9af5af;
-    font-size: 1.2rem;
+/* Eliminamos el wrapper antiguo */
+#presupuesto-display-wrapper {
+    display: none;
+}
+
+/* Título pequeño “Tu presupuesto diario actual es:” */
+.center {
     text-align: center;
 }
 
-#presupuesto-input.editando {
-    border-color: #6bc1ff;
-    background: #0e1a24;
-    color: #c5e8ff;
-}
-
-/* Botón del lápiz */
-.btn-icon-edit {
-    background: #6bc1ff;
-    color: #121212 !important;
-    border: none;
-    padding: 6px 10px;
-    font-size: 1.1rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.btn-icon-edit:hover {
-    background: #8fd3ff;
-}
-
 /* ============================================
-   ESTILOS PARA LISTA DE PENDIENTES
-   ============================================ */
-
-.pendientes-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
+   SECCIÓN PENDIENTES
+============================================ */
 .pendientes-titulo {
-    color: #6be58f;
-    margin-bottom: 5px;
-}
-
-.pending-list {
-    margin-top: 15px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #4f46e5;
 }
 
 .pending-item {
     display: flex;
     justify-content: space-between;
-    padding: 12px;
-    background: #161616;
-    border-radius: 10px;
-    border: 1px solid #333;
+    background: #f9fafc;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
     margin-bottom: 10px;
 }
 
-.pending-fecha {
-    font-size: 1.1rem;
-}
-
 .tag {
-    background: #6bc1ff33;
-    padding: 5px 10px;
-    border-radius: 6px;
-    color: #6bc1ff;
-}
-
-.note {
-    color: #bdbdbd;
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: #e0e7ff;
+    color: #4338ca;
     font-size: 0.9rem;
 }
 
+
+/* ============================================
+   INPUTS EDITABLES + LÁPIZ
+============================================ */
+.editable-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.editable-field label {
+    width: 110px;
+    font-weight: 600;
+    color: #333;
+}
+
+.editable-number {
+    width: 140px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d3d6df;
+    background: #fff;
+    color: #333;
+    font-size: 1rem;
+    text-align: center;
+    transition: 0.15s;
+}
+
+/* en edición */
+.editable-number.editando {
+    border-color: #4f46e5;
+    background: #eef0ff;
+    color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+}
+
+/* modo lectura */
+.editable-number[readonly] {
+    background: transparent;
+    border: none;
+    color: #4f46e5;
+    font-size: 1.3rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.edit-btn {
+    background: #4f46e5;
+    border: none;
+    color: white;
+    padding: 6px 11px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background: #4338ca;
+}
+
+
 /* ============================================
    REGISTRO DIARIO
-   ============================================ */
-
-.registro-header {
-    display: flex;
-    justify-content: space-between;
-}
-
+============================================ */
 .registro-titulo {
-    color: #6be58f;
-}
-
-.registro-fijado {
-    color: #81ff9f;
-    font-weight: bold;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #4f46e5;
 }
 
 .registro-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 25px;
 }
+
 
 /* ============================================
-   INPUTS GENERALES
-   ============================================ */
-
-.input-numero {
-    width: 160px;
-    padding: 8px;
-    background: #121212;
-    border: 1px solid #3b3b3b;
-    border-radius: 8px;
-    color: #e3e3e3;
-    text-align: center;
-    margin-top: 5px;
-}
-
-.input-numero:focus {
-    border-color: #6bc1ff;
-    outline: none;
-}
-
-.input-numero.editando {
-    background: #112733;
-    border-color: #6bc1ff;
-    color: #c2e6ff;
-}
-
-/* ============================================
-   BOTONES FIJAR
-   ============================================ */
-
-.btn-ghost {
-    background: #222;
-    border: 1px solid #444;
-    color: #c7c7c7;
-}
-
-.btn-ghost:hover {
-    background: #333;
-}
-
+   BOTONES
+============================================ */
 .btn-primary {
-    background: #6bc1ff;
-    color: #121212;
-    border-radius: 8px;
+    background: #4f46e5;
+    color: white;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
 }
 
 .btn-primary:hover {
-    background: #8fd3ff;
+    background: #4338ca;
 }
 
 .btn-accent {
-    background: #6be58f;
-    color: #121212;
-    font-weight: 600;
+    background: #10b981;
+    color: white;
+    font-weight: bold;
+    padding: 10px 16px;
+    border-radius: 10px;
 }
 
 .btn-accent:hover {
-    background: #57c67a;
+    background: #059669;
 }
+
+.btn-ghost {
+    background: white;
+    border: 1px solid #d3d6df;
+    padding: 10px 16px;
+    border-radius: 10px;
+    color: #444;
+}
+
+.btn-ghost:hover {
+    background: #f0f0f3;
+}
+
 
 /* ============================================
-   GUARDAR TODOS
-   ============================================ */
-
-.guardar-botones {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-/* ============================================
-   RESUMEN TOTAL
-   ============================================ */
-
-.resumen-total {
-    text-align: center;
-}
-
+   RESUMEN FINAL
+============================================ */
 .resumen-valor {
-    color: #6be58f;
-    font-size: 1.4rem;
-    font-weight: bold;
+    font-size: 1.5rem;
+    color: #4f46e5;
+    font-weight: 700;
 }
 
 .resumen-grid {
@@ -242,10 +229,8 @@ body.body-bg {
     margin-top: 15px;
 }
 
-/* ============================================
-   TRANSICIONES
-   ============================================ */
-
-button, input {
-    transition: 0.2s ease;
+.link-historial .btn-accent {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    border-radius: 12px;
 }

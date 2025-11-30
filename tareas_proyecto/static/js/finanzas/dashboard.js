@@ -44,10 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 // -------------------------------------------
-                // 🔥 ACTUALIZADO: coincide con tu HTML real
-                // input id = "presupuesto-diario"
-                // hidden id = "hidden-presupuesto"
-                // form id = "form-presupuesto"
+                // 🔥 Convertir a número entero al mostrar
+                // -------------------------------------------
+                let numero = parseFloat(valor.replace(",", "."));
+                input.value = Math.round(numero).toString();
+                valor = input.value;
+                
+
+                // -------------------------------------------
+                // Enviar si es presupuesto diario
                 // -------------------------------------------
                 if (inputId === "presupuesto-diario") {
                     const hidden = document.getElementById("hidden-presupuesto");

@@ -1,4 +1,4 @@
-from django.db import models 
+from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 from django.db.models.signals import post_save
@@ -36,7 +36,7 @@ class RegistroFinanciero(models.Model):
     # Comentario opcional
     comentario = models.TextField(blank=True, null=True)
 
-    # ⭐ NUEVO: indica si el día está completamente registrado
+    # ⭐ Indica si el día está completamente registrado
     completado = models.BooleanField(default=False)
 
     class Meta:
@@ -154,7 +154,7 @@ class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # 🔥 Nuevos valores por defecto para fijar montos sin registro del día
+    # Nuevos valores por defecto
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
 
@@ -169,6 +169,7 @@ class ConfigFinanciera(models.Model):
 
     def __str__(self):
         return f"Config de {self.user.username} - ${self.presupuesto_diario}"
+
 
 # ==========================
 # SIGNAL: crear config automática

@@ -30,9 +30,11 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 messages.error(request, "El valor ingresado no es válido.")
             return redirect("finanzas:dashboard")
 
-        # verificar si ya existe registro de hoy
+        # verificar registro de hoy
         try:
-            registro = RegistroFinanciero.objects.get(user=request.user, fecha=date.today())
+            registro = RegistroFinanciero.objects.get(
+                user=request.user, fecha=date.today()
+            )
             existe_registro = True
         except RegistroFinanciero.DoesNotExist:
             registro = None
@@ -42,7 +44,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         if "fijar" in request.POST:
             tipo = request.POST.get("tipo")
 
-            # crear registro solo si ES NECESARIO fijar algo
             if not existe_registro:
                 registro = RegistroFinanciero.objects.create(
                     user=request.user,
@@ -54,7 +55,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 )
                 existe_registro = True
 
-            # obtener valor
             if tipo == "sobrante":
                 valor_decimal = registro.sobrante_monetario
             else:
@@ -62,6 +62,7 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 if not valor_raw:
                     messages.warning(request, "⚠️ Agregar monto válido antes de fijar.")
                     return redirect("finanzas:dashboard")
+
                 try:
                     valor_decimal = Decimal(valor_raw.replace(",", "."))
                 except:
@@ -75,12 +76,9 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             campo_valor = tipo if tipo != "sobrante" else "sobrante_monetario"
             campo_fijo = f"{tipo}_fijo"
 
-            # alternar fijación
-            actual = getattr(registro, campo_fijo)
-            setattr(registro, campo_fijo, not actual)
+            setattr(registro, campo_fijo, not getattr(registro, campo_fijo))
             setattr(registro, campo_valor, valor_decimal)
 
-            # recalcular sobrante si no está fijado
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,
@@ -91,17 +89,14 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
 
             registro.save()
             messages.success(request, f"{tipo.capitalize()} fijado correctamente.")
-
             return redirect("finanzas:dashboard")
 
-        # 3) GUARDAR TODOS LOS GASTOS (marca completado)
+        # 3) guardar todos los gastos
         if "guardar_todo" in request.POST:
 
             def to_decimal(v, default=Decimal("0")):
                 try:
-                    if not v:
-                        return default
-                    return Decimal(v.replace(",", "."))
+                    return default if not v else Decimal(v.replace(",", "."))
                 except:
                     return default
 
@@ -125,11 +120,8 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 registro.productos = pr
                 registro.ahorro_y_deuda = ad
 
-            # calcular sobrante si no está fijado
             if not registro.sobrante_fijo:
-                registro.sobrante_monetario = calcular_sobrante(
-                    p, a, ad, pr
-                )
+                registro.sobrante_monetario = calcular_sobrante(p, a, ad, pr)
 
             registro.completado = True
             registro.save()
@@ -140,26 +132,41 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         return redirect("finanzas:dashboard")
 
     # -------------------------------------------------
-    # GET - contexto
+    # GET — contexto
     # -------------------------------------------------
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         config, _ = ConfigFinanciera.objects.get_or_create(user=self.request.user)
 
+        # ⭐ PRESUPUESTO MOSTRADO COMO ENTERO
+        try:
+            valor_presupuesto = str(int(float(config.presupuesto_diario)))
+        except:
+            valor_presupuesto = "0"
+
+        context["presupuesto_mostrar"] = valor_presupuesto
+        context["presupuesto_diario"] = valor_presupuesto
+
         pendientes = obtener_dias_pendientes(self.request.user)
 
-        # registro de HOY (solo si existe)
+        # registro HOY
         try:
-            registro = RegistroFinanciero.objects.get(user=self.request.user, fecha=date.today())
+            registro = RegistroFinanciero.objects.get(
+                user=self.request.user, fecha=date.today()
+            )
             existe_registro = True
         except RegistroFinanciero.DoesNotExist:
             registro = None
             existe_registro = False
 
+        # convertir cualquier valor a entero string
         def dec(v):
-            return format(v, "f")
+            try:
+                return str(int(float(v)))
+            except:
+                return "0"
 
-        # valores para mostrar en inputs
+        # valores para inputs
         if existe_registro:
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
@@ -175,14 +182,14 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             context["valor_ahorro_y_deuda"] = dec(registro.ahorro_y_deuda)
             context["valor_sobrante"] = dec(registro.sobrante_monetario)
         else:
-            # día sin registro → valores por defecto
             context["valor_alimento"] = "0"
             context["valor_productos"] = "0"
             context["valor_ahorro_y_deuda"] = "0"
-            context["valor_sobrante"] = dec(config.presupuesto_diario)
+            context["valor_sobrante"] = valor_presupuesto
 
-        # para resumen
-        registros = RegistroFinanciero.objects.filter(user=self.request.user).order_by("-fecha")
+        registros = RegistroFinanciero.objects.filter(
+            user=self.request.user
+        ).order_by("-fecha")
 
         context.update({
             "config": config,

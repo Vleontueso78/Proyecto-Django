@@ -1,4 +1,4 @@
-{% load static %} 
+{% load static %}   
 <!doctype html>
 <html lang="es">
 <head>
@@ -6,8 +6,34 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Panel Financiero</title>
 
-  <!-- CSS original mejorado -->
+  <!-- CSS original -->
   <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard.css' %}">
+  
+  <style>
+    /* Nueva forma: $ pegado al número */
+    .presupuesto-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px; /* separa apenas el símbolo */
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    /* Ajuste para que el input quede bien */
+    #presupuesto-diario {
+        width: 80px;
+        text-align: left;
+        border: none;
+        background: transparent;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #presupuesto-diario[readonly] {
+        cursor: default;
+    }
+  </style>
+
 </head>
 
 <body class="body-bg">
@@ -25,13 +51,17 @@
 
       <div id="presupuesto-wrapper" class="editable-field">
 
-          <!-- MOSTRAR VALOR (readonly) -->
-          <input 
-            id="presupuesto-diario" 
-            type="number" 
-            class="editable-number" 
-            value="{{ presupuesto_diario }}"
-            readonly>
+          <!-- Nueva visual del valor -->
+          <div class="presupuesto-display">
+              <span>$</span>
+
+              <input 
+                id="presupuesto-diario" 
+                type="number" 
+                class="editable-number" 
+                value="{{ presupuesto_diario }}"
+                readonly>
+          </div>
 
           <!-- BOTÓN LÁPIZ -->
           <button 
@@ -226,7 +256,7 @@
 
 </div>
 
-<!-- JS correcto -->
+<!-- JS -->
 <script src="{% static 'js/finanzas/dashboard.js' %}"></script>
 
 </body>

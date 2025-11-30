@@ -234,3 +234,20 @@ body.body-bg {
     padding: 12px 20px;
     border-radius: 12px;
 }
+
+.input-money-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.money-symbol {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+}
+
+.input-money {
+    padding-left: 20px;
+}

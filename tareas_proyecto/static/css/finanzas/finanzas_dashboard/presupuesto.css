@@ -1,0 +1,52 @@
+/* ============================================
+   PRESUPUESTO
+============================================ */
+
+#presupuesto-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* El wrapper viejo no lo usás más */
+#presupuesto-display-wrapper {
+    display: none;
+}
+
+.center {
+    text-align: center;
+}
+
+/* ============================================
+   NUEVO — Estilos movidos desde el HTML
+============================================ */
+
+/* Display del valor tipo:  $ 123 */
+.presupuesto-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px; /* separación mínima entre el $ y el número */
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Input del presupuesto */
+#presupuesto-diario {
+    width: 80px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Cuando está en modo lectura */
+#presupuesto-diario[readonly] {
+    cursor: default;
+}
+
+#presupuesto-signo {
+    color: #4f46e5;
+}

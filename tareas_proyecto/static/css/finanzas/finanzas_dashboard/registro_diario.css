@@ -1,0 +1,14 @@
+/* ============================================
+   REGISTRO DIARIO
+============================================ */
+.registro-titulo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+.registro-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}

@@ -1,0 +1,58 @@
+/* ============================================
+   INPUTS EDITABLES + LÁPIZ
+============================================ */
+.editable-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.editable-field label {
+    width: 110px;
+    font-weight: 600;
+    color: #333;
+}
+
+.editable-number {
+    width: 140px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d3d6df;
+    background: #fff;
+    color: #333;
+    font-size: 1rem;
+    text-align: center;
+    transition: 0.15s;
+}
+
+.editable-number.editando {
+    border-color: #4f46e5;
+    background: #eef0ff;
+    color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.2);
+}
+
+.editable-number[readonly] {
+    background: transparent;
+    border: none;
+    color: #4f46e5;
+    font-size: 1.3rem;
+    font-weight: 700;
+    pointer-events: none;
+}
+
+.edit-btn {
+    background: #4f46e5;
+    border: none;
+    color: white;
+    padding: 6px 11px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.edit-btn:hover {
+    background: #4338ca;
+}

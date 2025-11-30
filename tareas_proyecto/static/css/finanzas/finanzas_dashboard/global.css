@@ -1,0 +1,40 @@
+/* ============================================
+   ESTILO GLOBAL
+============================================ */
+body.body-bg {
+    background: #10b981;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #252525;
+}
+
+#dashboard-container {
+    max-width: 950px;
+    margin: 40px auto;
+    padding: 25px;
+}
+
+/* ============================================
+   TÍTULO PRINCIPAL
+============================================ */
+#titulo-finanzas {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000000;
+    margin-bottom: 35px;
+}
+
+/* ============================================
+   CARD BASE
+============================================ */
+.card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    border: 1px solid #ececf1;
+    box-shadow: 0px 8px 20px rgba(0,0,0,0.06);
+}

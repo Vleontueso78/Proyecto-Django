@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Página de inicio pública (redirige si el usuario ya está autenticado)
+    # Página de inicio pública
     path('', mauri_views.inicio, name='inicio'),
 
     # Menú principal (redirige al dashboard de tareas)
@@ -18,7 +18,9 @@ urlpatterns = [
     path('tareas/', include(('tareas.urls', 'tareas'), namespace='tareas')),
     path('mauri/', include(('tareasMauri.urls', 'tareasMauri'), namespace='tareasMauri')),
     path('usuarios/', include('usuarios.urls')),
-    path('finanzas/', include('finanzas.urls')),
+
+    # namespace
+    path('finanzas/', include(('finanzas.urls', 'finanzas'), namespace='finanzas')),
 
     # Login / Logout
     path(

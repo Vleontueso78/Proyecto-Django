@@ -29,14 +29,14 @@ class RegistroFinanciero(models.Model):
 
     # Indicadores de gasto fijo
     alimento_fijo = models.BooleanField(default=False)
-    monto_fijo = models.BooleanField(default=False)  # productos fijo
+    productos_fijo = models.BooleanField(default=False)
     ahorro_y_deuda_fijo = models.BooleanField(default=False)
     sobrante_fijo = models.BooleanField(default=False)
 
     # Comentario opcional
     comentario = models.TextField(blank=True, null=True)
 
-    # ⭐ Indica si el día está completamente registrado
+    # Indica si el día está completamente registrado
     completado = models.BooleanField(default=False)
 
     class Meta:
@@ -52,32 +52,29 @@ class RegistroFinanciero(models.Model):
     # ==========================
     @property
     def gasto_total(self):
-        """Suma total de los gastos del día (sin contar sobrante)."""
         return self.alimento + self.productos + self.ahorro_y_deuda
 
     @property
     def balance_diario(self):
-        """Diferencia entre presupuesto y gasto total."""
         return self.para_gastar_dia - self.gasto_total
 
     @property
     def sobrante_efectivo(self):
-        """Suma del sobrante guardado más el balance restante."""
         return self.sobrante_monetario + self.balance_diario
 
     # ==========================
     # MARCAR VALORES FIJOS
     # ==========================
-    def fijar_valor(self, campo: str, valor: float = None):
+    def fijar_valor(self, campo: str, valor=None):
         """
         Marca o desmarca un gasto como fijo.
-        Si se pasa un valor, lo guarda también.
+        Si se pasa un valor, también lo guarda.
         """
         mapping = {
             "alimento": ("alimento", "alimento_fijo"),
+            "productos": ("productos", "productos_fijo"),
             "ahorro_y_deuda": ("ahorro_y_deuda", "ahorro_y_deuda_fijo"),
             "sobrante": ("sobrante_monetario", "sobrante_fijo"),
-            "productos": ("productos", "monto_fijo"),
         }
 
         if campo not in mapping:
@@ -88,8 +85,10 @@ class RegistroFinanciero(models.Model):
         if valor is not None:
             setattr(self, campo_valor, valor)
 
+        # toggle
         actual = getattr(self, campo_fijo)
         setattr(self, campo_fijo, not actual)
+
         self.save()
 
     # ==========================
@@ -97,26 +96,23 @@ class RegistroFinanciero(models.Model):
     # ==========================
     def save(self, *args, **kwargs):
         """
-        Recalcula el sobrante cada vez que se guarda un registro.
-        Siempre consistente incluso en registros antiguos.
+        Recalcula el sobrante cuando NO está fijo.
+        Si está fijo, respeta el valor ya guardado.
         """
         from .calculo_sobrante.calculadora import calcular_sobrante
 
-        self.sobrante_monetario = calcular_sobrante(
-            self.para_gastar_dia,
-            self.alimento,
-            self.ahorro_y_deuda,
-            self.productos
-        )
+        if not self.sobrante_fijo:
+            self.sobrante_monetario = calcular_sobrante(
+                self.para_gastar_dia,
+                self.alimento,
+                self.ahorro_y_deuda,
+                self.productos
+            )
 
         super().save(*args, **kwargs)
 
 
 class ObjetivoFinanciero(models.Model):
-    """
-    Modelo para representar objetivos de ahorro o pago de deudas.
-    """
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     monto_objetivo = models.DecimalField(max_digits=12, decimal_places=2)
@@ -134,27 +130,21 @@ class ObjetivoFinanciero(models.Model):
 
     @property
     def progreso(self):
-        """Devuelve el progreso del objetivo en porcentaje."""
         if self.monto_objetivo == 0:
             return 0
         return round((self.monto_actual / self.monto_objetivo) * 100, 2)
 
     def actualizar_estado(self):
-        """Marca el objetivo como completado si se alcanza el monto."""
         if self.monto_actual >= self.monto_objetivo:
             self.completado = True
             self.save()
 
 
 class ConfigFinanciera(models.Model):
-    """
-    Configuración personalizada para cada usuario.
-    """
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Nuevos valores por defecto
+    # Default values para autorrelleno del día
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
 
@@ -176,9 +166,5 @@ class ConfigFinanciera(models.Model):
 # ==========================
 @receiver(post_save, sender=User)
 def crear_config_usuario(sender, instance, created, **kwargs):
-    """
-    Crea automáticamente la configuración financiera
-    cuando se registra un nuevo usuario.
-    """
     if created:
         ConfigFinanciera.objects.create(user=instance)

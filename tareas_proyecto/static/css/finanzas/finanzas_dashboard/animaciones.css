@@ -1,0 +1,28 @@
+/* ============================================
+   ANIMACIONES DE ENTRADA PARA CARDS
+============================================ */
+
+.card-anim {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: cardFadeIn 0.6s ease-out forwards;
+}
+
+/* Cascada → cada tarjeta tiene un retraso incremental */
+.card-delay-1 { animation-delay: 0.05s; }
+.card-delay-2 { animation-delay: 0.10s; }
+.card-delay-3 { animation-delay: 0.15s; }
+.card-delay-4 { animation-delay: 0.20s; }
+.card-delay-5 { animation-delay: 0.25s; }
+.card-delay-6 { animation-delay: 0.30s; }
+
+@keyframes cardFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+}

@@ -3,7 +3,6 @@ from decimal import Decimal
 def calcular_sobrante(presupuesto, alimento, ahorro, productos):
     """
     Cálculo centralizado del sobrante.
-    Ahora recibe los 4 valores necesarios.
     """
     try:
         presupuesto = Decimal(presupuesto)

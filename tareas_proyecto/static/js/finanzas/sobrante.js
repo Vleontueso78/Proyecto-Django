@@ -1,33 +1,63 @@
+// ------------------------------------------------------
+// OBTENER PRESUPUESTO ACTUAL
+// ------------------------------------------------------
 function getPresupuestoActual() {
-    // Toma el valor del strong mostrado en pantalla
-    const texto = document.getElementById("valor-presupuesto-actual").innerText;
-
-    // Quita símbolos ($)
-    return parseFloat(texto.replace("$", "")) || 0;
+    const valor = document.getElementById("presupuesto-diario").value;
+    const numero = parseFloat(valor);
+    return isNaN(numero) ? 0 : numero;
 }
 
+// ------------------------------------------------------
+// NORMALIZAR VALORES NUMÉRICOS
+// ------------------------------------------------------
 function fixNumber(value) {
-    if (!value) return 0;
-    return parseFloat(value.toString().replace(",", ".")) || 0;
+    if (value === null || value === undefined) return 0;
+    value = value.toString().replace(",", ".");
+    const numero = parseFloat(value);
+    return isNaN(numero) ? 0 : numero;
 }
 
+// ------------------------------------------------------
+// CÁLCULO PRINCIPAL
+// ------------------------------------------------------
 function calcularSobranteFrontend() {
     const presupuesto = getPresupuestoActual();
 
     const alimento = fixNumber(document.getElementById("input-alimento").value);
-    const ahorro = fixNumber(document.getElementById("input-ahorro").value);
+    const productos = fixNumber(document.getElementById("input-productos").value);
+    const ahorro   = fixNumber(document.getElementById("input-ahorro").value);
 
-    const sobrante = presupuesto - alimento - ahorro;
+    const sobrante = presupuesto - alimento - productos - ahorro;
 
-    document.getElementById("input-sobrante").value = sobrante.toFixed(2);
+    const campoSobrante = document.getElementById("input-sobrante");
+    campoSobrante.value = sobrante.toFixed(2);
+
+    // Colores dinámicos
+    campoSobrante.classList.remove("sobrante-positivo", "sobrante-negativo");
+
+    if (sobrante < 0) {
+        campoSobrante.classList.add("sobrante-negativo");
+    } else {
+        campoSobrante.classList.add("sobrante-positivo");
+    }
 }
 
+// ------------------------------------------------------
+// EVENTOS
+// ------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    const campos = ["input-alimento", "input-ahorro"];
 
-    campos.forEach(id => {
+    const camposDinamicos = [
+        "input-alimento",
+        "input-productos",
+        "input-ahorro"
+    ];
+
+    camposDinamicos.forEach(id => {
         const campo = document.getElementById(id);
-        if (campo) campo.addEventListener("input", calcularSobranteFrontend);
+        if (campo) {
+            campo.addEventListener("input", calcularSobranteFrontend);
+        }
     });
 
     // Calcular al cargar la página

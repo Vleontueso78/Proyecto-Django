@@ -1,31 +1,31 @@
-{% load static %}    
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Panel Financiero</title>
+{% extends "finanzas/base.html" %}
+{% load static %}
 
-  <!-- CSS módulos -->
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/presupuesto.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/inputs_editables.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/registro_diario.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
-  <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/resumen_final.css' %}">
-</head>
+{% block title %}Panel Financiero{% endblock %}
 
-<body class="body-bg">
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/presupuesto.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/inputs_editables.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/registro_diario.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/resumen_final.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/sobrante.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/animaciones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
+{% endblock %}
 
-<div id="dashboard-container">
+{% block content %}
+
+<div id="dashboard-container" class="fade-in">
 
   <h2 id="titulo-finanzas">💼 Panel Financiero</h2>
 
   <!-- ==============================
        CARD: PRESUPUESTO
-       ============================== -->
-  <div class="card" id="presupuesto-card">
+  ============================== -->
+  <div class="card card-anim card-delay-1" id="presupuesto-card">
 
       <span class="muted center">Tu presupuesto diario actual es:</span>
 
@@ -51,20 +51,16 @@
 
       </div>
 
-      <!-- FORM oculto -->
       <form id="form-presupuesto" method="POST" action="{% url 'finanzas:dashboard' %}">
           {% csrf_token %}
           <input type="hidden" id="hidden-presupuesto" name="presupuesto_diario">
       </form>
-
   </div>
-
-
 
   <!-- ==============================
        CARD: PENDIENTES
-       ============================== -->
-  <div id="card-pendientes" class="card">
+  ============================== -->
+  <div id="card-pendientes" class="card card-anim card-delay-2">
 
     <div class="pendientes-header">
       <div>
@@ -104,12 +100,10 @@
     {% endif %}
   </div>
 
-
-
   <!-- ==============================
        CARD: REGISTRO DEL DÍA
-       ============================== -->
-  <div id="card-registro" class="card">
+  ============================== -->
+  <div id="card-registro" class="card card-anim card-delay-3">
 
     <div class="registro-header">
       <div>
@@ -117,7 +111,7 @@
         <p class="muted">Día: <strong>{{ hoy }}</strong></p>
       </div>
 
-      <div>
+      <div class="registro-hoy-botones">
         {% if dia_completado %}
           <div class="registro-fijado">✔ Registro del día guardado</div>
         {% else %}
@@ -126,20 +120,16 @@
       </div>
     </div>
 
-
     <div class="registro-grid">
 
       <div>
-
         <div class="editable-field">
           <label for="input-alimento">Alimento</label>
           <input id="input-alimento" type="number" class="editable-number"
                  step="0.01" name="alimento"
                  value="{{ valor_alimento }}"
                  {% if registro and registro.alimento_fijo %}readonly{% endif %}>
-
-          <button class="edit-btn"
-                  data-target="input-alimento"
+          <button class="edit-btn" data-target="input-alimento"
                   {% if registro and registro.alimento_fijo %}disabled{% endif %}>✏</button>
         </div>
 
@@ -149,9 +139,7 @@
                  step="0.01" name="productos"
                  value="{% if registro %}{{ valor_productos|default:registro.productos }}{% else %}{{ valor_productos|default:0 }}{% endif %}"
                  {% if registro and registro.productos_fijo %}readonly{% endif %}>
-
-          <button class="edit-btn"
-                  data-target="input-productos"
+          <button class="edit-btn" data-target="input-productos"
                   {% if registro and registro.productos_fijo %}disabled{% endif %}>✏</button>
         </div>
 
@@ -161,21 +149,19 @@
                  step="0.01" name="ahorro_y_deuda"
                  value="{{ valor_ahorro_y_deuda }}"
                  {% if registro and registro.ahorro_y_deuda_fijo %}readonly{% endif %}>
-
-          <button class="edit-btn"
-                  data-target="input-ahorro"
+          <button class="edit-btn" data-target="input-ahorro"
                   {% if registro and registro.ahorro_y_deuda_fijo %}disabled{% endif %}>✏</button>
         </div>
-
       </div>
 
-
       <div>
-
-        <div>
-          <label for="input-sobrante">Sobrante (cálculo automatico)</label>
-          <input id="input-sobrante" type="number" step="0.01"
-                 value="{{ valor_sobrante }}" readonly class="editable-number">
+        <div class="editable-field">
+          <label for="input-sobrante">Sobrante (cálculo automático)</label>
+          <div class="presupuesto-display">
+            <span class="signo-sobrante">$</span>
+            <input id="input-sobrante" type="number" step="0.01"
+                   value="{{ valor_sobrante }}" readonly class="editable-number">
+          </div>
         </div>
 
         {% if not dia_completado %}
@@ -188,26 +174,20 @@
             <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">Ver pendientes</a>
           </div>
         </form>
-
         {% else %}
-        <div class="center">
+        <div class="center registro-hoy-botones">
           <div class="success">✔ Control financiero guardado</div>
-          <a class="btn btn-accent" href="{% url 'finanzas:editar_registro' registro.id %}">
-            ✏ Editar registro de hoy
-          </a>
+          <a class="btn btn-accent" href="{% url 'finanzas:editar_registro' registro.id %}">✏ Editar registro de hoy</a>
         </div>
         {% endif %}
-
       </div>
     </div>
   </div>
 
-
-
   <!-- ==============================
        RESUMEN TOTAL
-       ============================== -->
-  <div class="card center">
+  ============================== -->
+  <div class="card center card-anim card-delay-4">
     <h4>Resumen total</h4>
 
     <div class="resumen-grid">
@@ -223,7 +203,6 @@
     </div>
   </div>
 
-
   <div class="center">
     <a class="btn btn-accent" href="{% url 'finanzas:registros' %}">
       📊 Ver historial de registros
@@ -232,8 +211,9 @@
 
 </div>
 
-<!-- JS -->
-<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+<script src="{% static 'js/finanzas/sobrante.js' %}"></script>
+{% endblock %}

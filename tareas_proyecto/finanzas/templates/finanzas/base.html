@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}Finanzas{% endblock %}</title>
+
+    <!-- TailwindCSS CDN (rápido para desarrollo) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Estilos comunes -->
+    <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/paleta.css' %}">
+    <link rel="stylesheet" href="{% static 'css/finanzas/general.css' %}">
+
+    <!-- CSS específico de cada página -->
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="w-full bg-gray-900 text-white py-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <h1 class="text-2xl font-bold tracking-wide">💰 Finanzas</h1>
+
+            <div class="space-x-4 text-lg">
+                <!-- CORREGIDO -->
+                <!-- <a href="{% url 'finanzas:dashboard' %}" class="hover:text-yellow-300 transition">Dashboard</a> -->
+                <!-- <a href="{% url 'finanzas:objetivos' %}" class="hover:text-yellow-300 transition">Objetivos</a> -->
+                <a href="{% url 'finanzas:registros' %}" class="hover:text-yellow-300 transition">Registros</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="container mx-auto mt-6 px-4">
+        {% block content %}
+        <!-- Aquí va el contenido de cada página -->
+        {% endblock %}
+    </main>
+
+    <!-- Scripts globales -->
+    <script src="{% static 'js/utils/animaciones.js' %}"></script>
+
+    <!-- JS específico de cada template -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

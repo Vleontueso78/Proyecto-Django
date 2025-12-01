@@ -1,0 +1,22 @@
+/* === FIX: Que el número del presupuesto NO se recorte === */
+.presupuesto-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#presupuesto-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#presupuesto-diario {
+    width: 120px;
+    min-width: 100px;
+    padding-right: 6px;
+    text-align: left;
+}

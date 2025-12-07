@@ -1,0 +1,25 @@
+{% extends "finanzas/base.html" %}
+
+{% block title %}Editar Registro{% endblock %}
+
+{% block content %}
+
+<h2>Editar registro del día {{ registro.fecha|date:"d/m/Y" }}</h2>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="card" style="padding: 20px; margin-top: 15px;">
+        {{ form.as_p }}
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="margin-top: 15px;">
+        Guardar cambios
+    </button>
+
+    <a href="{% url 'finanzas:registros' %}" class="btn btn-ghost" style="margin-left: 10px;">
+        Cancelar
+    </a>
+</form>
+
+{% endblock %}

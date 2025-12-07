@@ -1,4 +1,5 @@
 from django.urls import path
+from .views.calendario_views import configurar_calendario
 
 from .views.dashboard_views import FinanzasDashboardView
 from .views.registros_views import (
@@ -6,7 +7,7 @@ from .views.registros_views import (
     RegistroCreateView,
     editar_registro,
     registros_pendientes,
-    completar_pendiente,
+    completar_pendiente_por_fecha,
 )
 from .views.objetivos_views import (
     ObjetivoListView,
@@ -26,9 +27,9 @@ urlpatterns = [
     path("registros/nuevo/", RegistroCreateView.as_view(), name="crear_registro"),
     path("registros/editar/<int:pk>/", editar_registro, name="editar_registro"),
 
-    # NUEVAS RUTAS — DÍAS PENDIENTES
+    # DÍAS PENDIENTES — NUEVO MODO POR FECHA
     path("registros/pendientes/", registros_pendientes, name="registros_pendientes"),
-    path("registros/pendiente/siguiente/", completar_pendiente, name="completar_pendiente"),
+    path("registros/pendiente/<str:fecha_str>/", completar_pendiente_por_fecha, name="completar_pendiente_por_fecha"),
 
     # ======================
     #     OBJETIVOS
@@ -36,4 +37,6 @@ urlpatterns = [
 
     path("objetivos/", ObjetivoListView.as_view(), name="objetivos"),
     path("objetivos/nuevo/", ObjetivoCreateView.as_view(), name="crear_objetivo"),
+    
+    path("calendario/", configurar_calendario, name="configurar_calendario"),
 ]

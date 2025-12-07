@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 
 from ..models import RegistroFinanciero, ConfigFinanciera
 from ..calculo_sobrante.calculadora import calcular_sobrante
-from ..views.registros_views import obtener_dias_pendientes
+from ..views.registros_views.dias_pendientes import obtener_dias_pendientes
 
 
 # ---------------------------------------------
@@ -160,9 +160,25 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         context["presupuesto_diario"] = str(presupuesto_val)
         context["presupuesto_mostrar"] = str(presupuesto_val)
 
-        pendientes = obtener_dias_pendientes(self.request.user)
+        # =======================================
+        # OBTENER PENDIENTES — forma segura
+        # =======================================
+        pendientes, mensaje_pendientes = obtener_dias_pendientes(self.request.user)
 
+        # Copia segura de la lista
+        pendientes_limpios = [d for d in pendientes if d]
+
+        # Ordenar fechas correctamente
+        pendientes_limpios.sort()
+
+        # Enviar al template (lista final limpia)
+        context["pendientes"] = pendientes_limpios
+        context["hay_pendientes"] = len(pendientes_limpios) > 0
+        context["mensaje_pendientes"] = mensaje_pendientes
+
+        # =======================================
         # Registro de hoy
+        # =======================================
         try:
             registro = RegistroFinanciero.objects.get(
                 user=self.request.user,
@@ -215,8 +231,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
 
         context.update({
             "config": config,
-            "pendientes": pendientes,
-            "hay_pendientes": len(pendientes) > 0,
             "registro": registro,
             "existe_registro": existe_registro,
             "dia_completado": registro.completado if registro else False,

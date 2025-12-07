@@ -159,6 +159,11 @@ class ConfigFinanciera(models.Model):
 
     def __str__(self):
         return f"Config de {self.user.username} - ${self.presupuesto_diario}"
+    
+    fecha_inicio_registros = models.DateField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Config financiera de {self.user.username}"
 
 
 # ==========================

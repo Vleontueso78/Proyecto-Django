@@ -7,11 +7,8 @@
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/presupuesto.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
-<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/inputs_editables.css' %}">
-<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/registro_diario.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/resumen_final.css' %}">
-<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/sobrante.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/animaciones.css' %}">
 <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
 {% endblock %}
@@ -21,6 +18,15 @@
 <div id="dashboard-container" class="fade-in">
 
   <h2 id="titulo-finanzas">💼 Panel Financiero</h2>
+
+  <!-- ==============================
+       BOTÓN: CALENDARIO
+  ============================== -->
+  <div class="center" style="margin-bottom: 20px;">
+    <a href="{% url 'finanzas:configurar_calendario' %}" class="btn btn-accent">
+      📅 Configurar calendario
+    </a>
+  </div>
 
   <!-- ==============================
        CARD: PRESUPUESTO
@@ -65,13 +71,15 @@
     <div class="pendientes-header">
       <div>
         <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
-        <p class="muted">Completa los días faltantes en orden.</p>
+        <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
       </div>
 
       <div class="pendientes-acciones">
         {% if pendientes %}
           <span class="tag">{{ pendientes|length }} pendientes</span>
-          <a class="btn btn-accent btn-small" href="{% url 'finanzas:completar_pendiente' %}">Completar siguiente</a>
+          <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
+            Ver lista completa
+          </a>
         {% else %}
           <span class="note">No hay pendientes — estás al día ✅</span>
         {% endif %}
@@ -80,108 +88,34 @@
 
     {% if pendientes %}
     <div class="pending-list">
-      {% for d in pendientes %}
+      {% for d in pendientes|slice:":5" %}
       <div class="pending-item">
         <div>
           <div class="pending-fecha">{{ d|date:"d/m/Y" }}</div>
-          <div class="note">Pendiente — completar en orden</div>
+          <div class="note">Pendiente</div>
         </div>
 
         <div>
-          {% if forloop.first %}
-            <a class="btn btn-primary btn-small" href="{% url 'finanzas:completar_pendiente' %}">➜ Completar ahora</a>
+          {% if d %}
+          <a class="btn btn-primary btn-small"
+             href="{% url 'finanzas:completar_pendiente_por_fecha' d|date:'Y-m-d' %}">
+            Completar
+          </a>
           {% else %}
-            <button class="btn btn-ghost btn-small" disabled>Bloqueado</button>
+          <span class="btn btn-disabled btn-small">Fecha inválida</span>
           {% endif %}
         </div>
       </div>
       {% endfor %}
     </div>
+
+    <div class="center" style="margin-top: 10px;">
+      <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">
+        Mostrar todos los días →  
+      </a>
+    </div>
     {% endif %}
-  </div>
 
-  <!-- ==============================
-       CARD: REGISTRO DEL DÍA
-  ============================== -->
-  <div id="card-registro" class="card card-anim card-delay-3">
-
-    <div class="registro-header">
-      <div>
-        <h3 class="registro-titulo">Registrar gasto de hoy</h3>
-        <p class="muted">Día: <strong>{{ hoy }}</strong></p>
-      </div>
-
-      <div class="registro-hoy-botones">
-        {% if dia_completado %}
-          <div class="registro-fijado">✔ Registro del día guardado</div>
-        {% else %}
-          <div class="note">Pendiente — completa y guarda</div>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="registro-grid">
-
-      <div>
-        <div class="editable-field">
-          <label for="input-alimento">Alimento</label>
-          <input id="input-alimento" type="number" class="editable-number"
-                 step="0.01" name="alimento"
-                 value="{{ valor_alimento }}"
-                 {% if registro and registro.alimento_fijo %}readonly{% endif %}>
-          <button class="edit-btn" data-target="input-alimento"
-                  {% if registro and registro.alimento_fijo %}disabled{% endif %}>✏</button>
-        </div>
-
-        <div class="editable-field">
-          <label for="input-productos">Productos</label>
-          <input id="input-productos" type="number" class="editable-number"
-                 step="0.01" name="productos"
-                 value="{% if registro %}{{ valor_productos|default:registro.productos }}{% else %}{{ valor_productos|default:0 }}{% endif %}"
-                 {% if registro and registro.productos_fijo %}readonly{% endif %}>
-          <button class="edit-btn" data-target="input-productos"
-                  {% if registro and registro.productos_fijo %}disabled{% endif %}>✏</button>
-        </div>
-
-        <div class="editable-field">
-          <label for="input-ahorro">Ahorro / Deuda</label>
-          <input id="input-ahorro" type="number" class="editable-number"
-                 step="0.01" name="ahorro_y_deuda"
-                 value="{{ valor_ahorro_y_deuda }}"
-                 {% if registro and registro.ahorro_y_deuda_fijo %}readonly{% endif %}>
-          <button class="edit-btn" data-target="input-ahorro"
-                  {% if registro and registro.ahorro_y_deuda_fijo %}disabled{% endif %}>✏</button>
-        </div>
-      </div>
-
-      <div>
-        <div class="editable-field">
-          <label for="input-sobrante">Sobrante (cálculo automático)</label>
-          <div class="presupuesto-display">
-            <span class="signo-sobrante">$</span>
-            <input id="input-sobrante" type="number" step="0.01"
-                   value="{{ valor_sobrante }}" readonly class="editable-number">
-          </div>
-        </div>
-
-        {% if not dia_completado %}
-        <form method="post">
-          {% csrf_token %}
-          <input type="hidden" name="guardar_todo" value="1">
-
-          <div class="guardar-botones">
-            <button class="btn btn-primary" type="submit">💾 Guardar todos los gastos</button>
-            <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">Ver pendientes</a>
-          </div>
-        </form>
-        {% else %}
-        <div class="center registro-hoy-botones">
-          <div class="success">✔ Control financiero guardado</div>
-          <a class="btn btn-accent" href="{% url 'finanzas:editar_registro' registro.id %}">✏ Editar registro de hoy</a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
   </div>
 
   <!-- ==============================
@@ -215,5 +149,4 @@
 
 {% block extra_js %}
 <script src="{% static 'js/finanzas/dashboard.js' %}"></script>
-<script src="{% static 'js/finanzas/sobrante.js' %}"></script>
 {% endblock %}

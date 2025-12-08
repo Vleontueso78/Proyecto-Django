@@ -161,17 +161,24 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         context["presupuesto_mostrar"] = str(presupuesto_val)
 
         # =======================================
-        # OBTENER PENDIENTES — forma segura
+        # 1️⃣ LISTA REAL DE REGISTROS PENDIENTES
+        # =======================================
+        dias_pendientes = RegistroFinanciero.objects.filter(
+            user=self.request.user,
+            completado=False
+        ).order_by("fecha")
+
+        context["dias_pendientes"] = dias_pendientes
+        context["hay_dias_pendientes"] = dias_pendientes.exists()
+
+        # =======================================
+        # 2️⃣ Sistema previo (si querés mantenerlo)
         # =======================================
         pendientes, mensaje_pendientes = obtener_dias_pendientes(self.request.user)
 
-        # Copia segura de la lista
         pendientes_limpios = [d for d in pendientes if d]
-
-        # Ordenar fechas correctamente
         pendientes_limpios.sort()
 
-        # Enviar al template (lista final limpia)
         context["pendientes"] = pendientes_limpios
         context["hay_pendientes"] = len(pendientes_limpios) > 0
         context["mensaje_pendientes"] = mensaje_pendientes
@@ -189,16 +196,12 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             registro = None
             existe_registro = False
 
-        # Conversor seguro
         def dec(v):
             try:
                 return str(int(v))
             except:
                 return "0"
 
-        # ===============================
-        # Valores diarios que se muestran
-        # ===============================
         if existe_registro:
 
             # Recalcular si no está fijo
@@ -222,9 +225,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             context["valor_ahorro_y_deuda"] = "0"
             context["valor_sobrante"] = str(presupuesto_val)
 
-        # ===============================
-        # Registros históricos
-        # ===============================
         registros = RegistroFinanciero.objects.filter(
             user=self.request.user
         ).order_by("-fecha")

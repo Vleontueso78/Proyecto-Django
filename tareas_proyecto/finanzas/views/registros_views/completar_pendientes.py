@@ -7,6 +7,9 @@ from ...models import RegistroFinanciero, ConfigFinanciera
 from ...calculo_sobrante.calculadora import calcular_sobrante
 
 
+# ============================================================
+# Función utilitaria → convierte valores a Decimal de forma segura
+# ============================================================
 def to_decimal(value, default=Decimal("0")):
     """
     Conversión segura a Decimal.
@@ -21,26 +24,29 @@ def to_decimal(value, default=Decimal("0")):
 
 
 # ============================================================
-# NUEVA VISTA:
+# VISTA PRINCIPAL:
 #   completar_pendiente_por_fecha
-#   (el usuario completa el registro del día exacto)
 # ============================================================
 @login_required
 def completar_pendiente_por_fecha(request, fecha_str):
+    """
+    Permite completar un día pendiente según la fecha seleccionada desde el dashboard.
+    Si el registro no existe, se crea automáticamente con los valores base.
+    """
 
-    # Convertir YYYY-MM-DD → date
+    # Convertir string YYYY-MM-DD → date
     fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
 
     # Config financiera del usuario
     config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
 
-    # Buscar si ya existe un registro para ese día
+    # Buscar registro del día
     registro = RegistroFinanciero.objects.filter(
         user=request.user,
         fecha=fecha
     ).first()
 
-    # Si no existe → crearlo vacío con valores iniciales
+    # Si no existe → se crea vacío automáticamente
     if not registro:
         registro = RegistroFinanciero.objects.create(
             user=request.user,
@@ -49,10 +55,12 @@ def completar_pendiente_por_fecha(request, fecha_str):
             alimento=Decimal("0"),
             productos=Decimal("0"),
             ahorro_y_deuda=Decimal("0"),
+            sobrante_monetario=Decimal("0"),
+            completado=False,
         )
 
     # --------------------------------------------------------
-    # POST → guardar los valores del día
+    # POST → guardar cambios del formulario
     # --------------------------------------------------------
     if request.method == "POST":
 
@@ -66,18 +74,18 @@ def completar_pendiente_por_fecha(request, fecha_str):
         registro.productos = pr
         registro.ahorro_y_deuda = ad
 
-        # Recalcular sobrante si NO está fijo
+        # Recalcular sobrante si no está bloqueado
         if not registro.sobrante_fijo:
             registro.sobrante_monetario = calcular_sobrante(p, a, ad, pr)
 
+        # Marcar como completado
         registro.completado = True
         registro.save()
 
-        # Volver a la lista de días pendientes
         return redirect("finanzas:registros_pendientes")
 
     # --------------------------------------------------------
-    # GET → mostrar formulario
+    # GET → mostrar el formulario con valores actuales
     # --------------------------------------------------------
     return render(
         request,
@@ -86,8 +94,6 @@ def completar_pendiente_por_fecha(request, fecha_str):
             "registro": registro,
             "config": config,
             "fecha": fecha,
-
-            # Valores que se muestran en el formulario
             "defaults": {
                 "para_gastar_dia": registro.para_gastar_dia,
                 "alimento": registro.alimento,

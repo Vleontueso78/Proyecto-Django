@@ -64,59 +64,55 @@
   </div>
 
   <!-- ==============================
-       CARD: PENDIENTES
+     CARD: PENDIENTES (ACTUALIZADO)
   ============================== -->
-  <div id="card-pendientes" class="card card-anim card-delay-2">
+<div id="card-pendientes" class="card card-anim card-delay-2">
 
-    <div class="pendientes-header">
-      <div>
-        <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
-        <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
-      </div>
-
-      <div class="pendientes-acciones">
-        {% if pendientes %}
-          <span class="tag">{{ pendientes|length }} pendientes</span>
-          <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
-            Ver lista completa
-          </a>
-        {% else %}
-          <span class="note">No hay pendientes — estás al día ✅</span>
-        {% endif %}
-      </div>
+  <div class="pendientes-header">
+    <div>
+      <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
+      <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
     </div>
 
-    {% if pendientes %}
-    <div class="pending-list">
-      {% for d in pendientes|slice:":5" %}
-      <div class="pending-item">
-        <div>
-          <div class="pending-fecha">{{ d|date:"d/m/Y" }}</div>
-          <div class="note">Pendiente</div>
-        </div>
-
-        <div>
-          {% if d %}
-          <a class="btn btn-primary btn-small"
-             href="{% url 'finanzas:completar_pendiente_por_fecha' d|date:'Y-m-d' %}">
-            Completar
-          </a>
-          {% else %}
-          <span class="btn btn-disabled btn-small">Fecha inválida</span>
-          {% endif %}
-        </div>
-      </div>
-      {% endfor %}
+    <div class="pendientes-acciones">
+      {% if dias_pendientes %}
+        <span class="tag">{{ dias_pendientes|length }} pendientes</span>
+        <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
+          Ver lista completa
+        </a>
+      {% else %}
+        <span class="note">No hay pendientes — estás al día ✅</span>
+      {% endif %}
     </div>
-
-    <div class="center" style="margin-top: 10px;">
-      <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">
-        Mostrar todos los días →  
-      </a>
-    </div>
-    {% endif %}
-
   </div>
+
+  {% if dias_pendientes %}
+  <div class="pending-list">
+    {% for reg in dias_pendientes|slice:":5" %}
+    <div class="pending-item">
+      <div>
+        <div class="pending-fecha">{{ reg.fecha|date:"d/m/Y" }}</div>
+        <div class="note">Pendiente</div>
+      </div>
+
+      <div>
+        <a class="btn btn-primary btn-small"
+           href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
+          Completar
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="center" style="margin-top: 10px;">
+    <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">
+      Mostrar todos los días →
+    </a>
+  </div>
+  {% endif %}
+
+</div>
 
   <!-- ==============================
        RESUMEN TOTAL

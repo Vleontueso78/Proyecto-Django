@@ -12,28 +12,26 @@ def configurar_calendario(request):
             fecha_inicio = date.fromisoformat(fecha_inicio)
             hoy = date.today()
 
-            # Generar todos los días desde fecha_inicio hasta hoy
-            dias = []
+            # Generar días desde fecha_inicio hasta hoy
             actual = fecha_inicio
-
             while actual <= hoy:
-                dias.append(actual)
-                actual += timedelta(days=1)
-
-            # Crear registros pendientes únicamente si NO existen
-            for dia in dias:
                 RegistroFinanciero.objects.get_or_create(
                     user=request.user,
-                    fecha=dia,
+                    fecha=actual,
                     defaults={
+                        "para_gastar_dia": 0,
                         "alimento": 0,
                         "productos": 0,
                         "ahorro_y_deuda": 0,
                         "sobrante_monetario": 0,
-                        "control_financiero": False,
+                        "alimento_fijo": False,
+                        "productos_fijo": False,
+                        "ahorro_y_deuda_fijo": False,
                         "sobrante_fijo": False,
+                        "completado": False,
                     },
                 )
+                actual += timedelta(days=1)
 
         return redirect("finanzas:dashboard")
 

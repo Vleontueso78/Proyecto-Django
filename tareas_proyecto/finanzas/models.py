@@ -66,10 +66,6 @@ class RegistroFinanciero(models.Model):
     # MARCAR VALORES FIJOS
     # ==========================
     def fijar_valor(self, campo: str, valor=None):
-        """
-        Marca o desmarca un gasto como fijo.
-        Si se pasa un valor, también lo guarda.
-        """
         mapping = {
             "alimento": ("alimento", "alimento_fijo"),
             "productos": ("productos", "productos_fijo"),
@@ -85,7 +81,6 @@ class RegistroFinanciero(models.Model):
         if valor is not None:
             setattr(self, campo_valor, valor)
 
-        # toggle
         actual = getattr(self, campo_fijo)
         setattr(self, campo_fijo, not actual)
 
@@ -95,10 +90,6 @@ class RegistroFinanciero(models.Model):
     # SAVE AUTOMÁTICO
     # ==========================
     def save(self, *args, **kwargs):
-        """
-        Recalcula el sobrante cuando NO está fijo.
-        Si está fijo, respeta el valor ya guardado.
-        """
         from .calculo_sobrante.calculadora import calcular_sobrante
 
         if not self.sobrante_fijo:
@@ -144,7 +135,6 @@ class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Default values para autorrelleno del día
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
 
@@ -157,9 +147,6 @@ class ConfigFinanciera(models.Model):
     default_sobrante = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_sobrante_fijo = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Config de {self.user.username} - ${self.presupuesto_diario}"
-    
     fecha_inicio_registros = models.DateField(null=True, blank=True)
 
     def __str__(self):

@@ -1,0 +1,23 @@
+{% extends "finanzas/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Configurar Calendario Financiero</h2>
+    <p>Selecciona desde qué fecha querés generar los registros diarios.</p>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label for="fecha_inicio">Fecha de inicio:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" required class="form-control" />
+
+        <button type="submit" class="btn btn-primary mt-3">
+            Generar Registros
+        </button>
+
+        <a href="{% url 'finanzas:dashboard' %}" class="btn btn-secondary mt-3">
+            Cancelar
+        </a>
+    </form>
+</div>
+{% endblock %}

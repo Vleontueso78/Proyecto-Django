@@ -5,60 +5,50 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'finanzas/registros/registros.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="registros-container">
 
-    <div class="registros-header">
-        <h1>📘 Registros financieros</h1>
-        <a class="btn-volver" href="{% url 'finanzas:dashboard' %}">⬅ Volver</a>
+<div class="container mt-4">
+
+    <div class="pendientes-header">
+        <h1 class="pendientes-titulo">📘 Registros completados</h1>
+
+        <a class="btn btn-primary" href="{% url 'finanzas:dashboard' %}">
+            ⬅ Volver al panel
+        </a>
     </div>
 
-    <div class="registros-card">
-        <table class="registros-tabla">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Alimentos</th>
-                    <th>Productos</th>
-                    <th>Ahorro / Deuda</th>
-                    <th>Sobrante</th>
-                    <th>Total Día</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+    {% if registros|length == 0 %}
+        <div class="alert alert-info mt-3">
+            Todavía no completaste ningún registro.<br>
+            Puedes empezar desde la sección <a href="/finanzas/">Pendientes</a>.
+        </div>
+    {% endif %}
 
-                {% if registros %}
-                    {% for r in registros %}
-                    <tr>
-                        <td>{{ r.fecha|date:"d/m/Y" }}</td>
-                        <td>${{ r.alimento }}</td>
-                        <td>${{ r.productos }}</td>
-                        <td>${{ r.ahorro_y_deuda }}</td>
-                        <td>${{ r.sobrante_monetario }}</td>
-                        <td>${{ r.gasto_total }}</td>
+    <div class="pending-list mt-3">
 
+        {% for r in registros %}
+        <div class="pending-item">
 
-                        <td>
-                            <a href="{% url 'finanzas:editar_registro' r.id %}" class="btn btn-warning btn-sm">
-                                ✏ Editar
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="7" class="sin-registros">
-                            No hay registros cargados.
-                        </td>
-                    </tr>
-                {% endif %}
+            <div class="pending-fecha">
+                {{ r.fecha|date:"d/m/Y" }}
+            </div>
 
-            </tbody>
-        </table>
+            <div class="tag">
+                Total día: ${{ r.gasto_total }}
+            </div>
+
+            <a href="{% url 'finanzas:editar_registro' r.id %}" class="btn btn-warning btn-sm">
+                ✏ Editar
+            </a>
+
+        </div>
+        {% endfor %}
+
     </div>
 
 </div>
+
 {% endblock %}

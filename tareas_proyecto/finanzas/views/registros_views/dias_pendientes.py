@@ -1,11 +1,11 @@
 from datetime import date, timedelta
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from ...models import RegistroFinanciero, ConfigFinanciera
 
 
 def generar_rango_fechas(desde, hasta):
-    """Genera una lista de fechas entre dos días (incluye ambos)."""
+    """
+    Genera una lista de fechas entre dos días (inclusive).
+    """
     dias = []
     actual = desde
     while actual <= hasta:
@@ -15,10 +15,16 @@ def generar_rango_fechas(desde, hasta):
 
 
 def obtener_dias_pendientes(usuario):
-    """Devuelve todos los días que NO tienen registro desde la fecha elegida hasta hoy."""
+    """
+    Devuelve una lista de días SIN registro entre la fecha de inicio configurada
+    y el día actual.
+
+    Un día NO se considera pendiente si existe un RegistroFinanciero,
+    aunque esté incompleto.
+    """
     hoy = date.today()
 
-    # Buscar configuración financiera
+    # Obtener configuración financiera
     try:
         config = ConfigFinanciera.objects.get(user=usuario)
     except ConfigFinanciera.DoesNotExist:
@@ -29,22 +35,22 @@ def obtener_dias_pendientes(usuario):
     if not fecha_inicio:
         return [], "⚠ Debes seleccionar desde qué día quieres registrar gastos."
 
-    # Generar rango completo
+    # Crear rango de fechas desde inicio → hoy
     rango_completo = generar_rango_fechas(fecha_inicio, hoy)
 
-    # Fechas registradas
+    # Fechas con al menos un registro (completo o no)
     fechas_existentes = set(
         RegistroFinanciero.objects.filter(
             user=usuario,
-            fecha__range=[fecha_inicio, hoy]
+            fecha__gte=fecha_inicio,
+            fecha__lte=hoy
         ).values_list("fecha", flat=True)
     )
 
-    # Determinar días sin registro
+    # Días faltantes = días del rango que NO tienen registro
     pendientes = [dia for dia in rango_completo if dia not in fechas_existentes]
 
-    # 🔥 FILTRO CRÍTICO:
-    # Elimina valores corruptos, None, vacíos o no-fechas
+    # Seguridad defensiva
     pendientes = [d for d in pendientes if d]
 
     mensaje = ""
@@ -52,17 +58,3 @@ def obtener_dias_pendientes(usuario):
         mensaje = "✔ No hay días pendientes. Todo está completo."
 
     return pendientes, mensaje
-
-
-@login_required
-def registros_pendientes(request):
-    pendientes, mensaje = obtener_dias_pendientes(request.user)
-
-    return render(
-        request,
-        "finanzas/registros/registros_lista.html",
-        {
-            "pendientes": pendientes,
-            "mensaje": mensaje
-        }
-    )

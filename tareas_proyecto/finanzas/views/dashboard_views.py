@@ -41,7 +41,9 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         nuevo_presupuesto = request.POST.get("presupuesto_diario")
         if nuevo_presupuesto:
             try:
-                config.presupuesto_diario = to_decimal(nuevo_presupuesto, config.presupuesto_diario)
+                config.presupuesto_diario = to_decimal(
+                    nuevo_presupuesto, config.presupuesto_diario
+                )
                 config.save()
                 messages.success(request, "Presupuesto actualizado.")
             except InvalidOperation:
@@ -88,7 +90,9 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
                 valor = to_decimal(valor_raw)
 
                 if valor <= 0:
-                    messages.warning(request, "⚠️ Debe ingresar un monto positivo.")
+                    messages.warning(
+                        request, "⚠️ Debe ingresar un monto positivo."
+                    )
                     return redirect("finanzas:dashboard")
 
             # Asignar campos
@@ -116,7 +120,10 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         # ---------------------------------------------------------
         if "guardar_todo" in request.POST:
 
-            p = to_decimal(request.POST.get("para_gastar_dia"), config.presupuesto_diario)
+            p = to_decimal(
+                request.POST.get("para_gastar_dia"),
+                config.presupuesto_diario
+            )
             a = to_decimal(request.POST.get("alimento"))
             pr = to_decimal(request.POST.get("productos"))
             ad = to_decimal(request.POST.get("ahorro_y_deuda"))
@@ -153,7 +160,9 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     # =====================================================
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        config, _ = ConfigFinanciera.objects.get_or_create(user=self.request.user)
+        config, _ = ConfigFinanciera.objects.get_or_create(
+            user=self.request.user
+        )
 
         # Valores de presupuesto
         presupuesto_val = int(config.presupuesto_diario)
@@ -162,19 +171,25 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
 
         # =======================================
         # 1️⃣ LISTA REAL DE REGISTROS PENDIENTES
+        # (FILTRADOS POR FECHA INICIAL)
         # =======================================
+        fecha_inicio = config.fecha_inicio_registros or date.today()
+
         dias_pendientes = RegistroFinanciero.objects.filter(
             user=self.request.user,
-            completado=False
+            completado=False,
+            fecha__gte=fecha_inicio
         ).order_by("fecha")
 
         context["dias_pendientes"] = dias_pendientes
         context["hay_dias_pendientes"] = dias_pendientes.exists()
 
         # =======================================
-        # 2️⃣ Sistema previo (si querés mantenerlo)
+        # 2️⃣ Sistema previo
         # =======================================
-        pendientes, mensaje_pendientes = obtener_dias_pendientes(self.request.user)
+        pendientes, mensaje_pendientes = obtener_dias_pendientes(
+            self.request.user
+        )
 
         pendientes_limpios = [d for d in pendientes if d]
         pendientes_limpios.sort()
@@ -204,7 +219,6 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
 
         if existe_registro:
 
-            # Recalcular si no está fijo
             if not registro.sobrante_fijo:
                 registro.sobrante_monetario = calcular_sobrante(
                     registro.para_gastar_dia,

@@ -1,5 +1,4 @@
 from .lista_registros import RegistroListView
 from .crear_registro import RegistroCreateView
 from .editar_registro import editar_registro
-from .dias_pendientes import registros_pendientes
 from .completar_pendientes import completar_pendiente_por_fecha

@@ -1,22 +1,4 @@
 // ------------------------------------------------------
-// VALIDACIÓN DE MONTOS
-// ------------------------------------------------------
-function validarMonto(valor) {
-    if (valor === null || valor === undefined) return false;
-
-    valor = valor.toString().trim();
-    if (valor === "") return false;
-
-    const numero = parseFloat(valor.replace(",", "."));
-
-    if (isNaN(numero)) {
-        alert("⚠️ Ingresá un monto válido.");
-        return false;
-    }
-    return true;
-}
-
-// ------------------------------------------------------
 // SISTEMA GLOBAL DE INPUT + LÁPIZ (editable)
 // ------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
@@ -120,4 +102,38 @@ function animarCampoFijado(idCampo) {
     if (el && el.hasAttribute("readonly")) {
         animarCampoFijado(id);
     }
+});
+
+// ------------------------------------------------------
+// DESBLOQUEAR INPUTS FIJOS CON CLICK EN 🔒
+// ------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+
+    const lockButtons = document.querySelectorAll(".lock-btn");
+
+    lockButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+
+            const inputId = btn.dataset.target;
+            const input = document.getElementById(inputId);
+            if (!input) return;
+
+            // Si ya está desbloqueado, no hacer nada
+            if (!input.hasAttribute("data-locked")) return;
+
+            // 🔓 Desbloquear
+            input.removeAttribute("readonly");
+            input.removeAttribute("data-locked");
+            input.classList.remove("input-locked");
+
+            // Cambiar icono
+            btn.textContent = "🔓";
+            btn.title = "Campo desbloqueado";
+
+            // Foco inmediato
+            input.focus();
+            input.select();
+        });
+    });
+
 });

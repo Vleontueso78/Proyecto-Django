@@ -5,16 +5,19 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+# ============================================================
+#   MODELO PRINCIPAL - REGISTRO FINANCIERO
+# ============================================================
 class RegistroFinanciero(models.Model):
     """
     Modelo principal que registra los gastos diarios de un usuario.
-    Incluye campos para gastos fijos y variables, más cálculos automáticos.
+    Incluye campos para gastos fijos y variables, y cálculos automáticos.
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha = models.DateField(default=date.today)
 
-    # Presupuesto diario asignado para ese día
+    # Presupuesto asignado al día
     para_gastar_dia = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -27,16 +30,16 @@ class RegistroFinanciero(models.Model):
     ahorro_y_deuda = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     sobrante_monetario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Indicadores de gasto fijo
+    # Indicadores de gastos fijos
     alimento_fijo = models.BooleanField(default=False)
     productos_fijo = models.BooleanField(default=False)
     ahorro_y_deuda_fijo = models.BooleanField(default=False)
     sobrante_fijo = models.BooleanField(default=False)
 
-    # Comentario opcional
+    # Comentario
     comentario = models.TextField(blank=True, null=True)
 
-    # Indica si el día está completamente registrado
+    # Marca si el registro diario está completo
     completado = models.BooleanField(default=False)
 
     class Meta:
@@ -47,9 +50,9 @@ class RegistroFinanciero(models.Model):
     def __str__(self):
         return f"{self.fecha} - {self.user.username}"
 
-    # ==========================
-    # PROPIEDADES CALCULADAS
-    # ==========================
+    # ============================================================
+    #   PROPIEDADES CALCULADAS
+    # ============================================================
     @property
     def gasto_total(self):
         return self.alimento + self.productos + self.ahorro_y_deuda
@@ -62,9 +65,9 @@ class RegistroFinanciero(models.Model):
     def sobrante_efectivo(self):
         return self.sobrante_monetario + self.balance_diario
 
-    # ==========================
-    # MARCAR VALORES FIJOS
-    # ==========================
+    # ============================================================
+    #   CAMBIAR / FIJAR VALORES
+    # ============================================================
     def fijar_valor(self, campo: str, valor=None):
         mapping = {
             "alimento": ("alimento", "alimento_fijo"),
@@ -78,18 +81,21 @@ class RegistroFinanciero(models.Model):
 
         campo_valor, campo_fijo = mapping[campo]
 
+        # Cambiar valor si se pasa uno nuevo
         if valor is not None:
             setattr(self, campo_valor, valor)
 
+        # Alternar estado fijo
         actual = getattr(self, campo_fijo)
         setattr(self, campo_fijo, not actual)
 
         self.save()
 
-    # ==========================
-    # SAVE AUTOMÁTICO
-    # ==========================
+    # ============================================================
+    #   SAVE AUTOMÁTICO
+    # ============================================================
     def save(self, *args, **kwargs):
+        # Solo recalcular si el sobrante no es fijo
         from .calculo_sobrante.calculadora import calcular_sobrante
 
         if not self.sobrante_fijo:
@@ -103,12 +109,17 @@ class RegistroFinanciero(models.Model):
         super().save(*args, **kwargs)
 
 
+# ============================================================
+#   OBJETIVOS FINANCIEROS
+# ============================================================
 class ObjetivoFinanciero(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
+
     monto_objetivo = models.DecimalField(max_digits=12, decimal_places=2)
     monto_actual = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     completado = models.BooleanField(default=False)
+
     fecha_creacion = models.DateField(auto_now_add=True)
 
     class Meta:
@@ -131,10 +142,15 @@ class ObjetivoFinanciero(models.Model):
             self.save()
 
 
+# ============================================================
+#   CONFIGURACIÓN FINANCIERA DEL USUARIO
+# ============================================================
 class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    # Valores por defecto
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
 
@@ -147,15 +163,16 @@ class ConfigFinanciera(models.Model):
     default_sobrante = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_sobrante_fijo = models.BooleanField(default=False)
 
+    # NUEVO: fecha desde la cual se generan los registros
     fecha_inicio_registros = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"Config financiera de {self.user.username}"
 
 
-# ==========================
-# SIGNAL: crear config automática
-# ==========================
+# ============================================================
+#   SIGNAL - CREAR CONFIG AUTOMÁTICAMENTE CUANDO SE CREA UN USER
+# ============================================================
 @receiver(post_save, sender=User)
 def crear_config_usuario(sender, instance, created, **kwargs):
     if created:

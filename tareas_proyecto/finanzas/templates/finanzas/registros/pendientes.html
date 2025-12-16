@@ -1,0 +1,47 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="dashboard-container">
+
+    <h2 class="titulo-seccion">Días pendientes</h2>
+
+    <div class="panel">
+        <div class="panel-header">
+            <h3>Días sin completar</h3>
+        </div>
+
+        <div class="panel-body">
+
+            {% if mensaje %}
+                <p class="mensaje">{{ mensaje }}</p>
+            {% endif %}
+
+            {% if pendientes %}
+                <ul class="lista-pendientes">
+                    {% for dia in pendientes %}
+                        <li>
+                            <a href="{% url 'finanzas:completar_pendiente_por_fecha' dia %}"
+                               class="btn-pendiente">
+                                {{ dia }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="sin-pendientes">No hay días pendientes 🎉</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="volver-container">
+        <a href="{% url 'finanzas:dashboard' %}" class="btn-volver">Volver al panel</a>
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="{% static 'finanzas/registros.css' %}">
+
+{% endblock %}

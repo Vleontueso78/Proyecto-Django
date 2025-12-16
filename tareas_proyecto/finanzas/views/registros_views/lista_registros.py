@@ -6,9 +6,10 @@ class RegistroListView(LoginRequiredMixin, ListView):
     model = RegistroFinanciero
     template_name = "finanzas/registros/registros.html"
     context_object_name = "registros"
-    paginate_by = 30  # Opcional pero recomendado
+    paginate_by = 30  
 
     def get_queryset(self):
+        # Solo registros completados
         return (
             RegistroFinanciero.objects
             .filter(user=self.request.user)

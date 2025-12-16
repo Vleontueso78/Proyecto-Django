@@ -1,102 +1,63 @@
-{% extends "base.html" %}
+{% extends "finanzas/base.html" %}
 {% load static %}
-{% block title %}Registros Financieros{% endblock %}
+
+{% block title %}Días pendientes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/animaciones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4" id="finanzas-registros">
 
-    <!-- ============================ -->
-    <!--      TITULO Y BOTONES        -->
-    <!-- ============================ -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 id="titulo-registros">📘 Registros diarios</h1>
-        <a id="btn-volver" class="btn btn-outline-light" href="{% url 'finanzas:dashboard' %}">⬅ Volver</a>
+<div id="dashboard-container" class="fade-in">
+
+    <!-- TITULO Y BOTONES -->
+    <div class="pendientes-header">
+        <div>
+            <h2 class="pendientes-titulo">⏱ Días pendientes</h2>
+            <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
+        </div>
+
+        <div class="pendientes-acciones">
+            <span class="tag">{{ pendientes|length }} pendientes</span>
+            <a class="btn btn-accent" href="{% url 'finanzas:dashboard' %}">Volver al panel</a>
+        </div>
     </div>
 
-    <!-- ============================ -->
-    <!--   ALERTA SI HAY PENDIENTES   -->
-    <!-- ============================ -->
-    {% if dias_pendientes and dias_pendientes|length > 0 %}
-        <div class="alert alert-warning text-dark fw-bold">
-            📌 Tenés <u>{{ dias_pendientes|length }}</u> días pendientes de completar.
-        </div>
+    <!-- LISTA COMPLETA DE PENDIENTES -->
+    <div class="pending-list">
 
-        <div class="mb-3 d-flex gap-2">
-            <a href="{% url 'finanzas:registros_pendientes' %}" class="btn btn-info">
-                📅 Ver días pendientes
-            </a>
+        {% if pendientes %}
+            {% for dia in pendientes %}
+            <div class="pending-item">
 
-            <a href="{% url 'finanzas:completar_pendiente' %}" class="btn btn-success">
-                ➡ Completar siguiente día pendiente
-            </a>
-        </div>
+                <div>
+                    <div class="pending-fecha">{{ dia|date:"d/m/Y" }}</div>
+                    <div class="note">Pendiente</div>
+                </div>
 
-    {% else %}
-        <div class="alert alert-success fw-bold">
-            🎉 ¡Todo al día! No hay registros pendientes.
-        </div>
-    {% endif %}
+                <a class="btn btn-primary btn-small"
+                   href="{% url 'finanzas:completar_pendiente_por_fecha' dia|date:'Y-m-d' %}">
+                    Completar
+                </a>
+            </div>
+            {% endfor %}
 
-    <!-- ============================ -->
-    <!--         TABLA REGISTROS      -->
-    <!-- ============================ -->
-    <div id="tabla-registros" class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-dark table-striped align-middle mb-0" id="tabla-registros-financieros">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Alimentos (A)</th>
-                        <th>Productos (P)</th>
-                        <th>Ahorro/Deuda (AD)</th>
-                        <th>Sobrante (S)</th>
-                        <th>Total Día</th>
-                        <th style="width:120px;">Acciones</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% if registros %}
-                        {% for r in registros %}
-                        <tr class="{% if r.sobrante_monetario < 0 %}bg-danger text-light{% endif %}">
-                            <td>{{ r.fecha|date:"d/m/Y" }}</td>
-                            <td>${{ r.alimento }}</td>
-                            <td>${{ r.productos }}</td>
-                            <td>${{ r.ahorro_y_deuda }}</td>
-                            <td>${{ r.sobrante_monetario }}</td>
-                            <td><strong>${{ r.gasto_total }}</strong></td>
-
-                            <!-- ACCIONES -->
-                            <td>
-
-                                <!-- BOTÓN EDITAR -->
-                                <a href="{% url 'finanzas:editar_registro' r.id %}" 
-                                   class="btn btn-warning btn-sm w-100 mb-1">
-                                    ✏ Editar
-                                </a>
-
-                                <!-- BOTÓN ELIMINAR -->
-                                <form method="post" action="{% url 'finanzas:eliminar_registro' r.id %}">
-                                    {% csrf_token %}
-                                    <button class="btn btn-danger btn-sm w-100"
-                                            onclick="return confirm('¿Seguro que querés eliminar este registro?');">
-                                        🗑 Eliminar
-                                    </button>
-                                </form>
-
-                            </td>
-                        </tr>
-                        {% endfor %}
-
-                    {% else %}
-                        <tr>
-                            <td colspan="7" class="text-center py-3">No hay registros cargados.</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
-        </div>
+        {% else %}
+            <p class="center muted" style="margin-top: 20px;">
+                ✔ No hay días pendientes. ¡Todo al día!
+            </p>
+        {% endif %}
     </div>
 
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
 {% endblock %}

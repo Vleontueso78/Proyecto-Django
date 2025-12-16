@@ -14,78 +14,132 @@
 
 <div class="card card-anim fade-in" style="max-width: 600px; margin: auto;">
 
-    <h2 class="center" style="margin-bottom: 20px;">
+    <h2 class="center mb-4">
         📝 Completar registro<br>
         <span class="muted">Día {{ fecha|date:"d/m/Y" }}</span>
     </h2>
 
-    <form method="POST">
+    <form method="POST" novalidate>
         {% csrf_token %}
 
         <!-- ====== PARA GASTAR ===== -->
         <div class="editable-field">
             <label for="input-para-gastar">Para gastar del día</label>
-            <input id="input-para-gastar"
-                   type="number"
-                   step="0.01"
-                   name="para_gastar_dia"
-                   class="editable-number"
-                   value="{{ form_values.para_gastar_dia }}">
-            <button class="edit-btn" data-target="input-para-gastar">✏</button>
+            <input
+                id="input-para-gastar"
+                type="number"
+                step="0.01"
+                name="para_gastar_dia"
+                class="editable-number"
+                value="{{ form_values.para_gastar_dia|default_if_none:'0' }}"
+            >
+            <button type="button" class="edit-btn" data-target="input-para-gastar">✏</button>
         </div>
 
         <!-- ====== ALIMENTO ===== -->
         <div class="editable-field">
-            <label for="input-alimento">Alimento</label>
-            <input id="input-alimento"
-                   type="number"
-                   step="0.01"
-                   name="alimento"
-                   class="editable-number"
-                   value="{{ form_values.alimento }}">
-            <button class="edit-btn" data-target="input-alimento">✏</button>
+            <label for="input-alimento">
+                Alimento
+                {% if fixed_fields.alimento %}
+                    <button
+                        type="button"
+                        class="lock-btn"
+                        data-target="input-alimento"
+                        title="Este valor está fijado. Click para editar">
+                        🔒
+                    </button>
+                {% endif %}
+            </label>
+            <input
+                id="input-alimento"
+                type="number"
+                step="0.01"
+                name="alimento"
+                class="editable-number {% if fixed_fields.alimento %}input-locked{% endif %}"
+                value="{{ form_values.alimento|default_if_none:'0' }}"
+                {% if fixed_fields.alimento %}
+                    readonly
+                    data-locked="true"
+                {% endif %}
+            >
         </div>
 
         <!-- ====== PRODUCTOS ===== -->
         <div class="editable-field">
-            <label for="input-productos">Productos</label>
-            <input id="input-productos"
-                   type="number"
-                   step="0.01"
-                   name="productos"
-                   class="editable-number"
-                   value="{{ form_values.productos }}">
-            <button class="edit-btn" data-target="input-productos">✏</button>
+            <label for="input-productos">
+                Productos
+                {% if fixed_fields.productos %}
+                    <button
+                        type="button"
+                        class="lock-btn"
+                        data-target="input-productos"
+                        title="Este valor está fijado. Click para editar">
+                        🔒
+                    </button>
+                {% endif %}
+            </label>
+            <input
+                id="input-productos"
+                type="number"
+                step="0.01"
+                name="productos"
+                class="editable-number {% if fixed_fields.productos %}input-locked{% endif %}"
+                value="{{ form_values.productos|default_if_none:'0' }}"
+                {% if fixed_fields.productos %}
+                    readonly
+                    data-locked="true"
+                {% endif %}
+            >
         </div>
 
         <!-- ====== AHORRO / DEUDA ===== -->
         <div class="editable-field">
-            <label for="input-ahorro">Ahorro / Deuda</label>
-            <input id="input-ahorro"
-                   type="number"
-                   step="0.01"
-                   name="ahorro_y_deuda"
-                   class="editable-number"
-                   value="{{ form_values.ahorro_y_deuda }}">
-            <button class="edit-btn" data-target="input-ahorro">✏</button>
+            <label for="input-ahorro">
+                Ahorro / Deuda
+                {% if fixed_fields.ahorro_y_deuda %}
+                    <button
+                        type="button"
+                        class="lock-btn"
+                        data-target="input-ahorro"
+                        title="Este valor está fijado. Click para editar">
+                        🔒
+                    </button>
+                {% endif %}
+            </label>
+            <input
+                id="input-ahorro"
+                type="number"
+                step="0.01"
+                name="ahorro_y_deuda"
+                class="editable-number {% if fixed_fields.ahorro_y_deuda %}input-locked{% endif %}"
+                value="{{ form_values.ahorro_y_deuda|default_if_none:'0' }}"
+                {% if fixed_fields.ahorro_y_deuda %}
+                    readonly
+                    data-locked="true"
+                {% endif %}
+            >
         </div>
 
-        <!-- ====== SOBRANTE AUTO ===== -->
+        <!-- ====== SOBRANTE ===== -->
         <div class="editable-field">
             <label>Sobrante (cálculo automático)</label>
             <div class="presupuesto-display">
                 <span class="signo-sobrante">$</span>
-                <input type="number" id="sobrante-calculado"
-                       value="0" readonly class="editable-number">
+                <input
+                    type="number"
+                    readonly
+                    class="editable-number input-locked"
+                    value="{{ registro.sobrante_monetario|default_if_none:'0' }}"
+                >
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px;">
+        <button type="submit" class="btn btn-primary w-full mt-5">
             💾 Guardar registro
         </button>
     </form>
 
-    <div class="center" style="margin-top: 20px;">
+    <div class="center mt-4">
         <a class="btn btn-ghost" href="{% url 'finanzas:registros_pendientes' %}">
             ← Volver a pendientes
         </a>
@@ -98,4 +152,5 @@
 {% block extra_js %}
 <script src="{% static 'js/finanzas/sobrante.js' %}"></script>
 <script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+<script src="{% static 'js/finanzas/completar_pendiente.js' %}"></script>
 {% endblock %}

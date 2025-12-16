@@ -38,3 +38,94 @@ body.body-bg {
     border: 1px solid #ececf1;
     box-shadow: 0px 8px 20px rgba(0,0,0,0.06);
 }
+
+/* ============================================
+   INPUTS EDITABLES (BASE)
+============================================ */
+.editable-number {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    font-size: 1rem;
+    transition: border 0.2s ease, background 0.2s ease;
+}
+
+.editable-number:focus {
+    outline: none;
+    border-color: #10b981;
+    background-color: #ffffff;
+}
+
+/* ============================================
+   INPUTS FIJOS / BLOQUEADOS
+============================================ */
+.input-locked {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+/* Cuando el input está bloqueado pero se puede desbloquear */
+.input-locked.unlockable {
+    cursor: pointer;
+}
+
+/* ============================================
+   ICONO DE CANDADO
+============================================ */
+.lock-icon {
+    margin-left: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    opacity: 0.75;
+    user-select: none;
+    transition: transform 0.15s ease, opacity 0.15s ease, color 0.15s ease;
+}
+
+/* Hover visual */
+.lock-icon:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* Candado abierto */
+.lock-icon.unlocked {
+    opacity: 1;
+    color: #10b981;
+}
+
+/* ============================================
+   CONTENEDOR DE CAMPOS EDITABLES
+============================================ */
+.editable-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+/* Label con iconos */
+.editable-field label {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ============================================
+   BOTÓN EDITAR (lapicito)
+============================================ */
+.edit-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.6;
+    transition: opacity 0.15s ease;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+}

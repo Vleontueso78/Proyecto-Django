@@ -10,12 +10,12 @@ from django.dispatch import receiver
 # ============================================================
 class RegistroFinanciero(models.Model):
     """
-    Modelo principal que registra los gastos diarios de un usuario.
-    Incluye campos para gastos fijos y variables, y cálculos automáticos.
+    Registro financiero diario por usuario.
+    Solo puede existir UNO por usuario y fecha.
     """
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    fecha = models.DateField(default=date.today)
+    fecha = models.DateField()
 
     # Presupuesto asignado al día
     para_gastar_dia = models.DecimalField(
@@ -39,16 +39,17 @@ class RegistroFinanciero(models.Model):
     # Comentario
     comentario = models.TextField(blank=True, null=True)
 
-    # Marca si el registro diario está completo
+    # Estado del registro
     completado = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-fecha"]
         verbose_name = "Registro Financiero"
         verbose_name_plural = "Registros Financieros"
+        unique_together = ("user", "fecha")
 
     def __str__(self):
-        return f"{self.fecha} - {self.user.username}"
+        return f"{self.fecha} - {self.user.username} (id={self.id})"
 
     # ============================================================
     #   PROPIEDADES CALCULADAS
@@ -81,21 +82,16 @@ class RegistroFinanciero(models.Model):
 
         campo_valor, campo_fijo = mapping[campo]
 
-        # Cambiar valor si se pasa uno nuevo
         if valor is not None:
             setattr(self, campo_valor, valor)
 
-        # Alternar estado fijo
-        actual = getattr(self, campo_fijo)
-        setattr(self, campo_fijo, not actual)
-
+        setattr(self, campo_fijo, not getattr(self, campo_fijo))
         self.save()
 
     # ============================================================
     #   SAVE AUTOMÁTICO
     # ============================================================
     def save(self, *args, **kwargs):
-        # Solo recalcular si el sobrante no es fijo
         from .calculo_sobrante.calculadora import calcular_sobrante
 
         if not self.sobrante_fijo:
@@ -143,14 +139,13 @@ class ObjetivoFinanciero(models.Model):
 
 
 # ============================================================
-#   CONFIGURACIÓN FINANCIERA DEL USUARIO
+#   CONFIGURACIÓN FINANCIERA
 # ============================================================
 class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
-    # Valores por defecto
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
 
@@ -163,7 +158,6 @@ class ConfigFinanciera(models.Model):
     default_sobrante = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_sobrante_fijo = models.BooleanField(default=False)
 
-    # NUEVO: fecha desde la cual se generan los registros
     fecha_inicio_registros = models.DateField(null=True, blank=True)
 
     def __str__(self):
@@ -171,7 +165,7 @@ class ConfigFinanciera(models.Model):
 
 
 # ============================================================
-#   SIGNAL - CREAR CONFIG AUTOMÁTICAMENTE CUANDO SE CREA UN USER
+#   SIGNAL - CREAR CONFIG AUTOMÁTICA
 # ============================================================
 @receiver(post_save, sender=User)
 def crear_config_usuario(sender, instance, created, **kwargs):

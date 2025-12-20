@@ -1,0 +1,36 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="titulo-seccion">Todos los días</h2>
+
+<ul class="lista-dias">
+
+    {% for dia in dias %}
+        <li class="dia-item">
+
+            <span class="fecha">
+                {{ dia.fecha|date:"j \\d\\e F \\d\\e Y" }}
+            </span>
+
+            {% if dia.accion == "editar" and dia.registro %}
+                <a href="{% url 'finanzas:editar_registro' dia.registro.id %}"
+                   class="btn-editar">
+                    Editar
+                </a>
+            {% else %}
+                <a href="{% url 'finanzas:completar_pendiente_por_fecha' dia.fecha %}"
+                   class="btn-pendiente">
+                    Completar
+                </a>
+            {% endif %}
+
+        </li>
+    {% empty %}
+        <p>No hay días para mostrar.</p>
+    {% endfor %}
+
+</ul>
+
+{% endblock %}

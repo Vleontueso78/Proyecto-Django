@@ -1,0 +1,70 @@
+/* ============================================
+   SOBRANTE (cálculo automático)
+============================================ */
+
+/* INPUT PRINCIPAL DEL SOBRANTE */
+#input-sobrante {
+    width: 140px;
+    background: #f5f5f7;
+    border: 2px solid transparent;
+    padding: 6px 8px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 8px;
+    text-align: left;
+    transition: 0.25s ease-in-out;
+}
+
+/* NO EDITABLE */
+#input-sobrante[readonly] {
+    cursor: default;
+    color: #333;
+}
+
+/* ========= ESTADOS DEL SOBRANTE ========= */
+
+/* NEGATIVO: rojo */
+.sobrante-negativo {
+    color: #b91c1c !important;
+    background-color: #fee2e2 !important;
+    border-color: #ef4444 !important;
+}
+
+/* POSITIVO: verde */
+.sobrante-positivo {
+    color: #166534 !important;
+    background-color: #dcfce7 !important;
+    border-color: #22c55e !important;
+}
+
+/* LABEL */
+label[for="input-sobrante"] {
+    font-weight: 600;
+    font-size: 16px;
+    color: #374151;
+}
+
+/* ============================================
+   ANIMACIONES FADE-IN / FADE-OUT DEL SOBRANTE
+============================================ */
+
+/* Animación suave al cambiar el estado */
+#input-sobrante.animate-change {
+    animation: fadePulse 0.45s ease-in-out;
+}
+
+/* Keyframes del efecto */
+@keyframes fadePulse {
+    0% {
+        opacity: 0.3;
+        transform: scale(0.98);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

@@ -1,0 +1,148 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block title %}Panel Financiero{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/presupuesto.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/resumen_final.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/animaciones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="dashboard-container" class="fade-in">
+
+  <h2 id="titulo-finanzas">💼 Panel Financiero</h2>
+
+  <!-- ==============================
+       BOTÓN: CALENDARIO
+  ============================== -->
+  <div class="center" style="margin-bottom: 20px;">
+    <a href="{% url 'finanzas:configurar_calendario' %}" class="btn btn-accent">
+      📅 Configurar calendario
+    </a>
+  </div>
+
+  <!-- ==============================
+       CARD: PRESUPUESTO
+  ============================== -->
+  <div class="card card-anim card-delay-1" id="presupuesto-card">
+
+      <span class="muted center">Tu presupuesto diario actual es:</span>
+
+      <div id="presupuesto-wrapper" class="editable-field">
+
+          <div class="presupuesto-display">
+              <span id="presupuesto-signo">$</span>
+
+              <input 
+                id="presupuesto-diario" 
+                type="number" 
+                class="editable-number" 
+                value="{{ presupuesto_diario }}"
+                readonly>
+          </div>
+
+          <button 
+            id="btn-editar-presupuesto" 
+            class="edit-btn"
+            data-target="presupuesto-diario">
+            ✏
+          </button>
+
+      </div>
+
+      <form id="form-presupuesto" method="POST" action="{% url 'finanzas:dashboard' %}">
+          {% csrf_token %}
+          <input type="hidden" id="hidden-presupuesto" name="presupuesto_diario">
+      </form>
+  </div>
+
+  <!-- ==============================
+     CARD: PENDIENTES (ACTUALIZADO)
+  ============================== -->
+<div id="card-pendientes" class="card card-anim card-delay-2">
+
+  <div class="pendientes-header">
+    <div>
+      <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
+      <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
+    </div>
+
+    <div class="pendientes-acciones">
+      {% if dias_pendientes %}
+        <span class="tag">{{ dias_pendientes|length }} pendientes</span>
+        <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
+          Ver lista completa
+        </a>
+      {% else %}
+        <span class="note">No hay pendientes — estás al día ✅</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if dias_pendientes %}
+  <div class="pending-list">
+    {% for reg in dias_pendientes|slice:":5" %}
+    <div class="pending-item">
+      <div>
+        <div class="pending-fecha">{{ reg.fecha|date:"d/m/Y" }}</div>
+        <div class="note">Pendiente</div>
+      </div>
+
+      <div>
+        <a class="btn btn-primary btn-small"
+           href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
+          Completar
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="center" style="margin-top: 10px;">
+    <a class="btn btn-ghost" href="{% url 'finanzas:registros_dias' %}">
+      Mostrar todos los días →
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+
+  <!-- ==============================
+       RESUMEN TOTAL
+  ============================== -->
+  <div class="card center card-anim card-delay-4">
+    <h4>Resumen total</h4>
+
+    <div class="resumen-grid">
+      <div>
+        <div class="muted">💸 Total gastado</div>
+        <div class="resumen-valor">${{ total_gastado }}</div>
+      </div>
+
+      <div>
+        <div class="muted">💵 Total sobrante</div>
+        <div class="resumen-valor">${{ total_sobrante }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="center">
+    <a class="btn btn-accent" href="{% url 'finanzas:registros' %}">
+      📊 Ver historial de registros
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,69 @@
+/* === EDITAR TAREA === */
+
+#editar-tarea-container {
+    color: #fff !important;
+}
+
+#editar-tarea-card {
+    background-color: #111 !important;
+    border: 3px solid #0d6efd !important;
+    border-radius: 10px !important;
+    width: 60%;
+    color: #fff !important;
+}
+
+#editar-tarea-titulo {
+    color: #0d6efd !important;
+    font-weight: 700;
+}
+
+/* Etiquetas */
+#label-editar-titulo,
+#label-editar-descripcion,
+#label-editar-completada {
+    color: #0d6efd !important;
+    font-weight: 500;
+}
+
+/* Inputs */
+#id_titulo,
+#id_descripcion {
+    background-color: #fff !important;
+    color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    border-radius: 5px;
+}
+
+#id_titulo:focus,
+#id_descripcion:focus {
+    outline: none !important;
+    box-shadow: 0 0 5px #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
+/* Checkbox */
+#check-editar-completada input {
+    accent-color: #0d6efd;
+}
+
+/* Botón Guardar */
+#btn-guardar-editar {
+    background-color: #0d6efd !important;
+    color: #fff !important;
+    border: 1px solid #0d6efd !important;
+    transition: 0.3s;
+}
+#btn-guardar-editar:hover {
+    background-color: #0b5ed7 !important;
+}
+
+/* Botón Volver */
+#btn-volver-editar {
+    background-color: #6c757d !important;
+    color: #fff !important;
+    border: 1px solid #6c757d !important;
+    transition: 0.3s;
+}
+#btn-volver-editar:hover {
+    background-color: #5c636a !important;
+}

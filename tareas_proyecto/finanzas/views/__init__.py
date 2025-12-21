@@ -1,0 +1,3 @@
+from .dashboard_views import FinanzasDashboardView
+from .registros_views import RegistroListView, RegistroCreateView
+from .objetivos_views import ObjetivoListView, ObjetivoCreateView

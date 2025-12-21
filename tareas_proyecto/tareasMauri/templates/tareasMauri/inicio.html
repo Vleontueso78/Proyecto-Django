@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .inicio-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 90vh;
+        padding: 0 8%;
+        background: linear-gradient(135deg, #f7f9fb, #e3f2fd);
+    }
+    .inicio-text {
+        flex: 1;
+        padding-right: 3rem;
+    }
+    .inicio-text h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #0d47a1;
+    }
+    .inicio-text p {
+        font-size: 1.3rem;
+        margin-top: 1rem;
+        color: #37474f;
+    }
+    .inicio-botones {
+        flex: 0.6;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .inicio-botones a {
+        width: 220px;
+        font-size: 1.2rem;
+        padding: 12px 0;
+    }
+</style>
+
+<div class="inicio-container">
+    <div class="inicio-text">
+        <h1>Tu organizador personal, tu vida más simple</h1>
+        <p>
+            Gestioná tus tareas, recordatorios y objetivos con claridad.  
+            Un organizador te ayuda a liberar tu mente para lo que realmente importa.
+        </p>
+    </div>
+
+    <div class="inicio-botones">
+        {% if user.is_authenticated %}
+            <!-- 🔗 Usuario autenticado -->
+            <a href="{% url 'menu' %}" class="btn btn-success btn-lg">Menú principal</a>
+        {% else %}
+            <!-- 🔗 Usuario no autenticado -->
+            <a href="{% url 'usuarios:login' %}" class="btn btn-primary btn-lg">Iniciar Sesión</a>
+            <a href="{% url 'usuarios:registro' %}" class="btn btn-outline-primary btn-lg">Registrarse</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Organizador Personal{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <p class="lead text-light">
+        Gestioná tus
+        <span class="fw-semibold text-tareas"> tareas</span>,
+        <span class="fw-semibold text-notas">notas</span> y
+        <span class="fw-semibold text-finanzas">finanzas</span>
+        desde un solo lugar.
+    </p>
+</div>
+
+<div class="text-center mb-5">
+    <a href="{% url 'tareas:lista_tareas' %}" class="btn btn-lg btn-tareas me-2">➕ Tareas</a>
+    <a href="{% url 'tareasMauri:notas' %}" class="btn btn-lg btn-notas me-2">📝 Notas</a>
+    <a href="{% url 'finanzas:dashboard' %}" class="btn btn-lg btn-finanzas">💰 Finanzas</a>
+</div>
+
+<div class="row justify-content-center g-4">
+    <div class="col-md-3">
+        <div class="card card-custom text-center">
+            <div class="card-body">
+                <h5 class="card-title text-tareas">Tareas</h5>
+                <p class="card-text text-light">Total: <strong>{{ tareas_count }}</strong></p>
+                <a href="{% url 'tareas:lista_tareas' %}" class="btn btn-sm btn-tareas">Ir a Tareas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-custom text-center">
+            <div class="card-body">
+                <h5 class="card-title text-notas">Notas</h5>
+                <p class="card-text text-light">Total: <strong>{{ notas_count }}</strong></p>
+                <a href="{% url 'tareasMauri:notas' %}" class="btn btn-sm btn-notas">Ir a Notas</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-custom text-center">
+            <div class="card-body">
+                <h5 class="card-title text-finanzas">Control Financiero</h5>
+                <p class="card-text text-light">Ingresos, gastos y objetivos en un solo lugar.</p>
+                <a href="{% url 'finanzas:dashboard' %}" class="btn btn-sm btn-finanzas">Ir a Finanzas</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

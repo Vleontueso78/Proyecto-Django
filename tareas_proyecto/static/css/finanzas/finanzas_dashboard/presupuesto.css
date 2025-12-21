@@ -1,0 +1,66 @@
+/* ============================================
+   PRESUPUESTO — LAYOUT GENERAL
+============================================ */
+
+#presupuesto-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+/* El wrapper viejo ya no se usa */
+#presupuesto-display-wrapper {
+    display: none;
+}
+
+.center {
+    text-align: center;
+}
+
+/* ============================================
+   DISPLAY DEL PRESUPUESTO
+   (Ejemplo visual:  $ 123 )
+============================================ */
+
+.presupuesto-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px; /* Espacio entre el $ y el número */
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Símbolo "$" con color especial */
+#presupuesto-signo {
+    color: #4f46e5;
+}
+
+/* ============================================
+   INPUT DEL PRESUPUESTO
+============================================ */
+
+#presupuesto-diario {
+    width: 80px;
+    text-align: left;
+    border: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: bold;
+    color: black; /* Por si querés que sea negro siempre */
+}
+
+/* Modo solo lectura */
+#presupuesto-diario[readonly] {
+    cursor: default;
+}
+
+/* Animación suave al entrar en edición */
+input.editando {
+    background: #fff;
+    border: 2px solid #2563eb;
+    transition: all .25s ease;
+    transform: scale(1.03);
+    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}

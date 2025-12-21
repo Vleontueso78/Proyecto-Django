@@ -1,0 +1,71 @@
+/* ============================================
+   SECCIÓN PENDIENTES
+============================================ */
+
+.pendientes-titulo {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+/* ====================================================
+   FIX DEFINITIVO — Sección "Días pendientes"
+   Evita superposiciones y mantiene todo alineado
+   ==================================================== */
+
+#card-pendientes {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Header con título + texto + botones */
+.pendientes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap; /* evita que se pisen */
+    gap: 12px;
+}
+
+/* Contenedor de botones */
+.pendientes-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Lista de días pendientes */
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Cada item de la lista */
+.pending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* evita superposición */
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #f6f6ff;
+    border: 1px solid #e1e1ff;
+    gap: 12px;
+}
+
+/* Fecha */
+.pending-fecha {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* Tag de cantidad de pendientes */
+.tag {
+    padding: 5px 12px;
+    border-radius: 8px;
+    background: #e0e7ff;
+    color: #4338ca;
+    font-size: 0.9rem;
+}

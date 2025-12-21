@@ -1,0 +1,106 @@
+/* ==============================
+   ESTILOS GENERALES - NOTAS
+   ============================== */
+#titulo-notas {
+    color: #fff;
+    font-weight: 700;
+}
+
+#notas-card {
+    background-color: #000;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+}
+
+/* ==============================
+   MARCO FINO DE CADA NOTA
+   ============================== */
+#nota-item {
+    background-color: #495057 !important;
+    border: 2px solid #28a745 !important; /* borde más visible */
+    color: #eaeaea !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+    margin-bottom: 10px !important;
+    box-shadow: none !important;
+}
+
+/* ==============================
+   TEXTOS
+   ============================== */
+#nota-titulo {
+    color: #fff;
+    font-weight: 600;
+}
+
+#nota-cuerpo {
+    color: #dcdcdc;
+}
+
+#nota-fecha {
+    color: #212529bf !important;
+}
+
+/* ==============================
+   BOTONES
+   ============================== */
+#btn-crear-nota {
+    background-color: #28a745;
+    color: #fff;
+    border: 1px solid #28a745;
+    transition: all 0.2s ease-in-out;
+}
+
+#btn-crear-nota:hover {
+    background-color: #1f7a33;
+    border-color: #1f7a33;
+}
+
+#btn-editar-nota {
+    background-color: transparent;
+    color: #28a745;
+    border: 1px solid #28a745;
+    transition: all 0.2s ease-in-out;
+}
+
+#btn-editar-nota:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+#btn-eliminar-nota {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    transition: all 0.2s ease-in-out;
+}
+
+#btn-eliminar-nota:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* ==============================
+   CUADRO SIN NOTAS
+   ============================== */
+#sin-notas-marco {
+    border: 1px dashed rgba(40, 167, 69, 0.5);
+}
+
+#icono-sin-notas {
+    color: #28a745 !important;
+}
+
+#texto-sin-notas {
+    color: #b0ffcc;
+}
+
+#btn-menu-principal-crear-nota {
+    background-color: #6c757d;
+    color: #fff;
+    border: 1px solid #6c757d;
+    transition: 0.3s;
+}
+#btn-menu-principal-crear-nota:hover {
+    background-color: #5c636a;
+}

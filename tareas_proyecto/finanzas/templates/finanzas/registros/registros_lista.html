@@ -1,0 +1,63 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block title %}Días pendientes{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/pendientes.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/animaciones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="dashboard-container" class="fade-in">
+
+    <!-- TITULO Y BOTONES -->
+    <div class="pendientes-header">
+        <div>
+            <h2 class="pendientes-titulo">⏱ Días pendientes</h2>
+            <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
+        </div>
+
+        <div class="pendientes-acciones">
+            <span class="tag">{{ pendientes|length }} pendientes</span>
+            <a class="btn btn-accent" href="{% url 'finanzas:dashboard' %}">Volver al panel</a>
+        </div>
+    </div>
+
+    <!-- LISTA COMPLETA DE PENDIENTES -->
+    <div class="pending-list">
+
+        {% if pendientes %}
+            {% for dia in pendientes %}
+            <div class="pending-item">
+
+                <div>
+                    <div class="pending-fecha">{{ dia|date:"d/m/Y" }}</div>
+                    <div class="note">Pendiente</div>
+                </div>
+
+                <a class="btn btn-primary btn-small"
+                   href="{% url 'finanzas:completar_pendiente_por_fecha' dia|date:'Y-m-d' %}">
+                    Completar
+                </a>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <p class="center muted" style="margin-top: 20px;">
+                ✔ No hay días pendientes. ¡Todo al día!
+            </p>
+        {% endif %}
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/finanzas/dashboard.js' %}"></script>
+{% endblock %}

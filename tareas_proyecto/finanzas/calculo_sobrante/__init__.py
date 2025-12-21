@@ -1,0 +1,1 @@
+# Carpeta de cálculo de sobrante

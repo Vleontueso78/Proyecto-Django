@@ -1,0 +1,71 @@
+/* ==============================
+   CREAR NOTA - ESTILOS PROPIOS
+   ============================== */
+
+/* --- Fondo general --- */
+body {
+    background-color: #111 !important;
+    color: #fff !important;
+}
+
+/* --- Título --- */
+#titulo-crear-nota {
+    color: #fff;
+    font-weight: 700;
+}
+
+/* --- Card principal --- */
+#crear-nota-card {
+    background-color: #000;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    box-shadow: none;
+}
+
+/* --- Labels del formulario --- */
+#label-titulo-nota,
+#label-cuerpo-nota {
+    color: #b0ffcc;
+    font-weight: 500;
+}
+
+/* --- Campos del formulario --- */
+#crear-nota-card input,
+#crear-nota-card textarea {
+    background-color: #fff !important;
+    color: #28a745 !important;
+    border: 1px solid #28a745 !important;
+    border-radius: 5px;
+}
+#crear-nota-card input:focus,
+#crear-nota-card textarea:focus {
+    outline: none;
+    border-color: #34d058;
+    box-shadow: 0 0 5px #28a745;
+}
+
+/* --- Botón Guardar --- */
+#btn-guardar-nota {
+    background-color: #28a745;
+    border: 1px solid #28a745;
+    color: #fff;
+    font-weight: 500;
+    transition: 0.3s;
+}
+#btn-guardar-nota:hover {
+    background-color: #1f7a33;
+}
+
+/* --- Botones del encabezado --- */
+/* Botón volver */
+#btn-volver-notas {
+    background-color: #28a745 !important;
+    border: 1px solid #28a745 !important;
+    color: white !important;
+    transition: 0.3s;
+}
+
+#btn-volver-notas:hover {
+    background-color: #1f7a33 !important;
+}
+

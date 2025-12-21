@@ -1,0 +1,59 @@
+/* ============================================
+   BOTONES PROFESIONALES
+============================================ */
+
+/* Estilos base para todos los botones */
+.btn-primary,
+.btn-accent,
+.btn-ghost {
+    padding: 10px 16px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    /* Animaciones suaves */
+    transition: 
+        background 0.25s ease,
+        transform 0.15s ease,
+        box-shadow 0.20s ease;
+}
+
+/* Efecto de elevación común */
+.btn-primary:hover,
+.btn-accent:hover,
+.btn-ghost:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ----------- PRIMARY ----------- */
+.btn-primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+}
+
+/* ----------- ACCENT (éxito) ----------- */
+.btn-accent {
+    background: #10b981;
+    color: white;
+}
+
+.btn-accent:hover {
+    background: #059669;
+}
+
+/* ----------- GHOST (botón blanco) ----------- */
+.btn-ghost {
+    background: white;
+    border: 1px solid #d3d6df;
+    color: #444;
+}
+
+.btn-ghost:hover {
+    background: #f8f8fb;
+}

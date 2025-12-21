@@ -1,0 +1,100 @@
+/* === ESTILOS ESPECÍFICOS PARA lista.html === */
+
+/* Fondo y texto general */
+body {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* ======== ENCABEZADO ======== */
+#titulo-lista-tareas {
+    color: #fff !important;   /* Azul original de tareas */
+    font-weight: 700;
+}
+
+#btn-crear-tarea {
+    background-color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    color: white !important;
+    transition: 0.3s;
+}
+#btn-crear-tarea:hover {
+    background-color: #0b5ed7 !important;
+    color: #fff !important;
+}
+
+#btn-menu-principal-tareas {
+    background-color: #6c757d !important;
+    border: 1px solid #6c757d !important;
+    color: white !important;
+    transition: 0.3s;
+}
+#btn-menu-principal-tareas:hover {
+    background-color: #5c636a !important;
+}
+
+/* ======== CARD CONTENEDORA ======== */
+#lista-tareas-card {
+    background-color: #111 !important;   /* fondo oscuro */
+    border: 2px solid #0d6efd !important; /* borde azul fino */
+    border-radius: 10px !important;
+    box-shadow: none !important;         /* sin sombra blanca */
+    padding: 0 !important;
+}
+
+/* ======== LISTA DE TAREAS ======== */
+.list-group-item {
+    background-color: #495057 !important;  /* gris oscuro */
+    color: #fff !important;
+    border: 1px solid #0d6efd !important;  /* borde azul */
+}
+
+/* ======== BOTONES DE ACCIÓN ======== */
+.btn-success {
+    background-color: #198754 !important;  /* verde de éxito */
+    border: 1px solid #198754 !important;
+    color: #fff !important;
+    transition: 0.3s;
+}
+.btn-success:hover {
+    background-color: #157347 !important;
+}
+
+.btn-outline-secondary {
+    background-color: transparent !important;
+    border: 1px solid #6c757d !important;
+    color: #fff !important;
+    transition: 0.3s;
+}
+.btn-outline-secondary:hover {
+    background-color: #6c757d !important;
+    color: #fff !important;
+}
+
+/* Botones personalizados reutilizados */
+.btn-editar {
+    background-color: #0d6efd !important;
+    border: 1px solid #0d6efd !important;
+    color: #fff !important;
+}
+.btn-editar:hover {
+    background-color: #0b5ed7 !important;
+}
+
+.btn-eliminar {
+    background-color: #dc3545 !important;
+    border: 1px solid #dc3545 !important;
+    color: #fff !important;
+}
+.btn-eliminar:hover {
+    background-color: #bb2d3b !important;
+}
+
+/* ======== CUADRO DE TAREA VACÍA ======== */
+.sin-tareas-cuadro {
+    border: 2px solid #0d6efd !important;  /* azul */
+    border-radius: 10px !important;
+    background-color: #111 !important;
+    box-shadow: none !important;
+    color: #fff !important;
+}

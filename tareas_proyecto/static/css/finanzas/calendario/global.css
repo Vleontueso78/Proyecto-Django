@@ -1,0 +1,17 @@
+/* Contenedor general */
+#dashboard-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Ajustes específicos */
+.calendario-form {
+    max-width: 420px;
+    margin: auto;
+}
+
+.note {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}

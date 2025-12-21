@@ -1,0 +1,72 @@
+/* ============================================
+   RESUMEN FINAL — ESTILO MEJORADO + FIX
+============================================ */
+
+/* Valor grande (Total gastado / Total sobrante) */
+.resumen-valor {
+    font-size: 1.8rem;
+    color: #1e3a8a;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* GRID — distribuye ambos bloques correctamente */
+.resumen-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    align-items: center;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Cada columna del resumen */
+.resumen-grid > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Botón para ver historial */
+.link-historial .btn-accent {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    border-radius: 12px;
+}
+
+/* Inputs con icono $ */
+.input-money-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.money-symbol {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #555;
+}
+
+.input-money {
+    padding-left: 20px;
+}
+
+/* Tarjetas del Resumen Total */
+.resumen-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15px 18px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.resumen-titulo {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #4f46e5;
+    margin-bottom: 6px;
+}

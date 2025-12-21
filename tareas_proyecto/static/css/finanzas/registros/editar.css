@@ -1,0 +1,61 @@
+.editar-container {
+    max-width: 600px;
+    margin: 40px auto;
+    color: white;
+    background: #1f1f1f;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px #0007;
+}
+
+.editar-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.editar-form label {
+    margin-top: 12px;
+    font-weight: bold;
+    display: block;
+}
+
+.editar-form input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: none;
+    background: #2b2b2b;
+    color: white;
+}
+
+.botones {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.btn-guardar {
+    background: #198754;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-guardar:hover {
+    background: #157347;
+}
+
+.btn-volver {
+    background: #6c757d;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: white;
+    text-decoration: none;
+}
+
+.btn-volver:hover {
+    background: #5c636a;
+}

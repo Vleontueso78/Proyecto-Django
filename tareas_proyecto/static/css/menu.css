@@ -1,0 +1,123 @@
+/* ======== MENU.CSS ======== */
+
+/* Fondo general */
+body {
+    background-color: #000 !important;
+    color: #fff !important;
+}
+
+/* ===== Encabezado ===== */
+#menu-titulo {
+    color: #fff;
+    font-weight: 800;
+}
+
+#menu-subtitulo {
+    color: #ccc;
+}
+
+#menu-texto-tareas {
+    color: #0d6efd; /* Azul */
+}
+
+#menu-texto-notas {
+    color: #28a745; /* Verde */
+}
+
+#menu-texto-finanzas {
+    color: #ffc107; /* Amarillo */
+}
+
+/* ===== Botones principales ===== */
+#menu-botones a {
+    font-weight: 600;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+/* Botón Tareas */
+#btn-menu-tareas {
+    background-color: #0d6efd;
+    color: #fff;
+}
+#btn-menu-tareas:hover {
+    background-color: #0b5ed7;
+}
+
+/* Botón Notas */
+#btn-menu-notas {
+    background-color: #28a745;
+    color: #fff;
+}
+#btn-menu-notas:hover {
+    background-color: #198754;
+}
+
+/* Botón Finanzas */
+#btn-menu-finanzas {
+    background-color: #ffc107;
+    color: #000;
+}
+#btn-menu-finanzas:hover {
+    background-color: #e0a800;
+}
+
+/* ===== Tarjetas ===== */
+#menu-tarjetas .card {
+    background-color: #111;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+/* Tareas */
+#card-tareas {
+    border-color: #0d6efd;
+}
+#card-tareas:hover {
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.4);
+}
+
+/* Notas */
+#card-notas {
+    border-color: #28a745;
+}
+#card-notas:hover {
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+}
+
+/* Finanzas */
+#card-finanzas {
+    border-color: #ffc107;
+}
+#card-finanzas:hover {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.4);
+}
+
+/* ===== Botones dentro de las tarjetas ===== */
+#btn-ir-tareas {
+    color: #0d6efd;
+    border: 1px solid #0d6efd;
+}
+#btn-ir-tareas:hover {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+#btn-ir-notas {
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+#btn-ir-notas:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+
+#btn-ir-finanzas {
+    color: #ffc107;
+    border: 1px solid #ffc107;
+}
+#btn-ir-finanzas:hover {
+    background-color: #ffc107;
+    color: #000;
+}

@@ -1,0 +1,75 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block title %}Configurar calendario{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/calendario/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/calendario/formulario.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div id="dashboard-container" class="fade-in">
+
+    <h2 id="titulo-finanzas">📅 Configuración del calendario</h2>
+
+    <!-- ==============================
+         CARD: EXPLICACIÓN
+    ============================== -->
+    <div class="card card-anim card-delay-1 center">
+
+        <p class="muted">
+            Elegí desde qué día querés comenzar a registrar tus gastos diarios.
+        </p>
+
+        <p class="note">
+            Se crearán automáticamente todos los días desde esa fecha hasta hoy.
+        </p>
+
+    </div>
+
+    <!-- ==============================
+         CARD: FORMULARIO
+    ============================== -->
+    <div class="card card-anim card-delay-2">
+
+        <form method="POST" class="calendario-form" id="form-calendario">
+            {% csrf_token %}
+
+            <label for="fecha_inicio" class="form-label">
+                Fecha de inicio
+            </label>
+
+            <input
+                type="date"
+                id="fecha_inicio"
+                name="fecha_inicio"
+                required
+                class="input-fecha"
+                value="{{ config.fecha_inicio_registros|date:'Y-m-d' }}"
+            >
+
+            <div class="form-actions">
+
+                <button type="submit" class="btn btn-accent">
+                    Generar registros
+                </button>
+
+                <a href="{% url 'finanzas:dashboard' %}" class="btn btn-ghost">
+                    Cancelar
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/finanzas/calendario/confirmar_generacion.js' %}"></script>
+{% endblock %}

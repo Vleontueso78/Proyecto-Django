@@ -1,0 +1,71 @@
+/* ====== ESTILOS PARA EDITAR NOTA ====== */
+
+/* Fondo de la tarjeta */
+#editar-nota-card {
+    background-color: #000 !important;
+    border: 2px solid #28a745 !important;
+    border-radius: 10px !important;
+    color: #fff !important;
+    box-shadow: 0 0 10px rgba(0, 255, 127, 0.3);
+}
+
+/* Título principal */
+#titulo-editar-nota {
+    color: #fff !important;
+    font-weight: bold;
+}
+
+/* Etiquetas del formulario */
+#label-editar-titulo,
+#label-editar-body {
+    color: #28a745 !important;
+    font-weight: 500;
+}
+
+/* Campos de texto */
+#editar-nota-card input,
+#editar-nota-card textarea {
+    background-color: #f8f9fa !important;
+    color: #000 !important;
+    border: 1px solid #28a745 !important;
+    border-radius: 5px;
+}
+
+#editar-nota-card input:focus,
+#editar-nota-card textarea:focus {
+    border-color: #28a745 !important;
+    box-shadow: 0 0 5px #28a745 !important;
+}
+
+/* Botón Guardar */
+#btn-guardar-editar-nota {
+    background-color: #28a745 !important;
+    border: none !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease;
+}
+#btn-guardar-editar-nota:hover {
+    background-color: #1f7a33 !important;
+}
+
+/* Botón Volver */
+#btn-volver-editar-nota {
+    background-color: #28a745 !important;
+    border: none !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease;
+}
+#btn-volver-editar-nota:hover {
+    background-color: #1f7a33 !important;
+}
+
+/* Botón Menú principal */
+#btn-menu-editar-nota {
+    background-color: #6c757d !important;
+    border: none !important;
+    color: #fff !important;
+    transition: background-color 0.3s ease;
+}
+#btn-menu-editar-nota:hover {
+    background-color: #5c636a !important;
+}

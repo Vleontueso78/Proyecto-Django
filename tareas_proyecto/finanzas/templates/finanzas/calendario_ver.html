@@ -1,0 +1,81 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block title %}Calendario{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/calendario/calendario.css' %}">
+{% endblock %}
+
+{% block content %}
+<div id="dashboard-container">
+
+    <h2 id="titulo-finanzas">📅 Calendario</h2>
+
+    <!-- ==========================
+         NAVEGACIÓN POR MESES
+    ========================== -->
+    <div class="calendario-nav">
+
+        {% if mostrar_prev %}
+            <a href="?year={{ prev_year }}&month={{ prev_month }}" class="btn btn-ghost">
+                ⬅ Mes anterior
+            </a>
+        {% else %}
+            <span></span>
+        {% endif %}
+
+        <!-- 🔤 Nombre del mes + año -->
+        <span class="calendario-mes">
+            {{ nombre_mes }} {{ anio }}
+        </span>
+
+        <a href="?year={{ next_year }}&month={{ next_month }}" class="btn btn-ghost">
+            Mes siguiente ➡
+        </a>
+    </div>
+
+    <!-- ==========================
+         GRID DEL CALENDARIO
+    ========================== -->
+    <div class="calendario-grid">
+
+        {% for dia in dias %}
+            {% with fecha=dia.fecha registro=dia.registro %}
+                <a
+                    href="{% url 'finanzas:detalle_dia' fecha|date:'Y-m-d' %}"
+                    class="dia-calendario
+                        {% if fecha == today %} hoy {% endif %}
+                        {% if fecha > today %} futuro {% endif %}
+                        {% if registro %}
+                            {% if registro.completado %}
+                                completo
+                            {% else %}
+                                pendiente
+                            {% endif %}
+                        {% endif %}
+                    "
+                >
+
+                    <span class="numero-dia">
+                        {{ fecha.day }}
+                    </span>
+
+                    {% if registro %}
+                        <span class="estado">
+                            {% if registro.completado %}
+                                ✔
+                            {% else %}
+                                ⏳
+                            {% endif %}
+                        </span>
+                    {% endif %}
+
+                </a>
+            {% endwith %}
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}

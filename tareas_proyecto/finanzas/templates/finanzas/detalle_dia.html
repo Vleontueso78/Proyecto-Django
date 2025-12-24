@@ -1,0 +1,41 @@
+{% extends "finanzas/base.html" %}
+{% load static %}
+
+{% block title %}Detalle del día{% endblock %}
+
+{% block content %}
+<div id="dashboard-container">
+
+    <h2 id="titulo-finanzas">
+        📆 {{ fecha|date:"d/m/Y" }}
+    </h2>
+
+    <div class="card">
+
+        <p><strong>Presupuesto:</strong> ${{ registro.para_gastar_dia }}</p>
+        <p><strong>Alimento:</strong> ${{ registro.alimento }}</p>
+        <p><strong>Productos:</strong> ${{ registro.productos }}</p>
+        <p><strong>Ahorro / Deuda:</strong> ${{ registro.ahorro_y_deuda }}</p>
+
+        <hr>
+
+        <p><strong>Gasto total:</strong> ${{ registro.gasto_total }}</p>
+        <p><strong>Balance diario:</strong> ${{ registro.balance_diario }}</p>
+        <p><strong>Sobrante efectivo:</strong> ${{ registro.sobrante_efectivo }}</p>
+
+        <div class="form-actions">
+            <a href="{% url 'finanzas:editar_registro' registro.id %}"
+               class="btn btn-accent">
+                ✏️ Editar día
+            </a>
+
+            <a href="{% url 'finanzas:calendario_ver' %}"
+               class="btn btn-ghost">
+                ⬅ Volver al calendario
+            </a>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

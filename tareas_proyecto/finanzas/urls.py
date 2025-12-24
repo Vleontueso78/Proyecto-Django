@@ -5,6 +5,9 @@ from .views.dashboard_views import FinanzasDashboardView
 
 # CALENDARIO
 from .views.calendario_views import configurar_calendario
+# CALENDARIO (visual)
+from .views.calendario_views import calendario_ver
+from .views.calendario_views import detalle_dia
 
 # REGISTROS
 from .views.registros_views.lista_registros import RegistroListView
@@ -65,4 +68,12 @@ urlpatterns = [
     #     CONFIGURACIÓN
     # ======================
     path("calendario/", configurar_calendario, name="configurar_calendario"),
+    
+    path("calendario/ver/", calendario_ver, name="calendario_ver"),
+    
+    path(
+        "calendario/dia/<str:fecha_str>/",
+        detalle_dia,
+        name="detalle_dia"
+    ),
 ]

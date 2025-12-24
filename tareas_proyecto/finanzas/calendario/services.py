@@ -9,7 +9,6 @@ def generar_registros_desde_fecha(*, user, fecha_inicio):
     Genera registros financieros diarios desde fecha_inicio hasta hoy.
     Devuelve la cantidad de registros creados.
     """
-
     hoy = date.today()
     creados = 0
 
@@ -39,3 +38,20 @@ def generar_registros_desde_fecha(*, user, fecha_inicio):
             actual += timedelta(days=1)
 
     return creados
+
+
+# ✅ NUEVA FUNCIÓN – USO PARA CALENDARIO
+def asegurar_registros_hasta_hoy(*, user):
+    """
+    Asegura que existan registros diarios desde la fecha configurada hasta hoy.
+    Pensada para usarse al entrar al calendario.
+    """
+    config = ConfigFinanciera.objects.filter(user=user).first()
+
+    if not config or not config.fecha_inicio_registros:
+        return 0
+
+    return generar_registros_desde_fecha(
+        user=user,
+        fecha_inicio=config.fecha_inicio_registros
+    )

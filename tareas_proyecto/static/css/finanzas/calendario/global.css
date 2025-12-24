@@ -1,17 +1,75 @@
-/* Contenedor general */
+/* ==============================
+   CONTENEDOR GENERAL
+============================== */
 #dashboard-container {
     max-width: 900px;
     margin: auto;
-    padding: 20px;
+    padding: 30px 20px;
 }
 
-/* Ajustes específicos */
+/* ==============================
+   TÍTULO
+============================== */
+#titulo-finanzas {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.6rem;
+}
+
+/* ==============================
+   FORMULARIO
+============================== */
 .calendario-form {
     max-width: 420px;
     margin: auto;
 }
 
+/* ==============================
+   TEXTOS DE APOYO
+============================== */
 .note {
     font-size: 0.95rem;
-    opacity: 0.8;
+    opacity: 0.85;
+    margin-top: 8px;
+}
+
+/* ==============================
+   CARDS
+============================== */
+.card {
+    padding: 22px;
+    border-radius: 14px;
+}
+
+.card.center {
+    text-align: center;
+}
+
+/* ==============================
+   ESTADO ACTUAL DEL CALENDARIO
+============================== */
+.estado-calendario {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    display: inline-block;
+}
+
+.estado-calendario.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #15803d;
+}
+
+.estado-calendario.warning {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #92400e;
+}
+
+/* ==============================
+   BOTÓN VOLVER
+============================== */
+.volver-dashboard {
+    margin-bottom: 20px;
+    text-align: center;
 }

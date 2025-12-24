@@ -15,6 +15,15 @@
     <h2 id="titulo-finanzas">📅 Configuración del calendario</h2>
 
     <!-- ==============================
+         BOTÓN VOLVER
+    ============================== -->
+    <div class="volver-dashboard">
+        <a href="{% url 'finanzas:dashboard' %}" class="btn btn-ghost">
+            ⬅ Volver al dashboard
+        </a>
+    </div>
+
+    <!-- ==============================
          CARD: EXPLICACIÓN
     ============================== -->
     <div class="card card-anim card-delay-1 center">
@@ -26,6 +35,20 @@
         <p class="note">
             Se crearán automáticamente todos los días desde esa fecha hasta hoy.
         </p>
+
+        <!-- ==============================
+             ESTADO ACTUAL DEL CALENDARIO
+        ============================== -->
+        {% if config.fecha_inicio_registros %}
+            <div class="estado-calendario success">
+                📌 Actualmente tenés registros desde
+                <strong>{{ config.fecha_inicio_registros|date:"d/m/Y" }}</strong>
+            </div>
+        {% else %}
+            <div class="estado-calendario warning">
+                ⚠️ Todavía no configuraste una fecha de inicio
+            </div>
+        {% endif %}
 
     </div>
 
@@ -48,6 +71,7 @@
                 required
                 class="input-fecha"
                 value="{{ config.fecha_inicio_registros|date:'Y-m-d' }}"
+                data-original="{{ config.fecha_inicio_registros|date:'Y-m-d' }}"
             >
 
             <div class="form-actions">

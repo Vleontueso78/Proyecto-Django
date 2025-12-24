@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import date
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from decimal import Decimal
 
 
 # ============================================================
@@ -99,7 +99,7 @@ class RegistroFinanciero(models.Model):
                 self.para_gastar_dia,
                 self.alimento,
                 self.ahorro_y_deuda,
-                self.productos
+                self.productos,
             )
 
         super().save(*args, **kwargs)
@@ -144,7 +144,11 @@ class ObjetivoFinanciero(models.Model):
 class ConfigFinanciera(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    presupuesto_diario = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    presupuesto_diario = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
 
     default_alimento = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     default_alimento_fijo = models.BooleanField(default=False)
@@ -162,6 +166,17 @@ class ConfigFinanciera(models.Model):
 
     def __str__(self):
         return f"Config financiera de {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        """
+        Blindaje defensivo:
+        evita NULL / valores inválidos en DecimalField
+        (especialmente desde JS o datos viejos)
+        """
+        if self.presupuesto_diario is None:
+            self.presupuesto_diario = Decimal("0.00")
+
+        super().save(*args, **kwargs)
 
 
 # ============================================================

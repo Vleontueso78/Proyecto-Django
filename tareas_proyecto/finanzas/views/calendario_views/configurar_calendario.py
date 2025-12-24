@@ -1,9 +1,10 @@
 from datetime import date
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from ..models import ConfigFinanciera
+from ...models import ConfigFinanciera
 
 
 @login_required
@@ -34,13 +35,19 @@ def configurar_calendario(request):
         hoy = date.today()
 
         if fecha_inicio > hoy:
-            messages.error(request, "La fecha de inicio no puede ser superior a hoy.")
+            messages.error(
+                request,
+                "La fecha de inicio no puede ser superior a hoy."
+            )
             return redirect("finanzas:configurar_calendario")
 
         config.fecha_inicio_registros = fecha_inicio
         config.save()
 
-        messages.success(request, "Calendario inicial configurado correctamente.")
+        messages.success(
+            request,
+            "Calendario inicial configurado correctamente."
+        )
         return redirect("finanzas:calendario_ver")
 
     return render(

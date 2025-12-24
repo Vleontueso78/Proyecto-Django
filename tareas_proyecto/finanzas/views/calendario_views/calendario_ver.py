@@ -4,8 +4,9 @@ from calendar import monthrange
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-from ..models import RegistroFinanciero, ConfigFinanciera
-from ..calendario.services import asegurar_registros_hasta_hoy
+from ...models import RegistroFinanciero, ConfigFinanciera
+from ...calendario.services import asegurar_registros_hasta_hoy
+
 
 @login_required
 def calendario_ver(request):
@@ -27,7 +28,7 @@ def calendario_ver(request):
     try:
         year = int(request.GET.get("year", hoy.year))
         month = int(request.GET.get("month", hoy.month))
-    except ValueError:
+    except (TypeError, ValueError):
         year = hoy.year
         month = hoy.month
 
@@ -81,9 +82,9 @@ def calendario_ver(request):
 
     context = {
         "dias": dias,
-        "mes": month,
         "anio": year,
-        "mes_nombre": calendar.month_name[month],
+        "mes": month,
+        "nombre_mes": hoy.replace(month=month).strftime("%B").capitalize(),
         "prev_year": prev_year,
         "prev_month": prev_month,
         "next_year": next_year,

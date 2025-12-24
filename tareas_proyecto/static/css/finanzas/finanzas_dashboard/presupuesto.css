@@ -1,66 +1,133 @@
-/* ============================================
-   PRESUPUESTO — LAYOUT GENERAL
-============================================ */
+/* ==============================
+   PRESUPUESTO DIARIO
+============================== */
 
-#presupuesto-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-/* El wrapper viejo ya no se usa */
-#presupuesto-display-wrapper {
-    display: none;
-}
-
-.center {
+#presupuesto-card {
     text-align: center;
 }
 
-/* ============================================
-   DISPLAY DEL PRESUPUESTO
-   (Ejemplo visual:  $ 123 )
-============================================ */
+/* Texto superior */
+#presupuesto-card .muted {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
 
+/* Contenedor editable */
+#presupuesto-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 10px;
+}
+
+/* Caja del monto */
 .presupuesto-display {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: 4px; /* Espacio entre el $ y el número */
-    font-size: 20px;
-    font-weight: bold;
+    gap: 6px;
+    background: #f8f9fa;
+    padding: 10px 18px;
+    border-radius: 14px;
+    box-shadow: inset 0 0 0 1px #dee2e6;
 }
 
-/* Símbolo "$" con color especial */
+/* Signo $ */
 #presupuesto-signo {
-    color: #4f46e5;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #6c757d;
 }
 
-/* ============================================
-   INPUT DEL PRESUPUESTO
-============================================ */
+/* ==============================
+   NÚMERO (LECTURA)
+============================== */
 
-#presupuesto-diario {
-    width: 80px;
-    text-align: left;
+.presupuesto-valor {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #212529;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* ==============================
+   INPUT (EDICIÓN)
+============================== */
+
+.editable-number {
+    display: none;
+
+    /* 🔑 ANCHO INTELIGENTE */
+    min-width: 6ch;                  /* ancho base estable */
+    width: fit-content;              /* se adapta al contenido */
+    max-width: 12ch;                 /* límite visual razonable */
+
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
     border: none;
     background: transparent;
-    font-size: 20px;
-    font-weight: bold;
-    color: black; /* Por si querés que sea negro siempre */
+    text-align: center;
+    color: #212529;
+
+    padding: 0;
+    margin: 0;
+
+    outline: none;
+
+    opacity: 0;
+    transform: scale(0.96);
+    transition:
+        opacity 0.15s ease,
+        transform 0.15s ease,
+        width 0.15s ease;
 }
 
-/* Modo solo lectura */
-#presupuesto-diario[readonly] {
-    cursor: default;
+/* ==============================
+   MODO EDICIÓN
+============================== */
+
+.presupuesto-display.editing .presupuesto-valor {
+    opacity: 0;
+    transform: scale(0.96);
+    pointer-events: none;
 }
 
-/* Animación suave al entrar en edición */
-input.editando {
-    background: #fff;
-    border: 2px solid #2563eb;
-    transition: all .25s ease;
-    transform: scale(1.03);
-    box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+.presupuesto-display.editing .editable-number {
+    display: inline-block;
+    opacity: 1;
+    transform: scale(1);
+}
+
+.presupuesto-display.editing #presupuesto-signo {
+    opacity: 0.6;
+}
+
+/* ==============================
+   BOTÓN EDITAR ✏
+============================== */
+
+.edit-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #e9ecef;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.edit-btn:hover {
+    background: #dee2e6;
+    transform: scale(1.05);
+}
+
+.edit-btn:active {
+    transform: scale(0.95);
 }

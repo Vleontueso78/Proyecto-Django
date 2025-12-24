@@ -3,79 +3,82 @@
 // ------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
 
-    const editButtons = document.querySelectorAll(".edit-btn");
+    const editBtn = document.getElementById("btn-editar-presupuesto");
+    const input = document.getElementById("presupuesto-diario");
+    const wrapper = document.querySelector(".presupuesto-display");
+    const hiddenInput = document.getElementById("hidden-presupuesto");
+    const form = document.getElementById("form-presupuesto");
 
-    editButtons.forEach(btn => {
-        btn.addEventListener("click", () => {
+    if (!editBtn || !input || !wrapper) return;
 
-            const inputId = btn.dataset.target;
-            const input = document.getElementById(inputId);
-            if (!input) return;
+    // Crear span visual si no existe
+    let valorSpan = document.querySelector(".presupuesto-valor");
 
-            // Habilitar edición
-            input.removeAttribute("readonly");
-            input.classList.add("editando");
-            input.focus();
-            input.select();
+    if (!valorSpan) {
+        valorSpan = document.createElement("span");
+        valorSpan.className = "presupuesto-valor";
+        valorSpan.textContent = input.value;
+        wrapper.appendChild(valorSpan);
+    }
 
-            // Handler único para cuando se sale del input
-            const blurHandler = () => {
-
-                let valor = input.value.trim();
-
-                // Validación
-                if (!validarMonto(valor)) {
-                    valor = "0";
-                    input.value = "0";
-                }
-
-                // Convertir a número real
-                let numero = parseFloat(valor.replace(",", "."));
-
-                // ----------------------------------
-                // Caso especial → **presupuesto**
-                // (se guarda como entero)
-                // ----------------------------------
-                if (inputId === "presupuesto-diario") {
-                    numero = Math.round(numero);
-                    input.value = numero.toString();
-
-                    const hidden = document.getElementById("hidden-presupuesto");
-                    const form = document.getElementById("form-presupuesto");
-
-                    if (hidden && form) {
-                        hidden.value = numero;
-                        form.submit();
-                    }
-
-                } else {
-                    // Otros inputs permiten decimales
-                    input.value = numero.toFixed(2);
-                }
-
-                // Volver a modo lectura
-                input.setAttribute("readonly", true);
-                input.classList.remove("editando");
-
-                // Limpieza → evitar múltiples listeners
-                input.removeEventListener("blur", blurHandler);
-            };
-
-            // Registrar handler de blur UNA sola vez
-            input.addEventListener("blur", blurHandler);
-        });
+    // ✏ Entrar en modo edición
+    editBtn.addEventListener("click", () => {
+        wrapper.classList.add("editing");
+        input.removeAttribute("readonly");
+        input.focus();
+        input.select();
     });
+
+    // Guardar con Enter / cancelar con Escape
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            guardarPresupuesto();
+        }
+
+        if (e.key === "Escape") {
+            cancelarEdicion();
+        }
+    });
+
+    // Guardar al salir del input
+    input.addEventListener("blur", guardarPresupuesto);
+
+    function guardarPresupuesto() {
+        const valor = input.value.trim();
+        if (!valor) {
+            cancelarEdicion();
+            return;
+        }
+
+        valorSpan.textContent = valor;
+        hiddenInput.value = valor;
+
+        salirEdicion();
+        form.submit();
+    }
+
+    function cancelarEdicion() {
+        input.value = valorSpan.textContent;
+        salirEdicion();
+    }
+
+    function salirEdicion() {
+        wrapper.classList.remove("editing");
+        input.setAttribute("readonly", true);
+    }
 
 });
 
+// ------------------------------------------------------
+// ANIMACIÓN ✔ AL FIJAR CAMPOS
+// ------------------------------------------------------
 function animarCampoFijado(idCampo) {
     const input = document.getElementById(idCampo);
     if (!input) return;
 
-    // 1) Agregar clase visual
     input.classList.add("input-fijado");
 
-    // 2) Crear un ✔ junto al input
     const check = document.createElement("span");
     check.textContent = "✔";
     check.classList.add("fijado-check");
@@ -85,15 +88,8 @@ function animarCampoFijado(idCampo) {
 
     input.parentElement.appendChild(check);
 
-    // 3) Eliminar el ✔ después de la animación
-    setTimeout(() => {
-        check.remove();
-    }, 900);
-
-    // 4) Remover animación para permitir otra si se vuelve a editar
-    setTimeout(() => {
-        input.classList.remove("input-fijado");
-    }, 1200);
+    setTimeout(() => check.remove(), 900);
+    setTimeout(() => input.classList.remove("input-fijado"), 1200);
 }
 
 // Detectar inputs fijados por el backend
@@ -118,19 +114,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const input = document.getElementById(inputId);
             if (!input) return;
 
-            // Si ya está desbloqueado, no hacer nada
             if (!input.hasAttribute("data-locked")) return;
 
-            // 🔓 Desbloquear
             input.removeAttribute("readonly");
             input.removeAttribute("data-locked");
             input.classList.remove("input-locked");
 
-            // Cambiar icono
             btn.textContent = "🔓";
             btn.title = "Campo desbloqueado";
 
-            // Foco inmediato
             input.focus();
             input.select();
         });

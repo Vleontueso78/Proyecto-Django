@@ -2,9 +2,10 @@
    CONTENEDOR GENERAL
 ============================== */
 #dashboard-container {
-    max-width: 900px;
-    margin: auto;
-    padding: 30px 20px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+    animation: fadeIn 0.4s ease;
 }
 
 /* ==============================
@@ -12,33 +13,52 @@
 ============================== */
 #titulo-finanzas {
     text-align: center;
-    margin-bottom: 25px;
-    font-size: 1.6rem;
+    margin-bottom: 1.8rem;
+    font-size: 1.8rem;
+    letter-spacing: 0.3px;
 }
 
 /* ==============================
-   FORMULARIO
+   BOTÓN VOLVER
 ============================== */
-.calendario-form {
-    max-width: 420px;
-    margin: auto;
+.volver-dashboard {
+    margin-bottom: 1.4rem;
+    text-align: center;
 }
 
-/* ==============================
-   TEXTOS DE APOYO
-============================== */
-.note {
-    font-size: 0.95rem;
-    opacity: 0.85;
-    margin-top: 8px;
+.volver-dashboard .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.85rem;
+    border-radius: 999px;
+    border: 1px solid #ddd;
+    color: #555;
+    background: #ffffff;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.15s ease;
+}
+
+.volver-dashboard .btn:hover {
+    background-color: #f3f4f6;
+    border-color: #ccc;
+    transform: translateX(-2px);
 }
 
 /* ==============================
    CARDS
 ============================== */
 .card {
-    padding: 22px;
+    background: #ffffff;
+    padding: 1.6rem 1.8rem;
     border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .card.center {
@@ -46,30 +66,63 @@
 }
 
 /* ==============================
+   TEXTOS DE APOYO
+============================== */
+.muted {
+    font-size: 0.95rem;
+    opacity: 0.85;
+}
+
+.note {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+/* ==============================
    ESTADO ACTUAL DEL CALENDARIO
 ============================== */
 .estado-calendario {
-    margin-top: 14px;
-    padding: 10px 14px;
+    margin-top: 1.2rem;
+    padding: 0.9rem 1.1rem;
     border-radius: 10px;
     font-size: 0.9rem;
     display: inline-block;
 }
 
 .estado-calendario.success {
-    background-color: rgba(34, 197, 94, 0.1);
-    color: #15803d;
+    background: rgba(46, 204, 113, 0.12);
+    color: #1e8449;
+    border: 1px solid rgba(46, 204, 113, 0.35);
 }
 
 .estado-calendario.warning {
-    background-color: rgba(245, 158, 11, 0.12);
-    color: #92400e;
+    background: rgba(241, 196, 15, 0.15);
+    color: #7d6608;
+    border: 1px solid rgba(241, 196, 15, 0.4);
 }
 
 /* ==============================
-   BOTÓN VOLVER
+   FORMULARIO
 ============================== */
-.volver-dashboard {
-    margin-bottom: 20px;
-    text-align: center;
+.calendario-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+/* ==============================
+   ANIMACIONES
+============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

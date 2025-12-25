@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 from ...models import RegistroFinanciero, ConfigFinanciera
 
 
@@ -58,3 +60,32 @@ def obtener_dias_pendientes(usuario):
         mensaje = "✔ No hay días pendientes. Todo está completo."
 
     return pendientes, mensaje
+
+
+@login_required
+def registros_pendientes(request):
+    """
+    Vista para /finanzas/registros/pendientes/
+    Muestra TODOS los días pendientes con el mismo diseño del dashboard.
+    """
+
+    # Obtener o crear configuración del usuario
+    config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
+    fecha_inicio = config.fecha_inicio_registros or date.today()
+
+    # Traer todos los registros pendientes (no completados)
+    pendientes = RegistroFinanciero.objects.filter(
+        user=request.user,
+        completado=False,
+        fecha__gte=fecha_inicio
+    ).order_by("fecha")
+
+    context = {
+        "pendientes": pendientes,
+    }
+
+    return render(
+        request,
+        "finanzas/registros/pendientes.html",
+        context
+    )

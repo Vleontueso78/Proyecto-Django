@@ -4,7 +4,9 @@
 .calendario-form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1.4rem;
+    max-width: 420px;
+    margin: 0 auto;
 }
 
 /* ==============================
@@ -13,26 +15,51 @@
 .form-label {
     font-weight: 600;
     font-size: 0.95rem;
-    margin-bottom: 4px;
+    color: #333;
+    margin-bottom: 0.2rem;
 }
 
 /* ==============================
-   INPUT FECHA
+   INPUT FECHA (MEJORADO)
 ============================== */
 .input-fecha {
-    padding: 12px 14px;
-    font-size: 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+
+    padding: 0.7rem 0.9rem;
+    font-size: 0.95rem;
     border-radius: 10px;
-    border: 1px solid #d0d0d0;
+    border: 1px solid #d1d5db;
     background-color: #fafafa;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    color: #111;
+    cursor: pointer;
+
+    /* espacio para icono */
+    padding-right: 2.5rem;
+
+    /* icono calendario */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3M3 11h18M5 5h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 18px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.input-fecha:hover {
+    background-color: #ffffff;
+    border-color: #c7c7c7;
 }
 
 .input-fecha:focus {
     outline: none;
-    border-color: var(--accent, #4f46e5);
-    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
-    background-color: #fff;
+    background-color: #ffffff;
+    border-color: var(--accent-color, #4f46e5);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
 /* ==============================
@@ -40,18 +67,59 @@
 ============================== */
 .form-actions {
     display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 18px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.6rem;
 }
 
 /* ==============================
-   BOTONES (AJUSTE VISUAL)
+   BOTONES
 ============================== */
 .form-actions .btn {
-    min-width: 160px;
-    padding: 10px 18px;
-    font-size: 0.95rem;
+    min-width: 150px;
+    padding: 0.55rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 
+        background-color 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.form-actions .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ==============================
+   BOTÓN PRINCIPAL
+============================== */
+.btn-accent {
+    background: linear-gradient(135deg, #4f46e5, #6366f1);
+    color: #ffffff;
+    border: none;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.btn-accent:hover {
+    filter: brightness(1.1);
+}
+
+/* ==============================
+   BOTÓN SECUNDARIO
+============================== */
+.btn-ghost {
+    background: transparent;
+    color: #555;
+    border: 1px solid #ddd;
+}
+
+.btn-ghost:hover {
+    background-color: #f5f5f5;
 }
 
 /* ==============================
@@ -59,6 +127,8 @@
 ============================== */
 .btn.disabled,
 .btn:disabled {
-    opacity: 0.5;
+    opacity: 0.55;
     cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
 }

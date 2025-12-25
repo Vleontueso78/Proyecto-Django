@@ -1,29 +1,40 @@
 from django.urls import path
 
-# DASHBOARD
+# ======================
+#     DASHBOARD
+# ======================
 from .views.dashboard_views import FinanzasDashboardView
 
-# CALENDARIO
-from .views.calendario_views import configurar_calendario
-# CALENDARIO (visual)
-from .views.calendario_views import calendario_ver
-from .views.calendario_views import detalle_dia
+# ======================
+#     CALENDARIO
+# ======================
+from .views.calendario_views import (
+    configurar_calendario,
+    calendario_ver,
+    detalle_dia,
+)
 
-# REGISTROS
+# ======================
+#     REGISTROS
+# ======================
 from .views.registros_views.lista_registros import RegistroListView
 from .views.registros_views.crear_registro import RegistroCreateView
 from .views.registros_views.editar_registro import editar_registro
 
-# PENDIENTES (flujo correcto)
-from .views.registros_views.completar_pendientes import (
-    completar_pendiente_por_fecha,
-    registros_pendientes,
-)
+# ======================
+#     PENDIENTES (CORRECTO)
+# ======================
+from .views.registros_views.dias_pendientes import registros_pendientes
+from .views.registros_views.completar_pendientes import completar_pendiente_por_fecha
 
-# DÍAS
+# ======================
+#     DÍAS
+# ======================
 from .dias.views import lista_dias
 
-# OBJETIVOS
+# ======================
+#     OBJETIVOS
+# ======================
 from .views.objetivos_views import ObjetivoListView, ObjetivoCreateView
 
 
@@ -49,9 +60,13 @@ urlpatterns = [
     path("registros/dias/", lista_dias, name="registros_dias"),
 
     # ======================
-    #     PENDIENTES
+    #     PENDIENTES ✅
     # ======================
-    path("registros/pendientes/", registros_pendientes, name="registros_pendientes"),
+    path(
+        "registros/pendientes/",
+        registros_pendientes,
+        name="registros_pendientes"
+    ),
     path(
         "registros/pendiente/<str:fecha_str>/",
         completar_pendiente_por_fecha,
@@ -68,9 +83,7 @@ urlpatterns = [
     #     CONFIGURACIÓN
     # ======================
     path("calendario/", configurar_calendario, name="configurar_calendario"),
-    
     path("calendario/ver/", calendario_ver, name="calendario_ver"),
-    
     path(
         "calendario/dia/<str:fecha_str>/",
         detalle_dia,

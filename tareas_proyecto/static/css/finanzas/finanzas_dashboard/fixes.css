@@ -1,3 +1,7 @@
+/* =========================================================
+   FIXES EXISTENTES – NO TOCAR (presupuesto dashboard)
+========================================================= */
+
 /* === FIX: Que el número del presupuesto NO se recorte === */
 .presupuesto-display {
     display: inline-flex;
@@ -19,4 +23,114 @@
     min-width: 100px;
     padding-right: 6px;
     text-align: left;
+}
+
+
+/* =========================================================
+   DETALLE DEL DÍA – MEJORAS VISUALES
+========================================================= */
+
+/* Animación general */
+.fade-in {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   INLINE EDITABLE FIELDS
+========================================================= */
+
+.editable-group {
+    gap: 16px;
+}
+
+.editable-field {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.editable-field:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+}
+
+/* Texto descriptivo */
+.editable-field .muted {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* Input numérico */
+.editable-number {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-align: right;
+    width: 120px;
+    color: #111827;
+}
+
+/* Estado edición */
+.editable-number.editing {
+    background: #ffffff;
+    border: 2px solid #3b82f6;
+    border-radius: 10px;
+    padding: 6px 10px;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+/* Botón editar */
+.edit-btn {
+    background: #e0e7ff;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: #c7d2fe;
+    transform: scale(1.1);
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn-accent {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-accent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.btn-ghost:hover {
+    background: rgba(0,0,0,0.05);
 }

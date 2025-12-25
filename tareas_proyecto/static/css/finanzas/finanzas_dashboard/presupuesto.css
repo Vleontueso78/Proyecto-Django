@@ -1,133 +1,230 @@
 /* ==============================
-   PRESUPUESTO DIARIO
+   PRESUPUESTO & INPUTS PREMIUM
 ============================== */
 
-#presupuesto-card {
-    text-align: center;
+/* =====================================================
+   SECCIONES (DÍA PENDIENTE / DETALLE DÍA)
+===================================================== */
+
+.dia-section {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
 }
 
-/* Texto superior */
-#presupuesto-card .muted {
-    margin-bottom: 10px;
-    font-size: 0.95rem;
-}
-
-/* Contenedor editable */
-#presupuesto-wrapper {
+.dia-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 14px;
-    margin-top: 10px;
+    gap: 8px;
 }
 
-/* Caja del monto */
-.presupuesto-display {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
+/* =====================================================
+   FORM GROUP (GENÉRICO)
+===================================================== */
+
+.form-group {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
-    background: #f8f9fa;
-    padding: 10px 18px;
-    border-radius: 14px;
-    box-shadow: inset 0 0 0 1px #dee2e6;
 }
 
-/* Signo $ */
-#presupuesto-signo {
-    font-size: 1.4rem;
-    font-weight: 600;
+.form-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
     color: #6c757d;
 }
 
-/* ==============================
-   NÚMERO (LECTURA)
-============================== */
-
-.presupuesto-valor {
-    font-size: 2.2rem;
-    font-weight: 700;
-    line-height: 1;
-    color: #212529;
-    transition: opacity 0.15s ease, transform 0.15s ease;
+.form-group input[type="number"] {
+    height: 46px;
+    padding: 0 14px;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 1px solid #dee2e6;
+    background: #f9fafb;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
-/* ==============================
-   INPUT (EDICIÓN)
-============================== */
+.form-group input[type="number"]:hover {
+    background: #ffffff;
+    border-color: #ced4da;
+}
 
-.editable-number {
-    display: none;
+.form-group input[type="number"]:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: #5c7cfa;
+    box-shadow: 0 0 0 3px rgba(92, 124, 250, 0.15);
+}
 
-    /* 🔑 ANCHO INTELIGENTE */
-    min-width: 6ch;                  /* ancho base estable */
-    width: fit-content;              /* se adapta al contenido */
-    max-width: 12ch;                 /* límite visual razonable */
+/* =====================================================
+   INPUT DESTACADO (DÍA PENDIENTE)
+===================================================== */
 
-    font-size: 2.2rem;
-    font-weight: 700;
+.form-group.destacado input[type="number"] {
+    height: 56px;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+    border-radius: 16px;
+    background: linear-gradient(180deg, #f8f9ff, #ffffff);
+    border: 1px solid #dbe4ff;
+}
+
+.form-group.destacado input[type="number"]:focus {
+    border-color: #4263eb;
+    box-shadow: 0 0 0 4px rgba(66, 99, 235, 0.18);
+}
+
+/* =====================================================
+   GRID DE GASTOS
+===================================================== */
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+}
+
+/* =====================================================
+   PRESUPUESTO DASHBOARD (VERSIÓN DEFINITIVA)
+===================================================== */
+
+#presupuesto-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Caja visual */
+.presupuesto-display {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 14px 24px;
+    min-height: 64px;
+    min-width: 280px;
+
+    background: linear-gradient(180deg, #f8f9ff, #ffffff);
+    border: 1px solid #dbe4ff;
+    border-radius: 18px;
+
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #212529;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Signo $ — SIEMPRE FUERA */
+#presupuesto-signo {
+    font-size: 1.4rem;
+    opacity: 0.7;
+    user-select: none;
+}
+
+/* =====================================================
+   VALOR / INPUT (MISMO LUGAR, NUNCA SE MUEVE)
+===================================================== */
+
+.presupuesto-valor,
+#presupuesto-diario {
+    font-size: inherit;
+    font-weight: inherit;
     line-height: 1;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Texto visible */
+.presupuesto-valor {
+    display: inline-block;
+    min-width: 3ch;
+}
+
+/* Input editable */
+#presupuesto-diario {
+    display: inline-block;
+    width: calc(var(--digits, 4) * 1ch);
+    min-width: 3ch;
+    max-width: 10ch;
+
     border: none;
     background: transparent;
-    text-align: center;
     color: #212529;
-
-    padding: 0;
-    margin: 0;
-
     outline: none;
-
-    opacity: 0;
-    transform: scale(0.96);
-    transition:
-        opacity 0.15s ease,
-        transform 0.15s ease,
-        width 0.15s ease;
+    padding: 0;
 }
 
-/* ==============================
+/* Ocultar input cuando no se edita */
+#presupuesto-diario[hidden] {
+    display: none;
+}
+
+/* =====================================================
    MODO EDICIÓN
-============================== */
+===================================================== */
 
-.presupuesto-display.editing .presupuesto-valor {
-    opacity: 0;
-    transform: scale(0.96);
-    pointer-events: none;
-}
-
-.presupuesto-display.editing .editable-number {
-    display: inline-block;
-    opacity: 1;
-    transform: scale(1);
+.presupuesto-display.editing {
+    background: #eef4ff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.18);
 }
 
 .presupuesto-display.editing #presupuesto-signo {
-    opacity: 0.6;
+    opacity: 1;
 }
 
-/* ==============================
-   BOTÓN EDITAR ✏
-============================== */
+/* =====================================================
+   LIMPIEZA INPUT NUMBER
+===================================================== */
 
-.edit-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: none;
-    background: #e9ecef;
-    cursor: pointer;
-    font-size: 1.1rem;
+#presupuesto-diario::-webkit-outer-spin-button,
+#presupuesto-diario::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#presupuesto-diario[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* =====================================================
+   BOTONES / ACCIONES
+===================================================== */
+
+.acciones-dia {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
     justify-content: center;
-    transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.edit-btn:hover {
-    background: #dee2e6;
-    transform: scale(1.05);
+.edit-btn.active {
+    background: #22c55e;
+    color: #ffffff;
 }
 
-.edit-btn:active {
-    transform: scale(0.95);
+/* =====================================================
+   ESTADOS OPCIONALES
+===================================================== */
+
+.form-group input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f1f3f5;
 }

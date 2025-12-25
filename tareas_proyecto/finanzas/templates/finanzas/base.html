@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+
     <title>{% block title %}Finanzas{% endblock %}</title>
 
     <!-- TailwindCSS CDN -->
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/paleta.css' %}">
     <link rel="stylesheet" href="{% static 'css/finanzas/general.css' %}">
 
-    <!-- CSS específico -->
+    <!-- CSS específico por vista -->
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -72,14 +72,15 @@
             </div>
         {% endif %}
 
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
     <!-- Scripts globales -->
     <script src="{% static 'js/utils/animaciones.js' %}"></script>
 
-    <!-- JS específico -->
-    {% block extra_js %}{% endblock %}
+    <!-- JS específico por vista -->
+    {% block extra_js %}
+    <script src="{% static 'js/finanzas/detalle_dia.js' %}"></script>
+    {% endblock %}
 </body>
 </html>

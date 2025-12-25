@@ -39,13 +39,17 @@
 
           <div class="presupuesto-display">
               <span id="presupuesto-signo">$</span>
+              <span class="presupuesto-valor">
+                  {{ presupuesto_diario }}
+              </span>
 
               <input 
                 id="presupuesto-diario" 
                 type="number" 
-                class="editable-number" 
+                class="editable-number"
                 value="{{ presupuesto_diario }}"
-                readonly>
+                readonly
+                hidden>
           </div>
 
           <button 
@@ -64,72 +68,86 @@
   </div>
 
   <!-- ==============================
-     CARD: PENDIENTES (ACTUALIZADO)
+     CARD: PENDIENTES
   ============================== -->
-<div id="card-pendientes" class="card card-anim card-delay-2">
+  <div id="card-pendientes" class="card card-anim card-delay-2">
 
-  <div class="pendientes-header">
-    <div>
-      <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
-      <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
-    </div>
-
-    <div class="pendientes-acciones">
-      {% if dias_pendientes %}
-        <span class="tag">{{ dias_pendientes|length }} pendientes</span>
-        <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
-          Ver lista completa
-        </a>
-      {% else %}
-        <span class="note">No hay pendientes — estás al día ✅</span>
-      {% endif %}
-    </div>
-  </div>
-
-  {% if dias_pendientes %}
-  <div class="pending-list">
-    {% for reg in dias_pendientes|slice:":5" %}
-    <div class="pending-item">
+    <div class="pendientes-header">
       <div>
-        <div class="pending-fecha">{{ reg.fecha|date:"d/m/Y" }}</div>
-        <div class="note">Pendiente</div>
+        <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
+        <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
       </div>
 
-      <div>
-        <a class="btn btn-primary btn-small"
-           href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
-          Completar
-        </a>
+      <div class="pendientes-acciones">
+        {% if dias_pendientes %}
+          <span class="tag">{{ dias_pendientes|length }} pendientes</span>
+          <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
+            Ver lista completa
+          </a>
+        {% else %}
+          <span class="note">No hay pendientes — estás al día ✅</span>
+        {% endif %}
       </div>
     </div>
-    {% endfor %}
-  </div>
 
-  <div class="center" style="margin-top: 10px;">
-    <a class="btn btn-ghost" href="{% url 'finanzas:registros_dias' %}">
-      Mostrar todos los días →
-    </a>
-  </div>
-  {% endif %}
+    {% if dias_pendientes %}
+    <div class="pending-list">
+      {% for reg in dias_pendientes|slice:":5" %}
+      <div class="pending-item">
+        <div>
+          <div class="pending-fecha">{{ reg.fecha|date:"d/m/Y" }}</div>
+          <div class="note">Pendiente</div>
+        </div>
 
-</div>
+        <div>
+          <a class="btn btn-primary btn-small"
+             href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
+            Completar
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="center" style="margin-top: 10px;">
+      <a class="btn btn-ghost" href="{% url 'finanzas:registros_dias' %}">
+        Mostrar todos los días →
+      </a>
+    </div>
+    {% endif %}
+  </div>
 
   <!-- ==============================
-       RESUMEN TOTAL
+       RESUMEN TOTAL (MISMO PATRÓN QUE PRESUPUESTO)
   ============================== -->
-  <div class="card center card-anim card-delay-4">
-    <h4>Resumen total</h4>
+  <div class="card card-anim card-delay-4">
+
+    <span class="muted center">Resumen total</span>
 
     <div class="resumen-grid">
-      <div>
-        <div class="muted">💸 Total gastado</div>
-        <div class="resumen-valor">${{ total_gastado }}</div>
+
+      <div class="resumen-bloque">
+        <span class="muted">💸 Total gastado</span>
+
+        <div class="presupuesto-display">
+          <span class="presupuesto-signo">$</span>
+          <span class="presupuesto-valor">
+            {{ total_gastado }}
+          </span>
+        </div>
       </div>
 
-      <div>
-        <div class="muted">💵 Total sobrante</div>
-        <div class="resumen-valor">${{ total_sobrante }}</div>
+      <div class="resumen-bloque">
+        <span class="muted">💵 Total sobrante</span>
+
+        <div class="presupuesto-display">
+          <span class="presupuesto-signo">$</span>
+          <span class="presupuesto-valor">
+            {{ total_sobrante }}
+          </span>
+        </div>
       </div>
+
     </div>
   </div>
 

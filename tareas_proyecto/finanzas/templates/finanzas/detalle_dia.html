@@ -1,41 +1,201 @@
 {% extends "finanzas/base.html" %}
 {% load static %}
-
 {% block title %}Detalle del día{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/global.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/botones.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/presupuesto.css' %}">
+<link rel="stylesheet" href="{% static 'css/finanzas/finanzas_dashboard/fixes.css' %}">
+{% endblock %}
+
 {% block content %}
-<div id="dashboard-container">
+<div id="dashboard-container" class="fade-in">
 
     <h2 id="titulo-finanzas">
         📆 {{ fecha|date:"d/m/Y" }}
     </h2>
 
-    <div class="card">
+    <div class="card card-anim">
 
-        <p><strong>Presupuesto:</strong> ${{ registro.para_gastar_dia }}</p>
-        <p><strong>Alimento:</strong> ${{ registro.alimento }}</p>
-        <p><strong>Productos:</strong> ${{ registro.productos }}</p>
-        <p><strong>Ahorro / Deuda:</strong> ${{ registro.ahorro_y_deuda }}</p>
+        {% if not registro.completado %}
 
-        <hr>
+            <!-- ESTADO DEL DÍA -->
+            <div class="alert alert-warning center mb-6">
+                ⚠ Este día está pendiente. Completá los datos para poder cerrarlo.
+            </div>
 
-        <p><strong>Gasto total:</strong> ${{ registro.gasto_total }}</p>
-        <p><strong>Balance diario:</strong> ${{ registro.balance_diario }}</p>
-        <p><strong>Sobrante efectivo:</strong> ${{ registro.sobrante_efectivo }}</p>
+            <form method="post" class="dia-pendiente-form">
+                {% csrf_token %}
 
-        <div class="form-actions">
-            <a href="{% url 'finanzas:editar_registro' registro.id %}"
-               class="btn btn-accent">
-                ✏️ Editar día
-            </a>
+                <!-- =========================
+                     SECCIÓN: PRESUPUESTO
+                ========================== -->
+                <section class="dia-section">
+                    <h3 class="dia-section-title">
+                        💰 Presupuesto del día
+                    </h3>
 
-            <a href="{% url 'finanzas:calendario_ver' %}"
-               class="btn btn-ghost">
-                ⬅ Volver al calendario
-            </a>
-        </div>
+                    <div class="center" style="margin-top: 10px;">
+
+                        <div id="presupuesto-wrapper" class="editable-field">
+
+                            <div class="presupuesto-display">
+                                <span id="presupuesto-signo">$</span>
+
+                                <input
+                                    type="number"
+                                    name="para_gastar_dia"
+                                    class="editable-number"
+                                    step="0.01"
+                                    value="{{ registro.para_gastar_dia }}"
+                                >
+                            </div>
+
+                            <button type="button" class="edit-btn">
+                                ✏
+                            </button>
+
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- =========================
+                     SECCIÓN: GASTOS
+                ========================== -->
+                <section class="dia-section">
+                    <h3 class="dia-section-title">
+                        🧾 Distribución de gastos
+                    </h3>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>🍽 Alimento</label>
+                            <input type="number"
+                                   name="alimento"
+                                   step="0.01"
+                                   value="{{ registro.alimento }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>🛒 Productos</label>
+                            <input type="number"
+                                   name="productos"
+                                   step="0.01"
+                                   value="{{ registro.productos }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>🏦 Ahorro / Deuda</label>
+                            <input type="number"
+                                   name="ahorro_y_deuda"
+                                   step="0.01"
+                                   value="{{ registro.ahorro_y_deuda }}">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- =========================
+                     ACCIONES
+                ========================== -->
+                <div class="center acciones-dia" style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-accent">
+                        💾 Guardar día
+                    </button>
+
+                    <a href="{% url 'finanzas:calendario_ver' %}" class="btn btn-ghost">
+                        ⬅ Volver al calendario
+                    </a>
+                </div>
+            </form>
+
+        {% else %}
+
+            <!-- =========================
+                 DÍA COMPLETADO
+            ========================== -->
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="resumen-grid editable-group" style="margin-bottom: 20px;">
+
+                    <div class="editable-field">
+                        <div class="muted">💰 Presupuesto</div>
+                        <input type="number" name="para_gastar_dia"
+                               class="editable-number"
+                               step="0.01"
+                               value="{{ registro.para_gastar_dia }}"
+                               readonly>
+                        <button type="button" class="edit-btn">✏</button>
+                    </div>
+
+                    <div class="editable-field">
+                        <div class="muted">🍽 Alimento</div>
+                        <input type="number" name="alimento"
+                               class="editable-number"
+                               step="0.01"
+                               value="{{ registro.alimento }}"
+                               readonly>
+                        <button type="button" class="edit-btn">✏</button>
+                    </div>
+
+                    <div class="editable-field">
+                        <div class="muted">🛒 Productos</div>
+                        <input type="number" name="productos"
+                               class="editable-number"
+                               step="0.01"
+                               value="{{ registro.productos }}"
+                               readonly>
+                        <button type="button" class="edit-btn">✏</button>
+                    </div>
+
+                    <div class="editable-field">
+                        <div class="muted">🏦 Ahorro / Deuda</div>
+                        <input type="number" name="ahorro_y_deuda"
+                               class="editable-number"
+                               step="0.01"
+                               value="{{ registro.ahorro_y_deuda }}"
+                               readonly>
+                        <button type="button" class="edit-btn">✏</button>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="resumen-grid" style="margin-top: 20px;">
+                    <div>
+                        <div class="muted">💸 Gasto total</div>
+                        <div class="resumen-valor">${{ registro.gasto_total }}</div>
+                    </div>
+
+                    <div>
+                        <div class="muted">📊 Balance diario</div>
+                        <div class="resumen-valor">${{ registro.balance_diario }}</div>
+                    </div>
+
+                    <div>
+                        <div class="muted">💵 Sobrante efectivo</div>
+                        <div class="resumen-valor">${{ registro.sobrante_efectivo }}</div>
+                    </div>
+                </div>
+
+                <div class="center" style="margin-top: 30px;">
+                    <button type="submit" class="btn btn-accent">
+                        💾 Guardar cambios
+                    </button>
+
+                    <a href="{% url 'finanzas:calendario_ver' %}" class="btn btn-ghost">
+                        ⬅ Volver al calendario
+                    </a>
+                </div>
+
+            </form>
+
+        {% endif %}
 
     </div>
-
 </div>
 {% endblock %}

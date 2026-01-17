@@ -1,7 +1,8 @@
 # finanzas/utils/reparador_global.py
 
+from django.contrib.auth.models import User
 from finanzas.utils.reparador import reparar_registros_financieros
-from finanzas.models import User
+
 
 def reparar_todos_los_usuarios():
     print("\n========================================")
@@ -24,15 +25,14 @@ def reparar_todos_los_usuarios():
 
         resultados = reparar_registros_financieros(user=user)
 
-        # Acumular estadística por usuario
         resumen_global["usuarios_procesados"] += 1
         resumen_global["total_registros"] += resultados.get("total_registros", 0)
-        resumen_global["fechas_fuera_de_rango"] += resultados["fechas_fuera_de_rango"]
-        resumen_global["duplicados_eliminados"] += resultados["duplicados_eliminados"]
-        resumen_global["sobrantes_recalculados"] += resultados["sobrantes_recalculados"]
-        resumen_global["decimales_corregidos"] += resultados["decimales_corregidos"]
-        resumen_global["valores_negativos_corregidos"] += resultados["valores_negativos_corregidos"]
-        resumen_global["registros_actualizados"] += resultados["registros_actualizados"]
+        resumen_global["fechas_fuera_de_rango"] += resultados.get("fechas_fuera_de_rango", 0)
+        resumen_global["duplicados_eliminados"] += resultados.get("duplicados_eliminados", 0)
+        resumen_global["sobrantes_recalculados"] += resultados.get("sobrantes_recalculados", 0)
+        resumen_global["decimales_corregidos"] += resultados.get("decimales_corregidos", 0)
+        resumen_global["valores_negativos_corregidos"] += resultados.get("valores_negativos_corregidos", 0)
+        resumen_global["registros_actualizados"] += resultados.get("registros_actualizados", 0)
 
     print("\n========================================")
     print(" Reparación Global Finalizada ")

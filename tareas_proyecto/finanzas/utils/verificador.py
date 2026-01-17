@@ -1,8 +1,8 @@
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from django.contrib.auth import get_user_model
-from datetime import date
 
-from ..models import RegistroFinanciero
+from ..models import RegistroFinanciero, normalizar_decimal
+from ..calculo_sobrante.calculadora import calcular_sobrante
 
 User = get_user_model()
 
@@ -17,7 +17,11 @@ def verificar_registros_financieros():
     usuarios = User.objects.all()
 
     for user in usuarios:
-        registros = RegistroFinanciero.objects.filter(user=user).order_by("fecha")
+        registros = (
+            RegistroFinanciero.objects
+            .filter(user=user)
+            .order_by("fecha")
+        )
 
         # -------------------------------------------------------
         # 1) Fechas duplicadas por usuario
@@ -25,63 +29,92 @@ def verificar_registros_financieros():
         fechas_vistas = set()
         for r in registros:
             if r.fecha in fechas_vistas:
-                errores.append(f"[{user.username}] Duplicado en fecha {r.fecha}")
+                errores.append(
+                    f"[{user.username}] Duplicado en fecha {r.fecha}"
+                )
             fechas_vistas.add(r.fecha)
 
         for r in registros:
             # -------------------------------------------------------
-            # 2) Validación de tipo numérico seguro
+            # 2) Normalización segura de campos monetarios
             # -------------------------------------------------------
-            for campo in ["para_gastar_dia", "alimento", "productos", "ahorro_y_deuda", "sobrante_monetario"]:
-                valor = getattr(r, campo)
+            campos = [
+                "para_gastar_dia",
+                "alimento",
+                "productos",
+                "ahorro_y_deuda",
+                "sobrante_monetario",
+            ]
+
+            valores = {}
+            for campo in campos:
                 try:
-                    Decimal(valor)
-                except (InvalidOperation, TypeError):
-                    errores.append(f"[{user.username}] {campo} contiene dato inválido → {valor}")
+                    valores[campo] = normalizar_decimal(getattr(r, campo))
+                except Exception:
+                    errores.append(
+                        f"[{user.username}] {campo} contiene dato inválido → {getattr(r, campo)}"
+                    )
+                    valores[campo] = Decimal("0")
 
             # -------------------------------------------------------
             # 3) Valores negativos imposibles
             # -------------------------------------------------------
-            if r.para_gastar_dia < 0:
-                errores.append(f"[{user.username}] para_gastar_dia negativo en {r.fecha}")
+            if valores["para_gastar_dia"] < 0:
+                errores.append(
+                    f"[{user.username}] para_gastar_dia negativo en {r.fecha}"
+                )
 
-            if r.alimento < 0 or r.productos < 0 or r.ahorro_y_deuda < 0:
-                errores.append(f"[{user.username}] gasto negativo en {r.fecha}")
+            if (
+                valores["alimento"] < 0
+                or valores["productos"] < 0
+                or valores["ahorro_y_deuda"] < 0
+            ):
+                errores.append(
+                    f"[{user.username}] gasto negativo en {r.fecha}"
+                )
 
             # -------------------------------------------------------
             # 4) Gastos mayores al dinero disponible
             # -------------------------------------------------------
-            if (r.alimento + r.productos + r.ahorro_y_deuda) > r.para_gastar_dia:
+            total_gastos = (
+                valores["alimento"]
+                + valores["productos"]
+                + valores["ahorro_y_deuda"]
+            )
+
+            if total_gastos > valores["para_gastar_dia"]:
                 errores.append(
                     f"[{user.username}] Gastos superan presupuesto en {r.fecha} → "
-                    f"Gastado {r.alimento + r.productos + r.ahorro_y_deuda} / {r.para_gastar_dia}"
+                    f"Gastado {total_gastos} / {valores['para_gastar_dia']}"
                 )
 
             # -------------------------------------------------------
             # 5) Sobrante incoherente si no está fijo
             # -------------------------------------------------------
             if not r.sobrante_fijo:
-                esperado = (
-                    r.para_gastar_dia
-                    - r.alimento
-                    - r.productos
-                    - r.ahorro_y_deuda
+                esperado = normalizar_decimal(
+                    calcular_sobrante(
+                        valores["para_gastar_dia"],
+                        valores["alimento"],
+                        valores["ahorro_y_deuda"],
+                        valores["productos"],
+                    )
                 )
 
-                if r.sobrante_monetario != esperado:
+                if valores["sobrante_monetario"] != esperado:
                     errores.append(
                         f"[{user.username}] sobrante_monetario incorrecto en {r.fecha} → "
-                        f"{r.sobrante_monetario} debería ser {esperado}"
+                        f"{valores['sobrante_monetario']} debería ser {esperado}"
                     )
 
             # -------------------------------------------------------
             # 6) Flags fijos inconsistentes
             # -------------------------------------------------------
             flags = [
-                ("alimento_fijo", r.alimento),
-                ("productos_fijo", r.productos),
-                ("ahorro_y_deuda_fijo", r.ahorro_y_deuda),
-                ("sobrante_fijo", r.sobrante_monetario),
+                ("alimento_fijo", valores["alimento"]),
+                ("productos_fijo", valores["productos"]),
+                ("ahorro_y_deuda_fijo", valores["ahorro_y_deuda"]),
+                ("sobrante_fijo", valores["sobrante_monetario"]),
             ]
 
             for flag, valor in flags:

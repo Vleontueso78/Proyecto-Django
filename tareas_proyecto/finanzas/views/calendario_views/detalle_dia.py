@@ -1,77 +1,132 @@
-from datetime import datetime
-from decimal import Decimal
+from datetime import datetime, date
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
+from django.contrib import messages
 
-from ...models import RegistroFinanciero, ConfigFinanciera
+from ...models import (
+    RegistroFinanciero,
+    ConfigFinanciera,
+    normalizar_decimal,
+)
 
 
 @login_required
 def detalle_dia(request, fecha_str):
-    # --------------------------------
-    # Convertir string a date
-    # --------------------------------
-    fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    """
+    Vista de detalle y carga del registro financiero de un día específico.
+    """
 
-    # --------------------------------
-    # Presupuesto diario global (dashboard)
-    # --------------------------------
+    # --------------------------------------------------------
+    # 1️⃣ Validar fecha
+    # --------------------------------------------------------
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        raise Http404("Fecha inválida")
+
+    hoy = date.today()
+
+    # --------------------------------------------------------
+    # 2️⃣ Configuración financiera
+    # --------------------------------------------------------
     config, _ = ConfigFinanciera.objects.get_or_create(
         user=request.user
     )
-    presupuesto_diario = config.presupuesto_diario or Decimal("0")
 
-    # --------------------------------
-    # Buscar registro del día
-    # --------------------------------
+    # --------------------------------------------------------
+    # 3️⃣ Validaciones de rango
+    # --------------------------------------------------------
+    if fecha > hoy:
+        raise Http404("No se puede acceder a fechas futuras")
+
+    if config.fecha_inicio_registros and fecha < config.fecha_inicio_registros:
+        raise Http404("Fecha fuera del rango configurado")
+
+    # --------------------------------------------------------
+    # 4️⃣ Obtener o crear registro (IDEMPOTENTE)
+    # --------------------------------------------------------
     registro = RegistroFinanciero.objects.filter(
         user=request.user,
         fecha=fecha
     ).first()
 
-    # ==========================
-    # DÍA PENDIENTE (NO EXISTE)
-    # ==========================
     if not registro:
+        registro = RegistroFinanciero.objects.create(
+            user=request.user,
+            fecha=fecha,
+            para_gastar_dia=normalizar_decimal(
+                config.presupuesto_diario
+            ),
 
-        if request.method == "POST":
-            RegistroFinanciero.objects.create(
-                user=request.user,
-                fecha=fecha,
-                para_gastar_dia=request.POST.get("para_gastar_dia") or presupuesto_diario,
-                alimento=request.POST.get("alimento") or 0,
-                productos=request.POST.get("productos") or 0,
-                ahorro_y_deuda=request.POST.get("ahorro_y_deuda") or 0,
-                completado=True,
+            alimento=normalizar_decimal(
+                config.default_alimento
+                if config.default_alimento_fijo else 0
+            ),
+            productos=normalizar_decimal(
+                config.default_productos
+                if config.default_productos_fijo else 0
+            ),
+            ahorro_y_deuda=normalizar_decimal(
+                config.default_ahorro_y_deuda
+                if config.default_ahorro_y_deuda_fijo else 0
+            ),
+
+            alimento_fijo=config.default_alimento_fijo,
+            productos_fijo=config.default_productos_fijo,
+            ahorro_y_deuda_fijo=config.default_ahorro_y_deuda_fijo,
+
+            completado=False,
+        )
+
+    # --------------------------------------------------------
+    # 5️⃣ POST → Guardar / completar día
+    # --------------------------------------------------------
+    if request.method == "POST":
+
+        if not registro.alimento_fijo:
+            registro.alimento = normalizar_decimal(
+                request.POST.get("alimento")
             )
 
-            return redirect(
-                "finanzas:detalle_dia",
-                fecha_str=fecha_str
+        if not registro.productos_fijo:
+            registro.productos = normalizar_decimal(
+                request.POST.get("productos")
             )
 
-        # Registro "virtual" para mostrar valores por defecto
-        registro_virtual = {
-            "para_gastar_dia": presupuesto_diario,
-            "alimento": Decimal("0"),
-            "productos": Decimal("0"),
-            "ahorro_y_deuda": Decimal("0"),
-        }
+        if not registro.ahorro_y_deuda_fijo:
+            registro.ahorro_y_deuda = normalizar_decimal(
+                request.POST.get("ahorro_y_deuda")
+            )
 
-        return render(request, "finanzas/detalle_dia.html", {
+        registro.para_gastar_dia = normalizar_decimal(
+            request.POST.get("para_gastar_dia"),
+            default=registro.para_gastar_dia
+        )
+
+        registro.completado = True
+        registro.save()
+
+        messages.success(
+            request,
+            f"Registro del {fecha.strftime('%d/%m/%Y')} guardado correctamente."
+        )
+
+        return redirect(
+            "finanzas:detalle_dia",
+            fecha_str=fecha.strftime("%Y-%m-%d")
+        )
+
+    # --------------------------------------------------------
+    # 6️⃣ Render
+    # --------------------------------------------------------
+    return render(
+        request,
+        "finanzas/detalle_dia.html",
+        {
             "fecha": fecha,
-            "registro": registro_virtual,
-            "presupuesto_diario": presupuesto_diario,
-            "es_pendiente": True,
-        })
-
-    # ==========================
-    # DÍA EXISTENTE
-    # ==========================
-    return render(request, "finanzas/detalle_dia.html", {
-        "fecha": fecha,
-        "registro": registro,
-        "presupuesto_diario": presupuesto_diario,
-        "es_pendiente": False,
-    })
+            "registro": registro,
+            "dia_completado": registro.completado,
+        }
+    )

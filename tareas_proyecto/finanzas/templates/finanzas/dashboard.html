@@ -24,7 +24,7 @@
   ============================== -->
   <div class="center" style="margin-bottom: 20px;">
     <a href="{% url 'finanzas:configurar_calendario' %}" class="btn btn-accent">
-      📅 Calendario
+      📅 Configurar calendario
     </a>
   </div>
 
@@ -33,121 +33,135 @@
   ============================== -->
   <div class="card card-anim card-delay-1" id="presupuesto-card">
 
-      <span class="muted center">Tu presupuesto diario actual es:</span>
+    <span class="muted center">Tu presupuesto diario actual es:</span>
 
-      <div id="presupuesto-wrapper" class="editable-field">
+    <div id="presupuesto-wrapper" class="editable-field">
 
-          <div class="presupuesto-display">
-              <span id="presupuesto-signo">$</span>
-              <span class="presupuesto-valor">
-                  {{ presupuesto_diario }}
-              </span>
+      <div class="presupuesto-display">
+        <span id="presupuesto-signo">$</span>
 
-              <input 
-                id="presupuesto-diario" 
-                type="number" 
-                class="editable-number"
-                value="{{ presupuesto_diario }}"
-                readonly
-                hidden>
-          </div>
+        <!-- Vista normal -->
+        <span class="presupuesto-valor">
+          {{ presupuesto_diario }}
+        </span>
 
-          <button 
-            id="btn-editar-presupuesto" 
-            class="edit-btn"
-            data-target="presupuesto-diario">
-            ✏
-          </button>
-
+        <!-- Input editable -->
+        <input
+          id="presupuesto-diario"
+          type="number"
+          class="editable-number"
+          value="{{ presupuesto_diario }}"
+          readonly
+          hidden
+        >
       </div>
 
-      <form id="form-presupuesto" method="POST" action="{% url 'finanzas:dashboard' %}">
-          {% csrf_token %}
-          <input type="hidden" id="hidden-presupuesto" name="presupuesto_diario">
-      </form>
+      <button
+        id="btn-editar-presupuesto"
+        class="edit-btn"
+        type="button">
+        ✏
+      </button>
+
+    </div>
+
+    <form
+      id="form-presupuesto"
+      method="POST"
+      action="{% url 'finanzas:dashboard' %}">
+      {% csrf_token %}
+      <input
+        type="hidden"
+        id="hidden-presupuesto"
+        name="presupuesto_diario">
+    </form>
+
   </div>
 
   <!-- ==============================
-     CARD: PENDIENTES
+       CARD: DÍAS PENDIENTES
   ============================== -->
   <div id="card-pendientes" class="card card-anim card-delay-2">
 
     <div class="pendientes-header">
       <div>
         <h3 class="pendientes-titulo">🕒 Días pendientes</h3>
-        <p class="muted">Días sin registrar desde tu fecha de inicio.</p>
+        <p class="muted">
+          Días sin registro desde tu fecha de inicio.
+        </p>
       </div>
 
       <div class="pendientes-acciones">
         {% if dias_pendientes %}
-          <span class="tag">{{ dias_pendientes|length }} pendientes</span>
-          <a class="btn btn-accent btn-small" href="{% url 'finanzas:registros_pendientes' %}">
+          <span class="tag">
+            {{ dias_pendientes|length }} pendientes
+          </span>
+          <a
+            class="btn btn-accent btn-small"
+            href="{% url 'finanzas:registros_pendientes' %}">
             Ver lista completa
           </a>
         {% else %}
-          <span class="note">No hay pendientes — estás al día ✅</span>
+          <span class="note">
+            No hay pendientes — estás al día ✅
+          </span>
         {% endif %}
       </div>
     </div>
 
     {% if dias_pendientes %}
-    <div class="pending-list">
-      {% for reg in dias_pendientes|slice:":5" %}
-      <div class="pending-item">
-        <div>
-          <div class="pending-fecha">{{ reg.fecha|date:"d/m/Y" }}</div>
-          <div class="note">Pendiente</div>
-        </div>
+      <div class="pending-list">
+        {% for fecha in dias_pendientes|slice:":5" %}
+          <div class="pending-item">
+            <div>
+              <div class="pending-fecha">
+                {{ fecha|date:"d/m/Y" }}
+              </div>
+              <div class="note">Pendiente</div>
+            </div>
 
-        <div>
-          <a class="btn btn-primary btn-small"
-             href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
-            Completar
-          </a>
-        </div>
+            <div>
+              <a
+                class="btn btn-primary btn-small"
+                href="{% url 'finanzas:completar_pendiente_por_fecha' fecha|date:'Y-m-d' %}">
+                Completar
+              </a>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
 
-    <div class="center" style="margin-top: 10px;">
-      <a class="btn btn-ghost" href="{% url 'finanzas:registros_dias' %}">
-        Mostrar todos los días →
-      </a>
-    </div>
+      <div class="center" style="margin-top: 10px;">
+        <a
+          class="btn btn-ghost"
+          href="{% url 'finanzas:registros_pendientes' %}">
+          Ver todos los pendientes →
+        </a>
+      </div>
     {% endif %}
+
   </div>
 
   <!-- ==============================
-       RESUMEN TOTAL (MISMO PATRÓN QUE PRESUPUESTO)
+       RESUMEN TOTAL
   ============================== -->
-  <div class="card card-anim card-delay-4">
-
-    <span class="muted center">Resumen total</span>
+  <div class="card center card-anim card-delay-4">
+    <h4>Resumen total</h4>
 
     <div class="resumen-grid">
-
-      <div class="resumen-bloque">
-        <span class="muted">💸 Total gastado</span>
-
-        <div class="presupuesto-display">
-          <span class="presupuesto-signo">$</span>
-          <span class="presupuesto-valor">
-            {{ total_gastado }}
-          </span>
+      <div>
+        <div class="muted">💸 Total gastado</div>
+        <div class="resumen-valor">
+          ${{ total_gastado }}
         </div>
       </div>
 
-      <div class="resumen-bloque">
-        <span class="muted">💵 Total sobrante</span>
-
-        <div class="presupuesto-display">
-          <span class="presupuesto-signo">$</span>
-          <span class="presupuesto-valor">
-            {{ total_sobrante }}
-          </span>
+      <div>
+        <div class="muted">💵 Total sobrante</div>
+        <div class="resumen-valor">
+          ${{ total_sobrante }}
         </div>
       </div>
-
     </div>
   </div>
 

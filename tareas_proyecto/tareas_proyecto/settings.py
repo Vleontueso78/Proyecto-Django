@@ -5,6 +5,7 @@ Django settings for tareas_proyecto project.
 from pathlib import Path
 import os
 from decouple import config, Csv  # 👈 para leer variables del .env
+from decimal import getcontext, InvalidOperation, DivisionByZero, Overflow
 
 # ==============================
 #   BASE DIR
@@ -16,7 +17,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ==============================
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='127.0.0.1,localhost',
+    cast=Csv()
+)
 
 # ==============================
 #       APLICACIONES
@@ -34,7 +39,7 @@ INSTALLED_APPS = [
     'tareas',
     'tareasMauri',
     'usuarios',
-    'finanzas',
+    "finanzas.apps.FinanzasConfig",
 
     # Login con Google
     'social_django',
@@ -73,7 +78,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
 
-                # Para social-auth
+                # Social auth
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
@@ -84,14 +89,28 @@ TEMPLATES = [
 WSGI_APPLICATION = 'tareas_proyecto.wsgi.application'
 
 # ==============================
-#       BASE DE DATOS
+#       BASE DE DATOS (BLINDADA)
 # ==============================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+
+        # Opciones seguras
+        'OPTIONS': {
+            'timeout': 20,
+            'detect_types': 1,
+        },
     }
 }
+
+# ==============================
+#   BLINDAJE GLOBAL DECIMAL
+# ==============================
+ctx = getcontext()
+ctx.traps[InvalidOperation] = True
+ctx.traps[DivisionByZero] = True
+ctx.traps[Overflow] = True
 
 # ==============================
 #   VALIDACIÓN DE CONTRASEÑAS
@@ -111,13 +130,18 @@ TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-LOCALE_PATHS = [BASE_DIR / 'locale']
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
 
 # ==============================
 #   ARCHIVOS ESTÁTICOS
 # ==============================
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 # ==============================
 #   LOGIN / LOGOUT
@@ -137,12 +161,10 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = config('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = config('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 
-# 🔥 SIEMPRE mostrar la pantalla de selección de cuentas
 SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
-    'prompt': 'select_account',    # ← fuerza el selector SIEMPRE
+    'prompt': 'select_account',
 }
 
-# 🔥 Cuando cerrás sesión, Google revoca el token y NO recuerda cuenta previa
 SOCIAL_AUTH_GOOGLE_OAUTH2_REVOKE_TOKENS_ON_DISCONNECT = True
 
 # ==============================

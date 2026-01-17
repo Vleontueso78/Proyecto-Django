@@ -1,54 +1,90 @@
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
 from ...models import RegistroFinanciero, ConfigFinanciera
-from ...calculo_sobrante.calculadora import calcular_sobrante
+from ...forms import RegistroFinancieroForm
 
 
+@login_required
 def editar_registro(request, pk):
-    registro = get_object_or_404(RegistroFinanciero, pk=pk, user=request.user)
-    config = ConfigFinanciera.objects.get(user=request.user)
+    registro = get_object_or_404(
+        RegistroFinanciero,
+        pk=pk,
+        user=request.user
+    )
 
-    # Valores por defecto (si el usuario dejó algo vacío)
-    defaults = {
-        "para_gastar_dia": config.presupuesto_diario,
-        "alimento": registro.alimento,
-        "productos": registro.productos,
-        "ahorro_y_deuda": registro.ahorro_y_deuda,
-    }
+    config, _ = ConfigFinanciera.objects.get_or_create(
+        user=request.user
+    )
 
-    # Valores del formulario que se muestran al cargar la página
-    form_values = {
-        "para_gastar_dia": registro.para_gastar_dia or defaults["para_gastar_dia"],
-        "alimento": registro.alimento,
-        "productos": registro.productos,
-        "ahorro_y_deuda": registro.ahorro_y_deuda,
-    }
+    # --------------------------------------------------
+    # Defaults centralizados (solo para UI)
+    # --------------------------------------------------
+    defaults = config.get_defaults_registro()
 
+    # --------------------------------------------------
+    # Campos editables según flags
+    # --------------------------------------------------
+    campos_editables = ["para_gastar_dia"]
+
+    if not registro.alimento_fijo:
+        campos_editables.append("alimento")
+
+    if not registro.productos_fijo:
+        campos_editables.append("productos")
+
+    if not registro.ahorro_y_deuda_fijo:
+        campos_editables.append("ahorro_y_deuda")
+
+    # --------------------------------------------------
+    # POST
+    # --------------------------------------------------
     if request.method == "POST":
-        # Obtiene valores ingresados por el usuario o los defaults
-        p = float(request.POST.get("para_gastar_dia") or defaults["para_gastar_dia"])
-        a = float(request.POST.get("alimento") or defaults["alimento"])
-        pr = float(request.POST.get("productos") or defaults["productos"])
-        ad = float(request.POST.get("ahorro_y_deuda") or defaults["ahorro_y_deuda"])
+        form = RegistroFinancieroForm(
+            request.POST,
+            instance=registro
+        )
 
-        # Actualizar campos
-        registro.para_gastar_dia = p
-        registro.alimento = a
-        registro.productos = pr
-        registro.ahorro_y_deuda = ad
+        # Deshabilitar campos fijos
+        for campo in form.fields:
+            if campo not in campos_editables:
+                form.fields[campo].disabled = True
 
-        # Recalcular sobrante solo si NO es fijo
-        if not registro.sobrante_fijo:
-            registro.sobrante_monetario = calcular_sobrante(p, a, ad, pr)
+        if form.is_valid():
+            # clean() + save() del modelo
+            form.save()
 
-        registro.save()
+            messages.success(
+                request,
+                "Registro actualizado correctamente."
+            )
+            return redirect("finanzas:registros")
 
-        messages.success(request, "Registro actualizado correctamente.")
-        return redirect("finanzas:registros")
+    # --------------------------------------------------
+    # GET
+    # --------------------------------------------------
+    else:
+        form = RegistroFinancieroForm(instance=registro)
 
-    return render(request, "finanzas/registros/registro_editar.html", {
-        "registro": registro,
-        "config": config,
-        "defaults": defaults,
-        "form_values": form_values,
-    })
+        # Aplicar defaults SOLO si el valor está vacío / cero
+        for campo, valor in defaults.items():
+            if campo in form.fields:
+                actual = getattr(registro, campo, None)
+                if not actual:
+                    form.initial[campo] = valor
+
+        # Deshabilitar campos fijos
+        for campo in form.fields:
+            if campo not in campos_editables:
+                form.fields[campo].disabled = True
+
+    return render(
+        request,
+        "finanzas/registros/registro_editar.html",
+        {
+            "form": form,
+            "registro": registro,
+            "config": config,
+        }
+    )

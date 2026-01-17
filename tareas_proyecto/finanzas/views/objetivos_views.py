@@ -5,17 +5,25 @@ from django.urls import reverse_lazy
 from ..models import ObjetivoFinanciero
 from ..forms import ObjetivoFinancieroForm
 
+
 # ===========================
 #   OBJETIVOS FINANCIEROS
 # ===========================
+
 class ObjetivoListView(LoginRequiredMixin, ListView):
-    """Lista de objetivos financieros."""
+    """Lista de objetivos financieros del usuario."""
     model = ObjetivoFinanciero
     template_name = "finanzas/objetivos.html"
     context_object_name = "objetivos"
+    paginate_by = 20
 
     def get_queryset(self):
-        return ObjetivoFinanciero.objects.filter(user=self.request.user).order_by('-fecha_creacion')
+        return (
+            super()
+            .get_queryset()
+            .filter(user=self.request.user)
+            .order_by("-fecha_creacion", "-id")
+        )
 
 
 class ObjetivoCreateView(LoginRequiredMixin, CreateView):

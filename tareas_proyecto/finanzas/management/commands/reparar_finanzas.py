@@ -1,7 +1,11 @@
 from django.core.management.base import BaseCommand
-from finanzas.utils.reparador import reparar_registros_financieros
-from finanzas.utils.diagnostico import diagnosticar_registros
 from django.contrib.auth import get_user_model
+
+from finanzas.utils.reparador import (
+    reparar_registros_financieros,
+    reparar_config_financiera_sql,
+)
+from finanzas.utils.diagnostico import diagnosticar_registros
 
 User = get_user_model()
 
@@ -25,7 +29,22 @@ class Command(BaseCommand):
         verbose = options["verbose"]
         ejecutar_reparacion = options["reparar"]
 
-        self.stdout.write(self.style.MIGRATE_HEADING("\n=== Diagnóstico de Finanzas ===\n"))
+        # ===================================================
+        # 0) REPARACIÓN CRÍTICA PREVIA (SQL PURO)
+        # ===================================================
+        self.stdout.write(
+            self.style.SQL_TABLE(
+                "\n=== Reparación inicial de ConfigFinanciera (SQL) ===\n"
+            )
+        )
+        reparar_config_financiera_sql(verbose=verbose)
+
+        # ===================================================
+        # 1) DIAGNÓSTICO
+        # ===================================================
+        self.stdout.write(
+            self.style.MIGRATE_HEADING("\n=== Diagnóstico de Finanzas ===\n")
+        )
 
         usuarios = User.objects.all()
         total_registros_global = 0
@@ -53,10 +72,12 @@ class Command(BaseCommand):
             )
             return
 
-        # ---------------------------------------------------
-        # EJECUTAR REPARACIONES
-        # ---------------------------------------------------
-        self.stdout.write(self.style.SQL_TABLE("\n=== Reparación de Registros ===\n"))
+        # ===================================================
+        # 2) REPARACIÓN DE REGISTROS (ORM)
+        # ===================================================
+        self.stdout.write(
+            self.style.SQL_TABLE("\n=== Reparación de Registros Financieros ===\n")
+        )
 
         resumen_reparaciones = reparar_registros_financieros(verbose=verbose)
 
@@ -64,4 +85,6 @@ class Command(BaseCommand):
         for clave, valor in resumen_reparaciones.items():
             self.stdout.write(f"{clave}: {valor}")
 
-        self.stdout.write(self.style.SUCCESS("\n>>> Proceso finalizado con éxito.\n"))
+        self.stdout.write(
+            self.style.SUCCESS("\n>>> Proceso finalizado con éxito.\n")
+        )

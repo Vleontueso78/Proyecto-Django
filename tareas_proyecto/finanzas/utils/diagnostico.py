@@ -1,5 +1,6 @@
-from finanzas.models import RegistroFinanciero
+from decimal import Decimal
 from django.utils.timezone import now
+from finanzas.models import RegistroFinanciero
 
 
 def diagnosticar_registros(usuario=None):
@@ -8,15 +9,15 @@ def diagnosticar_registros(usuario=None):
     Retorna cantidad total de registros y errores detectados.
     """
 
-    if usuario:
-        registros = RegistroFinanciero.objects.filter(user=usuario)
-    else:
-        registros = RegistroFinanciero.objects.all()
+    registros = (
+        RegistroFinanciero.objects.filter(user=usuario)
+        if usuario
+        else RegistroFinanciero.objects.all()
+    )
 
     hoy = now().date()
     errores = 0
 
-    # Campos numéricos reales del modelo
     campos_monetarios = [
         "alimento",
         "productos",
@@ -31,23 +32,29 @@ def diagnosticar_registros(usuario=None):
         if reg.fecha > hoy or reg.fecha.year < 2000:
             errores += 1
 
-        # 2) Revisar cada campo monetario
+        # 2) Campos monetarios
         for campo in campos_monetarios:
             valor = getattr(reg, campo, None)
 
             if valor is None:
                 continue
 
-            # Valores negativos
-            if valor < 0:
-                errores += 1
+            if isinstance(valor, Decimal):
+                if not valor.is_finite():
+                    errores += 1
+                    continue
 
-            # Más de dos decimales
-            if round(valor, 2) != valor:
-                errores += 1
+                if valor < 0:
+                    errores += 1
+
+                if valor.quantize(Decimal("0.01")) != valor:
+                    errores += 1
 
         # 3) Sobrante negativo
-        if reg.sobrante_monetario < 0:
+        if (
+            isinstance(reg.sobrante_monetario, Decimal)
+            and reg.sobrante_monetario < 0
+        ):
             errores += 1
 
     return {

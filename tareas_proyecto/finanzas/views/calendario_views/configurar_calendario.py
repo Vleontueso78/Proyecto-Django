@@ -4,32 +4,56 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from ...models import ConfigFinanciera
+from ...models import ConfigFinanciera, RegistroFinanciero
 
 
 @login_required
 def configurar_calendario(request):
     """
     Vista exclusiva para configurar la fecha de inicio del calendario.
+    Solo se permite una única vez por usuario y
+    únicamente si no existen registros financieros.
     """
 
-    config, _ = ConfigFinanciera.objects.get_or_create(user=request.user)
+    config, _ = ConfigFinanciera.objects.get_or_create(
+        user=request.user
+    )
 
-    # 🔒 Si ya está configurado → NO mostrar más este formulario
+    # 🔒 Si ya está configurado → bloqueo total
     if config.fecha_inicio_registros:
+        messages.info(
+            request,
+            "El calendario ya fue configurado."
+        )
         return redirect("finanzas:calendario_ver")
+
+    # 🔒 Si ya existen registros → bloqueo total
+    if RegistroFinanciero.objects.filter(
+        user=request.user
+    ).exists():
+        messages.error(
+            request,
+            "No puedes configurar el calendario porque ya existen registros."
+        )
+        return redirect("finanzas:dashboard")
 
     if request.method == "POST":
         fecha_inicio_str = request.POST.get("fecha_inicio")
 
         if not fecha_inicio_str:
-            messages.error(request, "Debes seleccionar una fecha válida.")
+            messages.error(
+                request,
+                "Debes seleccionar una fecha válida."
+            )
             return redirect("finanzas:configurar_calendario")
 
         try:
             fecha_inicio = date.fromisoformat(fecha_inicio_str)
         except ValueError:
-            messages.error(request, "Formato de fecha inválido.")
+            messages.error(
+                request,
+                "Formato de fecha inválido."
+            )
             return redirect("finanzas:configurar_calendario")
 
         hoy = date.today()
@@ -37,21 +61,32 @@ def configurar_calendario(request):
         if fecha_inicio > hoy:
             messages.error(
                 request,
-                "La fecha de inicio no puede ser superior a hoy."
+                "La fecha de inicio no puede ser posterior a hoy."
             )
             return redirect("finanzas:configurar_calendario")
 
+        if fecha_inicio.year < 2000:
+            messages.error(
+                request,
+                "La fecha de inicio no puede ser anterior al año 2000."
+            )
+            return redirect("finanzas:configurar_calendario")
+
+        # ✅ Guardado definitivo
         config.fecha_inicio_registros = fecha_inicio
         config.save()
 
         messages.success(
             request,
-            "Calendario inicial configurado correctamente."
+            "📅 Calendario inicial configurado correctamente."
         )
+
         return redirect("finanzas:calendario_ver")
 
     return render(
         request,
         "finanzas/configurar_calendario.html",
-        {"config": config},
+        {
+            "config": config,
+        },
     )

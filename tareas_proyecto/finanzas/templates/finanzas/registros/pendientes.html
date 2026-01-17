@@ -19,10 +19,15 @@
 
   <div id="card-pendientes" class="card card-anim">
 
+    <!-- =========================
+         HEADER
+    ========================== -->
     <div class="pendientes-header">
       <div>
         <h3 class="pendientes-titulo">Días sin completar</h3>
-        <p class="muted">Completá cada día para mantener tus finanzas al día.</p>
+        <p class="muted">
+          Estos días no tienen un registro financiero completo.
+        </p>
       </div>
 
       <div class="pendientes-acciones">
@@ -34,32 +39,41 @@
       </div>
     </div>
 
+    <!-- =========================
+         LISTA DE PENDIENTES
+    ========================== -->
     {% if pendientes %}
-    <div class="pending-list">
+      <div class="pending-list">
 
-      {% for reg in pendientes %}
-      <div class="pending-item">
-        <div>
-          <div class="pending-fecha">
-            {{ reg.fecha|date:"d/m/Y" }}
+        {% for fecha in pendientes %}
+        <div class="pending-item">
+
+          <div>
+            <div class="pending-fecha">
+              {{ fecha|date:"d/m/Y" }}
+            </div>
+            <div class="note">Pendiente</div>
           </div>
-          <div class="note">Pendiente</div>
-        </div>
 
-        <div>
-          <a class="btn btn-primary btn-small"
-             href="{% url 'finanzas:completar_pendiente_por_fecha' reg.fecha|date:'Y-m-d' %}">
-            Completar
-          </a>
+          <div>
+            <a
+              class="btn btn-primary btn-small"
+              href="{% url 'finanzas:completar_pendiente_por_fecha' fecha|date:'Y-m-d' %}">
+              Completar
+            </a>
+          </div>
+
         </div>
+        {% endfor %}
+
       </div>
-      {% endfor %}
-
-    </div>
     {% endif %}
 
   </div>
 
+  <!-- =========================
+       VOLVER
+  ========================== -->
   <div class="center" style="margin-top: 20px;">
     <a class="btn btn-ghost" href="{% url 'finanzas:dashboard' %}">
       ← Volver al panel

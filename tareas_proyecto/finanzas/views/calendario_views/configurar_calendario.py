@@ -11,13 +11,20 @@ from ...models import ConfigFinanciera, RegistroFinanciero
 def configurar_calendario(request):
     """
     Vista exclusiva para configurar la fecha de inicio del calendario.
-    Solo se permite una única vez por usuario y
-    únicamente si no existen registros financieros.
+    Solo se permite una única vez por usuario.
     """
 
-    config, _ = ConfigFinanciera.objects.get_or_create(
+    # 🔎 Solo leer configuración (no crear acá)
+    config = ConfigFinanciera.objects.filter(
         user=request.user
-    )
+    ).first()
+
+    if not config:
+        messages.error(
+            request,
+            "Error de configuración del usuario."
+        )
+        return redirect("finanzas:dashboard")
 
     # 🔒 Si ya está configurado → bloqueo total
     if config.fecha_inicio_registros:
@@ -27,16 +34,19 @@ def configurar_calendario(request):
         )
         return redirect("finanzas:calendario_ver")
 
-    # 🔒 Si ya existen registros → bloqueo total
+    # 🔒 Bloquear solo si existen registros creados previamente
     if RegistroFinanciero.objects.filter(
         user=request.user
     ).exists():
         messages.error(
             request,
-            "No puedes configurar el calendario porque ya existen registros."
+            "No puedes configurar el calendario porque ya existen registros financieros."
         )
         return redirect("finanzas:dashboard")
 
+    # -------------------------------------------------
+    # POST
+    # -------------------------------------------------
     if request.method == "POST":
         fecha_inicio_str = request.POST.get("fecha_inicio")
 
@@ -83,6 +93,9 @@ def configurar_calendario(request):
 
         return redirect("finanzas:calendario_ver")
 
+    # -------------------------------------------------
+    # GET
+    # -------------------------------------------------
     return render(
         request,
         "finanzas/configurar_calendario.html",

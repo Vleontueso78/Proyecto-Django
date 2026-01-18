@@ -12,15 +12,12 @@
 {% block content %}
 <div id="dashboard-container" class="fade-in">
 
-    <h2 id="titulo-finanzas">
-        📆 {{ fecha|date:"d/m/Y" }}
-    </h2>
+    <h2 id="titulo-finanzas">📆 {{ fecha|date:"d/m/Y" }}</h2>
 
     <div class="card card-anim">
 
         {% if not registro.completado %}
 
-        <!-- ESTADO DEL DÍA -->
         <div class="alert alert-warning center mb-6">
             ⚠ Este día está pendiente. Completá los datos para poder cerrarlo.
         </div>
@@ -28,80 +25,76 @@
         <form method="post" class="dia-pendiente-form">
             {% csrf_token %}
 
-            <!-- =========================
-                 SECCIÓN: PRESUPUESTO
-            ========================== -->
+            <!-- ================= PRESUPUESTO ================= -->
             <section class="dia-section">
                 <h3 class="dia-section-title">💰 Presupuesto del día</h3>
 
-                <div class="center" style="margin-top: 10px;">
+                <div class="center">
                     <div class="editable-field">
+                        <input
+                            id="presupuesto-input"
+                            type="number"
+                            name="para_gastar_dia"
+                            class="editable-number"
+                            step="0.01"
+                            value="{{ registro.para_gastar_dia }}"
+                            readonly
+                        >
 
-                        <div class="presupuesto-display">
-                            <span id="presupuesto-signo">$</span>
-                            <input
-                                type="number"
-                                name="para_gastar_dia"
-                                class="editable-number"
-                                step="0.01"
-                                value="{{ registro.para_gastar_dia }}"
-                                readonly
-                            >
+                        <div class="field-actions">
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-target="presupuesto-input">✏</button>
                         </div>
-
-                        <button type="button" class="edit-btn">✏</button>
                     </div>
                 </div>
             </section>
 
-            <!-- =========================
-                 SECCIÓN: GASTOS
-            ========================== -->
+            <!-- ================= GASTOS ================= -->
             <section class="dia-section">
                 <h3 class="dia-section-title">🧾 Distribución de gastos</h3>
 
                 <div class="form-grid">
 
+                    {% for item in campos_gastos %}
                     <div class="form-group editable-field">
-                        <label>🍽 Alimento</label>
-                        <input type="number"
-                               name="alimento"
-                               class="editable-number"
-                               step="0.01"
-                               value="{{ registro.alimento }}"
-                               readonly>
-                        <button type="button" class="edit-btn">✏</button>
-                    </div>
+                        <label>{{ item.icono }} {{ item.label }}</label>
 
-                    <div class="form-group editable-field">
-                        <label>🛒 Productos</label>
-                        <input type="number"
-                               name="productos"
-                               class="editable-number"
-                               step="0.01"
-                               value="{{ registro.productos }}"
-                               readonly>
-                        <button type="button" class="edit-btn">✏</button>
-                    </div>
+                        <input
+                            id="{{ item.campo }}-input"
+                            type="number"
+                            name="{{ item.campo }}"
+                            step="0.01"
+                            value="{{ item.valor }}"
+                            class="editable-number {% if item.fijo %}input-locked{% endif %}"
+                            {% if item.fijo %}readonly{% endif %}
+                        >
 
-                    <div class="form-group editable-field">
-                        <label>🏦 Ahorro / Deuda</label>
-                        <input type="number"
-                               name="ahorro_y_deuda"
-                               class="editable-number"
-                               step="0.01"
-                               value="{{ registro.ahorro_y_deuda }}"
-                               readonly>
-                        <button type="button" class="edit-btn">✏</button>
+                        <div class="field-actions">
+                            <button
+                                type="button"
+                                class="edit-btn"
+                                data-target="{{ item.campo }}-input"
+                                {% if item.fijo %}disabled{% endif %}
+                            >✏</button>
+
+                            <button
+                                type="button"
+                                class="lock-btn"
+                                data-target="{{ item.campo }}-input"
+                                title="{% if item.fijo %}Valor fijado{% else %}Fijar valor{% endif %}"
+                            >
+                                {% if item.fijo %}🔒{% else %}🔓{% endif %}
+                            </button>
+                        </div>
                     </div>
+                    {% endfor %}
 
                 </div>
             </section>
 
-            <!-- =========================
-                 ACCIONES
-            ========================== -->
-            <div class="center acciones-dia" style="margin-top: 30px;">
+            <div class="center acciones-dia">
                 <button type="submit" class="btn btn-accent">💾 Guardar día</button>
                 <a href="{% url 'finanzas:calendario_ver' %}" class="btn btn-ghost">⬅ Volver</a>
             </div>
@@ -109,60 +102,73 @@
 
         {% else %}
 
-        <!-- =========================
-             DÍA COMPLETADO
-        ========================== -->
+        <!-- ================= DÍA COMPLETADO ================= -->
 
         <form method="post">
             {% csrf_token %}
 
-            <div class="resumen-grid editable-group" style="margin-bottom: 20px;">
+            <div class="resumen-grid editable-group">
 
+                <!-- Presupuesto -->
                 <div class="editable-field">
                     <div class="muted">💰 Presupuesto</div>
-                    <input type="number" name="para_gastar_dia"
-                           class="editable-number"
-                           step="0.01"
-                           value="{{ registro.para_gastar_dia }}"
-                           readonly>
-                    <button type="button" class="edit-btn">✏</button>
+
+                    <input
+                        id="para_gastar_dia-completado"
+                        type="number"
+                        name="para_gastar_dia"
+                        class="editable-number"
+                        step="0.01"
+                        value="{{ registro.para_gastar_dia }}"
+                        readonly
+                    >
+
+                    <div class="field-actions">
+                        <button
+                            type="button"
+                            class="edit-btn"
+                            data-target="para_gastar_dia-completado">✏</button>
+                    </div>
                 </div>
 
+                {% for item in campos_gastos %}
                 <div class="editable-field">
-                    <div class="muted">🍽 Alimento</div>
-                    <input type="number" name="alimento"
-                           class="editable-number"
-                           step="0.01"
-                           value="{{ registro.alimento }}"
-                           readonly>
-                    <button type="button" class="edit-btn">✏</button>
-                </div>
+                    <div class="muted">{{ item.icono }} {{ item.label }}</div>
 
-                <div class="editable-field">
-                    <div class="muted">🛒 Productos</div>
-                    <input type="number" name="productos"
-                           class="editable-number"
-                           step="0.01"
-                           value="{{ registro.productos }}"
-                           readonly>
-                    <button type="button" class="edit-btn">✏</button>
-                </div>
+                    <input
+                        id="{{ item.campo }}-completado"
+                        type="number"
+                        name="{{ item.campo }}"
+                        class="editable-number {% if item.fijo %}input-locked{% endif %}"
+                        step="0.01"
+                        value="{{ item.valor }}"
+                        {% if item.fijo %}readonly{% endif %}
+                    >
 
-                <div class="editable-field">
-                    <div class="muted">🏦 Ahorro / Deuda</div>
-                    <input type="number" name="ahorro_y_deuda"
-                           class="editable-number"
-                           step="0.01"
-                           value="{{ registro.ahorro_y_deuda }}"
-                           readonly>
-                    <button type="button" class="edit-btn">✏</button>
+                    <div class="field-actions">
+                        <button
+                            type="button"
+                            class="edit-btn"
+                            data-target="{{ item.campo }}-completado"
+                            {% if item.fijo %}disabled{% endif %}
+                        >✏</button>
+
+                        <button
+                            type="button"
+                            class="lock-btn"
+                            data-target="{{ item.campo }}-completado"
+                        >
+                            {% if item.fijo %}🔒{% else %}🔓{% endif %}
+                        </button>
+                    </div>
                 </div>
+                {% endfor %}
 
             </div>
 
             <hr>
 
-            <div class="resumen-grid" style="margin-top: 20px;">
+            <div class="resumen-grid">
                 <div>
                     <div class="muted">💸 Gasto total</div>
                     <div class="resumen-valor">${{ registro.gasto_total }}</div>
@@ -177,7 +183,7 @@
                 </div>
             </div>
 
-            <div class="center" style="margin-top: 30px;">
+            <div class="center acciones-dia">
                 <button type="submit" class="btn btn-accent">💾 Guardar cambios</button>
                 <a href="{% url 'finanzas:calendario_ver' %}" class="btn btn-ghost">⬅ Volver</a>
             </div>
@@ -187,26 +193,5 @@
     </div>
 </div>
 
-<!-- =========================
-     JS EDICIÓN CON LÁPIZ
-========================== -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".editable-field").forEach(field => {
-        const btn = field.querySelector(".edit-btn");
-        const input = field.querySelector(".editable-number");
-        if (!btn || !input) return;
-
-        btn.addEventListener("click", () => {
-            if (input.hasAttribute("readonly")) {
-                input.removeAttribute("readonly");
-                input.focus();
-            } else {
-                input.setAttribute("readonly", true);
-            }
-        });
-    });
-});
-</script>
-
+<script src="{% static 'js/finanzas/completar_pendiente.js' %}"></script>
 {% endblock %}

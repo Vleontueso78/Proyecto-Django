@@ -8,11 +8,9 @@ from .views.dashboard_views import FinanzasDashboardView
 # ======================
 #     CALENDARIO
 # ======================
-from .views.calendario_views import (
-    configurar_calendario,
-    calendario_ver,
-    detalle_dia,
-)
+from .views.calendario_views.configurar_calendario import configurar_calendario
+from .views.calendario_views.calendario_ver import calendario_ver
+from .views.calendario_views.detalle_dia import detalle_dia
 
 # ======================
 #     REGISTROS
@@ -24,6 +22,7 @@ from .views.registros_views.dias_pendientes import registros_pendientes
 from .views.registros_views.completar_pendientes import (
     completar_pendiente_por_fecha,
 )
+
 # ======================
 #     DÍAS
 # ======================
@@ -37,19 +36,37 @@ from .views.objetivos_views import (
     ObjetivoCreateView,
 )
 
+# ======================
+#     API
+# ======================
+from .views.api.fijar_valor import fijar_valor_default
+
+
 app_name = "finanzas"
 
 urlpatterns = [
     # ======================
     #     DASHBOARD
     # ======================
-    path("", FinanzasDashboardView.as_view(), name="dashboard"),
+    path(
+        "",
+        FinanzasDashboardView.as_view(),
+        name="dashboard",
+    ),
 
     # ======================
     #     REGISTROS
     # ======================
-    path("registros/", RegistroListView.as_view(), name="registros"),
-    path("registros/nuevo/", RegistroCreateView.as_view(), name="crear_registro"),
+    path(
+        "registros/",
+        RegistroListView.as_view(),
+        name="registros",
+    ),
+    path(
+        "registros/nuevo/",
+        RegistroCreateView.as_view(),
+        name="crear_registro",
+    ),
     path(
         "registros/editar/<int:pk>/",
         editar_registro,
@@ -59,10 +76,14 @@ urlpatterns = [
     # ======================
     #     DÍAS
     # ======================
-    path("registros/dias/", lista_dias, name="registros_dias"),
+    path(
+        "registros/dias/",
+        lista_dias,
+        name="registros_dias",
+    ),
 
     # ======================
-    #     PENDIENTES ✅
+    #     PENDIENTES
     # ======================
     path(
         "registros/pendientes/",
@@ -78,17 +99,42 @@ urlpatterns = [
     # ======================
     #     OBJETIVOS
     # ======================
-    path("objetivos/", ObjetivoListView.as_view(), name="objetivos"),
-    path("objetivos/nuevo/", ObjetivoCreateView.as_view(), name="crear_objetivo"),
+    path(
+        "objetivos/",
+        ObjetivoListView.as_view(),
+        name="objetivos",
+    ),
+    path(
+        "objetivos/nuevo/",
+        ObjetivoCreateView.as_view(),
+        name="crear_objetivo",
+    ),
 
     # ======================
-    #     CONFIGURACIÓN / CALENDARIO
+    #     CALENDARIO
     # ======================
-    path("calendario/", configurar_calendario, name="configurar_calendario"),
-    path("calendario/ver/", calendario_ver, name="calendario_ver"),
+    path(
+        "calendario/",
+        configurar_calendario,
+        name="configurar_calendario",
+    ),
+    path(
+        "calendario/ver/",
+        calendario_ver,
+        name="calendario_ver",
+    ),
     path(
         "calendario/dia/<str:fecha_str>/",
         detalle_dia,
         name="detalle_dia",
+    ),
+
+    # ======================
+    #     API
+    # ======================
+    path(
+        "api/fijar-default/",
+        fijar_valor_default,
+        name="fijar_valor_default",
     ),
 ]

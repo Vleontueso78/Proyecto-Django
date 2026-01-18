@@ -21,13 +21,16 @@ def calendario_ver(request):
         user=request.user
     ).first()
 
+    # 🔒 Si el calendario no está configurado, redirigir
     if not config or not config.fecha_inicio_registros:
         return redirect("finanzas:configurar_calendario")
 
     # --------------------------------------------------------
     # 2️⃣ Asegurar registros desde inicio hasta hoy
+    # 👉 SOLO si el calendario ya fue configurado
     # --------------------------------------------------------
-    asegurar_registros_hasta_hoy(user=request.user)
+    if config.fecha_inicio_registros:
+        asegurar_registros_hasta_hoy(user=request.user)
 
     hoy = date.today()
 

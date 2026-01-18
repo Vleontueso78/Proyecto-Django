@@ -114,19 +114,21 @@ class RegistroFinanciero(models.Model):
         productos = normalizar_decimal(self.productos)
         ahorro = normalizar_decimal(self.ahorro_y_deuda)
 
-        gastos = alimento + productos + ahorro
+        gastos = [alimento, productos, ahorro]
 
-        # ❌ Gastos mayores al presupuesto
-        if gastos > para_gastar:
-            raise ValidationError(
-                "La suma de los gastos no puede superar el presupuesto diario."
-            )
-
-        # ❌ Presupuesto negativo
+        # ❌ Presupuesto negativo (esto NO se permite)
         if para_gastar < Decimal("0.00"):
             raise ValidationError(
                 {"para_gastar_dia": "El presupuesto diario no puede ser negativo."}
             )
+
+        # ❌ Gastos mayores al presupuesto
+        # 👉 SOLO se valida si TODOS los gastos son >= 0
+        if all(g >= Decimal("0.00") for g in gastos):
+            if sum(gastos) > para_gastar:
+                raise ValidationError(
+                    "La suma de los gastos no puede superar el presupuesto diario."
+                )
 
     # ======================================================
     # FIJAR / DESFIJAR VALORES
@@ -172,7 +174,6 @@ class RegistroFinanciero(models.Model):
         if not self.completado:
             # Un día NO completado nunca tiene sobrante
             self.sobrante_monetario = Decimal("0.00")
-
         else:
             # Día completado → calcular sobrante
             if self.sobrante_fijo:

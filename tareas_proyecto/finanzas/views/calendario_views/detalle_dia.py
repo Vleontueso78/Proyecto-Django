@@ -56,6 +56,8 @@ def detalle_dia(request, fecha_str):
         registro = RegistroFinanciero.objects.create(
             user=request.user,
             fecha=fecha,
+
+            # 🔑 Presupuesto SIEMPRE desde ConfigFinanciera
             para_gastar_dia=normalizar_decimal(
                 config.presupuesto_diario
             ),
@@ -81,32 +83,65 @@ def detalle_dia(request, fecha_str):
         )
 
     # --------------------------------------------------------
-    # 5️⃣ POST → Guardar / completar día
+    # 5️⃣ POST → Guardar / Completar
     # --------------------------------------------------------
     if request.method == "POST":
 
-        if not registro.alimento_fijo:
-            registro.alimento = normalizar_decimal(
-                request.POST.get("alimento")
-            )
+        accion = request.POST.get("accion", "guardar")
 
-        if not registro.productos_fijo:
-            registro.productos = normalizar_decimal(
-                request.POST.get("productos")
-            )
-
-        if not registro.ahorro_y_deuda_fijo:
-            registro.ahorro_y_deuda = normalizar_decimal(
-                request.POST.get("ahorro_y_deuda")
-            )
-
+        # ----------------------------
+        # Presupuesto (SIEMPRE editable)
+        # ----------------------------
         registro.para_gastar_dia = normalizar_decimal(
             request.POST.get("para_gastar_dia"),
             default=registro.para_gastar_dia
         )
 
-        registro.completado = True
+        # ----------------------------
+        # Gastos (solo si no están fijos)
+        # ----------------------------
+        if not registro.alimento_fijo:
+            registro.alimento = normalizar_decimal(
+                request.POST.get("alimento"),
+                default=registro.alimento
+            )
+
+        if not registro.productos_fijo:
+            registro.productos = normalizar_decimal(
+                request.POST.get("productos"),
+                default=registro.productos
+            )
+
+        if not registro.ahorro_y_deuda_fijo:
+            registro.ahorro_y_deuda = normalizar_decimal(
+                request.POST.get("ahorro_y_deuda"),
+                default=registro.ahorro_y_deuda
+            )
+
+        # ----------------------------
+        # Completar día
+        # ----------------------------
+        if accion == "completar":
+            registro.completado = True
+
         registro.save()
+
+        # ----------------------------------------------------
+        # 🔒 Sincronizar valores FIJOS a ConfigFinanciera
+        # ----------------------------------------------------
+        if registro.alimento_fijo:
+            config.default_alimento = registro.alimento
+            config.default_alimento_fijo = True
+
+        if registro.productos_fijo:
+            config.default_productos = registro.productos
+            config.default_productos_fijo = True
+
+        if registro.ahorro_y_deuda_fijo:
+            config.default_ahorro_y_deuda = registro.ahorro_y_deuda
+            config.default_ahorro_y_deuda_fijo = True
+
+        config.save()
 
         messages.success(
             request,
@@ -119,7 +154,34 @@ def detalle_dia(request, fecha_str):
         )
 
     # --------------------------------------------------------
-    # 6️⃣ Render
+    # 6️⃣ Campos de gastos para el template
+    # --------------------------------------------------------
+    campos_gastos = [
+        {
+            "campo": "alimento",
+            "label": "Alimento",
+            "icono": "🍽",
+            "valor": registro.alimento,
+            "fijo": registro.alimento_fijo,
+        },
+        {
+            "campo": "productos",
+            "label": "Productos",
+            "icono": "🛒",
+            "valor": registro.productos,
+            "fijo": registro.productos_fijo,
+        },
+        {
+            "campo": "ahorro_y_deuda",
+            "label": "Ahorro / Deuda",
+            "icono": "🏦",
+            "valor": registro.ahorro_y_deuda,
+            "fijo": registro.ahorro_y_deuda_fijo,
+        },
+    ]
+
+    # --------------------------------------------------------
+    # 7️⃣ Render
     # --------------------------------------------------------
     return render(
         request,
@@ -128,5 +190,6 @@ def detalle_dia(request, fecha_str):
             "fecha": fecha,
             "registro": registro,
             "dia_completado": registro.completado,
+            "campos_gastos": campos_gastos,
         }
     )

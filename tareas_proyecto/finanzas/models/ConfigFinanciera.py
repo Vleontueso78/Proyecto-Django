@@ -5,7 +5,6 @@ from decimal import Decimal
 from finanzas.validators import validar_presupuesto_diario
 from .normalizar_decimal import normalizar_decimal
 
-
 class ConfigFinanciera(models.Model):
     """
     Configuración financiera por usuario.

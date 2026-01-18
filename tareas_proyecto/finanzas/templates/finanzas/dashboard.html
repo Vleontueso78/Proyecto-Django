@@ -24,7 +24,7 @@
   ============================== -->
   <div class="center" style="margin-bottom: 20px;">
     <a href="{% url 'finanzas:configurar_calendario' %}" class="btn btn-accent">
-      📅 Configurar calendario
+      📅 Calendario
     </a>
   </div>
 
@@ -33,7 +33,9 @@
   ============================== -->
   <div class="card card-anim card-delay-1" id="presupuesto-card">
 
-    <span class="muted center">Tu presupuesto diario actual es:</span>
+    <span class="muted center">
+      Tu presupuesto diario actual es:
+    </span>
 
     <div id="presupuesto-wrapper" class="editable-field">
 
@@ -42,7 +44,7 @@
 
         <!-- Vista normal -->
         <span class="presupuesto-valor">
-          {{ presupuesto_diario }}
+          {{ presupuesto_mostrar }}
         </span>
 
         <!-- Input editable -->
@@ -59,7 +61,8 @@
       <button
         id="btn-editar-presupuesto"
         class="edit-btn"
-        type="button">
+        type="button"
+        aria-label="Editar presupuesto">
         ✏
       </button>
 
@@ -94,7 +97,7 @@
       <div class="pendientes-acciones">
         {% if dias_pendientes %}
           <span class="tag">
-            {{ dias_pendientes|length }} pendientes
+            {{ cantidad_pendientes }} pendientes
           </span>
           <a
             class="btn btn-accent btn-small"

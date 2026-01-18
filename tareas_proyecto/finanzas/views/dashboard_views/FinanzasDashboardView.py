@@ -27,9 +27,25 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     # =====================================================
     def post(self, request, *args, **kwargs):
 
-        config, _ = ConfigFinanciera.objects.get_or_create(
+        # 🔎 Solo leer configuración (ya existe por signal)
+        config = ConfigFinanciera.objects.filter(
             user=request.user
-        )
+        ).first()
+
+        if not config:
+            messages.error(
+                request,
+                "Error de configuración del usuario."
+            )
+            return redirect("finanzas:dashboard")
+
+        # 🔒 Si el calendario no está configurado → no tocar registros
+        if not config.fecha_inicio_registros:
+            messages.info(
+                request,
+                "Primero debes configurar el calendario."
+            )
+            return redirect("finanzas:configurar_calendario")
 
         # -------------------------------------------------
         # 1️⃣ Presupuesto diario
@@ -56,7 +72,7 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
             )
             return redirect("finanzas:dashboard")
 
-        # Registro del día actual
+        # Registro del día actual (SOLO lectura)
         registro = RegistroFinanciero.objects.filter(
             user=request.user,
             fecha=date.today()
@@ -70,19 +86,25 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         if "fijar" in request.POST:
             tipo = request.POST.get("tipo")
 
+            # 🔒 No crear registros si no existen
             if not existe_registro:
-                registro = RegistroFinanciero.objects.create(
-                    user=request.user,
-                    fecha=date.today(),
-                    para_gastar_dia=config.presupuesto_diario,
+                messages.warning(
+                    request,
+                    "Debes guardar el día antes de fijar valores."
                 )
+                return redirect("finanzas:dashboard")
 
             if tipo == "sobrante":
-                valor = normalizar_decimal(registro.sobrante_monetario)
+                valor = normalizar_decimal(
+                    registro.sobrante_monetario
+                )
                 campo_valor = "sobrante_monetario"
                 campo_fijo = "sobrante_fijo"
             else:
-                valor = normalizar_decimal(request.POST.get(tipo))
+                valor = normalizar_decimal(
+                    request.POST.get(tipo)
+                )
+
                 if valor <= 0:
                     messages.warning(
                         request,
@@ -150,9 +172,14 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        config, _ = ConfigFinanciera.objects.get_or_create(
+        config = ConfigFinanciera.objects.filter(
             user=self.request.user
-        )
+        ).first()
+
+        # 🔒 Si no hay configuración → forzar onboarding
+        if not config or not config.fecha_inicio_registros:
+            context["requiere_configuracion"] = True
+            return context
 
         presupuesto = dec_int(
             normalizar_decimal(config.presupuesto_diario)
@@ -213,7 +240,10 @@ class FinanzasDashboardView(LoginRequiredMixin, TemplateView):
         )
 
         context["total_gastado"] = sum(
-            (normalizar_decimal(r.gasto_total) for r in registros),
+            (
+                normalizar_decimal(r.gasto_total)
+                for r in registros
+            ),
             Decimal("0")
         )
 
